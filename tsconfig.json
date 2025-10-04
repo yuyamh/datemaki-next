@@ -1,27 +1,62 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    /* プロジェクト */
+    "incremental": true, // 差分型チェック（`.tsbuildinfo` を使ってビルドを高速化）
+    "tsBuildInfoFile": "./.tsbuildinfo", /* .tsbuildinfo 増分コンパイルファイルのパスを指定します。 */
+
+    /* 言語と環境 */
+    "target": "ES2022", // トランスパイル先の構文レベル（最新構文を許可）
+    "lib": ["DOM", "DOM.Iterable", "ES2022"], // 使用可能な組み込みAPI（ブラウザ環境と最新JS機能を含む）
+    "jsx": "preserve", // JSX構文をそのまま出力（SWCやBabelで後から処理）
+    "moduleDetection": "force", // 明示的にモジュールと判断するルール（ファイル単位で制御）
+
+    /* モジュール */
+    "module": "ESNext", // 出力されるモジュール形式（import/exportを維持）
+    "moduleResolution": "Bundler", // バンドラ向けのモジュール解決（Node.jsスタイルではない）
+    "baseUrl": ".", // ルートディレクトリ（相対パスの基準）
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"] // "@/" を "src/" にマッピング（エイリアス）
+    },
+    "resolveJsonModule": true, // .json ファイルを import できるようにする
+
+    /* JavaScript サポート */
+    "allowJs": true, // JS ファイルを TypeScript プロジェクト内で許可
+    "checkJs": true, // JS ファイルにも型チェックを適用
+
+    /* Emit */
+    "noEmit": true, // トランスパイル結果（.js）を出力しない（型チェック専用）
+
+    /* システム連携の制約事項 */
+    "esModuleInterop": true, // CommonJS のモジュールを ESModules としてインポート可能にする
+    "isolatedModules": true, // 各ファイルを独立して変換可能にする（SWCなどに必要）
+    "verbatimModuleSyntax": true, // import/export の構文を変更せずそのまま出力
+    "forceConsistentCasingInFileNames": true, // ファイル名の大文字・小文字の不一致を許さない（OS間の差異対策）
+
+    /* 型チェック */
+    "strict": true, // 厳密な型チェックをすべて有効にする
+    "noFallthroughCasesInSwitch": true, // switch文の意図しないfallthrough（次のcaseへの抜け）を禁止
+    "noUncheckedIndexedAccess": true, // 配列・オブジェクトの要素アクセスをより厳密にチェック
+
+    /* 完全性 */
+    "skipLibCheck": true, // node_modules 内の型定義ファイルの型チェックをスキップ（高速化）
+
+    /* プラグイン */
+    "plugins": [{ "name": "next" }], // Next.js の構文チェックを強化するプラグイン
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+
+  /* 型チェックの対象ファイル */
+  "include": [
+    "eslint.config.mjs", // ESLint 設定ファイル
+    "next-env.d.ts", // Next.js 環境用型定義ファイル（必須）
+    "**/*.ts", // すべての TypeScript ファイル
+    "**/*.tsx", // JSX を含む TypeScript ファイル
+    "**/*.cjs", // CommonJS 形式の JS ファイル
+    "**/*.js", // 通常の JavaScript ファイル
+    ".next/types/**/*.ts", // Next.js の内部型定義
+    "postcss.config.mjs", // PostCSS 設定ファイル
+    ".prettier.config.js" // Prettier 設定ファイル
+  ],
+
+  /* 除外するファイル */
+  "exclude": ["node_modules", ".next", "dist"] // npm の依存ファイルは除外（重いので）
 }

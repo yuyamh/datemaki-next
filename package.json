@@ -7,7 +7,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --skipLibCheck true --noEmit",
+    "typecheck:full": "tsc --skipLibCheck false --noEmit",
+    "clean": "git clean -xdf node_modules dist .next"
   },
   "dependencies": {
     "next": "15.3.1",
@@ -21,9 +24,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
+    "eslint": "^9.37.0",
     "eslint-config-next": "15.3.1",
     "eslint-plugin-react-hooks": "^6.1.1",
+    "postcss-load-config": "^6.0.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
