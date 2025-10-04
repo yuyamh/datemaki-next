@@ -1,6 +1,4 @@
-import { type FC } from "react";
-
-const Page: FC = () => {
+function Page() {
   return (
     <main>
       <div className="flex justify-center items-center h-screen">
