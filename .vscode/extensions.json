@@ -1,52 +1,52 @@
 {
-  "recommendations": [
-    // ------------------------------------------------------------
-    // おすすめ度：５（必須）
-    // ------------------------------------------------------------
-    // Tailwind CSS IntelliSense
-    // Tailwind CSS のクラス名を入力する際に、自動補完やホバープレビューが表示される
-    "bradlc.vscode-tailwindcss",
-    // ESLint
-    // 構文チェック
-    "dbaeumer.vscode-eslint",
-    // Prettier - Code formatter
-    // コードフォーマット
-    "esbenp.prettier-vscode",
-    // Prisma
-    // Prisma のスキーマファイルを編集する際に、シンタックスハイライトや自動補完が利用できる
-    "Prisma.prisma",
-    // ------------------------------------------------------------
-    // おすすめ度：４（ほぼ必須）
-    // ------------------------------------------------------------
-    // Auto Rename Tag
-    // ペアになった HTML/XML タグの名前を自動的に変更
-    "formulahendry.auto-rename-tag",
-    // Reload
-    // VS Code の再読み込みができる
-    "natqe.reload",
-    // Tailwind Fold
-    // Tailwind CSS のクラス名を折りたたむ
-    "stivo.tailwind-fold",
-    // Pretty TypeScript Errors
-    // TypeScript のエラーメッセージをより読みやすく
-    "yoavbls.pretty-ts-errors",
-    // Error Lens
-    // エディターにてメッセージを**インライン**で表示
-    "usernamehw.errorlens",
-    // Todo Tree
-    // コード中に`TODO`などコメントを残しておくことであとで見やすくしておくことができる
-    "Gruntfuggly.todo-tree",
-    // Import Cost
-    // import したパッケージのサイズを表示
-    "wix.vscode-import-cost",
-    // ------------------------------------------------------------
-    // おすすめ度：３（必要に応じて導入）
-    // ------------------------------------------------------------
-    // indent-rainbow
-    // インデントに色をつけてインデントの階層が見やすくなる
-    "oderwat.indent-rainbow",
-    // vscode-icons
-    // ファイルのアイコンを表示
-    "vscode-icons-team.vscode-icons",
-  ]
+    "recommendations": [
+        // ------------------------------------------------------------
+        // おすすめ度：５（必須）
+        // ------------------------------------------------------------
+        // Tailwind CSS IntelliSense
+        // Tailwind CSS のクラス名を入力する際に、自動補完やホバープレビューが表示される
+        "bradlc.vscode-tailwindcss",
+        // ESLint
+        // 構文チェック
+        "dbaeumer.vscode-eslint",
+        // Prettier - Code formatter
+        // コードフォーマット
+        "esbenp.prettier-vscode",
+        // Prisma
+        // Prisma のスキーマファイルを編集する際に、シンタックスハイライトや自動補完が利用できる
+        "Prisma.prisma",
+        // ------------------------------------------------------------
+        // おすすめ度：４（ほぼ必須）
+        // ------------------------------------------------------------
+        // Auto Rename Tag
+        // ペアになった HTML/XML タグの名前を自動的に変更
+        "formulahendry.auto-rename-tag",
+        // Reload
+        // VS Code の再読み込みができる
+        "natqe.reload",
+        // Tailwind Fold
+        // Tailwind CSS のクラス名を折りたたむ
+        "stivo.tailwind-fold",
+        // Pretty TypeScript Errors
+        // TypeScript のエラーメッセージをより読みやすく
+        "yoavbls.pretty-ts-errors",
+        // Error Lens
+        // エディターにてメッセージを**インライン**で表示
+        "usernamehw.errorlens",
+        // Todo Tree
+        // コード中に`TODO`などコメントを残しておくことであとで見やすくしておくことができる
+        "Gruntfuggly.todo-tree",
+        // Import Cost
+        // import したパッケージのサイズを表示
+        "wix.vscode-import-cost",
+        // ------------------------------------------------------------
+        // おすすめ度：３（必要に応じて導入）
+        // ------------------------------------------------------------
+        // indent-rainbow
+        // インデントに色をつけてインデントの階層が見やすくなる
+        "oderwat.indent-rainbow",
+        // vscode-icons
+        // ファイルのアイコンを表示
+        "vscode-icons-team.vscode-icons"
+    ]
 }

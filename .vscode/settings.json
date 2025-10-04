@@ -1,63 +1,62 @@
 {
-  // Prettier をデフォルトフォーマッターとして指定
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnSave": false,
-  // ファイル保存時に ESLint での自動修正
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
-  },
-  // Prisma のスキーマファイルはフォーマッターとして Prism.prisma を指定
-  "[prisma]": {
-    "editor.defaultFormatter": "Prisma.prisma"
-  },
-  // 行の最大文字数
-  "editor.rulers": [200],
-  // 行のタブサイズ
-  "editor.tabSize": 4,
-  // コードでコメントを記述する際にサジェストを無効化
-  "editor.quickSuggestions": {
-    "comments": false
-  },
-  // エディタの表示領域右端で折り返しをしない
-  "editor.wordWrap": "off",
-  // 制御文字を表示
-  "editor.renderControlCharacters": true,
-  // ESLint を実行するノードのランタイムのパスを設定
-  "eslint.runtime": "node",
-  // .gitignore に記載されているファイルは Prettier でフォーマットされない
-  "prettier.ignorePath": ".gitignore",
-  // TailwindCSS の補完対象を正規表現で指定
-  "tailwindCSS.experimental.classRegex": [
-    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
-    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
-  ],
-  // ユーザーが Workspace にインストールした TypeScript を使用するかどうかをユーザーへ確認
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  // プロジェクトの node_modules ディレクトリにインストールされたTypeScriptを使用
-  "typescript.tsdk": "node_modules/typescript/lib",
-  // 何かの依存関係で Red Hat へのデータ送信を求められる場合があるため、これを無効化
-  "redhat.telemetry.enabled": false,
-  // ファイルネスティングを有効化（任意のファイルをグルーピング化することで、フォルダーの整理をしやすくする）
-  "explorer.fileNesting.enabled": true,
-  "explorer.fileNesting.patterns": {
-    "*.ts": "${capture}.js, ${capture}.typegen.ts",
-    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
-    "*.jsx": "${capture}.js",
-    "*.tsx": "${capture}.ts, ${capture}.typegen.ts",
-    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, .eslintrc.json, next.config.mjs, postcss.config.mjs, tailwind.config.ts, tsconfig.json, next-env.d.ts, .gitignore, next.config.ts, .eslintrc.cjs, .env, .env.example, eslint.config.mjs, .lintstagedrc, .prettierrc.mjs",
-    "*.mts": "${capture}.typegen.ts",
-    "*.cts": "${capture}.typegen.ts"
-  },
-  // Tailwind Fold を有効化
-  "tailwind-fold.autoFold": true,
-  // 検索結果から node_modules を除外
-  "search.exclude": {
-    "**/node_modules": true
-  },
-  // 拡張機能で設定した Todo Tree が反応するタグを設定
-  "todo-tree.general.tags": [
-    "todo",
-    "TODO",
-    "Todo",
-  ]
+    // Prettier をデフォルトフォーマッターとして指定
+    "prettier.tabWidth": 4,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    // ファイル保存時に ESLint での自動修正
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    // Prisma のスキーマファイルはフォーマッターとして Prism.prisma を指定
+    "[prisma]": {
+        "editor.defaultFormatter": "Prisma.prisma"
+    },
+    // 行の最大文字数
+    "editor.rulers": [200],
+    // 行のタブサイズ
+    "editor.tabSize": 4,
+    // コードでコメントを記述する際にサジェストを無効化
+    "editor.quickSuggestions": {
+        "comments": false
+    },
+    // エディタの表示領域右端で折り返しをしない
+    "editor.wordWrap": "off",
+    // 制御文字を表示
+    "editor.renderControlCharacters": true,
+    // ESLint を実行するノードのランタイムのパスを設定
+    "eslint.runtime": "node",
+    // .gitignore に記載されているファイルは Prettier でフォーマットされない
+    "prettier.ignorePath": ".gitignore",
+    // TailwindCSS の補完対象を正規表現で指定
+    "tailwindCSS.experimental.classRegex": [
+        ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+        ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+    ],
+    // ユーザーが Workspace にインストールした TypeScript を使用するかどうかをユーザーへ確認
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    // プロジェクトの node_modules ディレクトリにインストールされたTypeScriptを使用
+    "typescript.tsdk": "node_modules/typescript/lib",
+    // 何かの依存関係で Red Hat へのデータ送信を求められる場合があるため、これを無効化
+    "redhat.telemetry.enabled": false,
+    // ファイルネスティングを有効化（任意のファイルをグルーピング化することで、フォルダーの整理をしやすくする）
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.ts": "${capture}.js, ${capture}.typegen.ts",
+        "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+        "*.jsx": "${capture}.js",
+        "*.tsx": "${capture}.ts, ${capture}.typegen.ts",
+        "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, .eslintrc.json, next.config.mjs, postcss.config.mjs, tailwind.config.ts, tsconfig.json, next-env.d.ts, .gitignore, next.config.ts, .eslintrc.cjs, .env, .env.example, eslint.config.mjs, .lintstagedrc, .prettierrc.mjs",
+        "*.mts": "${capture}.typegen.ts",
+        "*.cts": "${capture}.typegen.ts"
+    },
+    // Tailwind Fold を有効化
+    "tailwind-fold.autoFold": true,
+    // 検索結果から node_modules を除外
+    "search.exclude": {
+        "**/node_modules": true
+    },
+    // 拡張機能で設定した Todo Tree が反応するタグを設定
+    "todo-tree.general.tags": ["todo", "TODO", "Todo"]
 }
