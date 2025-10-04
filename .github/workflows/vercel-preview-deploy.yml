@@ -1,0 +1,88 @@
+# Vercelプレビュー環境を自動デプロイする設定
+# main 以外のブランチに push したとき、自動で Vercel にデプロイ→プレビューURL発行
+name: Vercel Preview Deployment
+
+# このワークフローが動くタイミングを指定
+# push（コードをプッシュ）したときに実行（ただし、main ブランチへのプッシュは除外）
+on:
+    push:
+        branches-ignore:
+            - main
+
+# 全ジョブ共通の環境変数を定義
+env:
+    NODE_VERSION: "22.15.0"
+    PNPM_VERSION: "10.10.0"
+
+# 権限設定
+permissions:
+    contents: read
+    deployments: write
+
+jobs:
+    deploy-preview:
+        runs-on: ubuntu-latest
+        # 1. リポジトリの取得(コードを GitHub から Actions 環境にコピー)
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            # 2. ./.github/actions/setupを実行（Composite Action を再利用）
+            - name: Setup environment
+              uses: ./.github/actions/setup
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  pnpm-version: ${{ env.PNPM_VERSION }}
+
+            # 3. コマンドライン版の Vercel ツールをインストール
+            - name: Install Vercel CLI
+              run: pnpm add --global vercel@latest
+
+            # 4. Vercel の環境情報を取得
+            # GitHub から Vercel のプロジェクト情報（org, project, token）を使って、プレビュー環境の設定を取得
+            - name: Pull Vercel Environment Information
+              run:
+                  vercel pull --yes --environment=preview --token=${{
+                  secrets.VERCEL_TOKEN }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+            # 5. 環境変数を設定
+            # Vercel の「プレビュー環境」に環境変数 DEBUG_MESSAGE を上書き登録
+            # GitHub Secrets から安全に渡す
+            - name: Set Vercel Environment Variables
+              run: |
+                  vercel env rm DEBUG_MESSAGE preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  echo "${{ secrets.PREVIEW_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE preview --token=${{ secrets.VERCEL_TOKEN }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+            # 6. 設定の確認
+            # 実際に Vercel 側に反映された環境変数をリスト出力(デバッグや確認用)
+            - name: Verify Vercel Environment Variables
+              run: |
+                  echo "Listing Vercel environment variables:"
+                  vercel env ls preview --token=${{ secrets.VERCEL_TOKEN }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+            # 7. ビルド
+            # Vercel のサーバーに送る前にGitHub Actions 上の一時的な仮想環境（＝Ubuntuのサーバー）で構築
+            - name: Build Project Artifacts
+              run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+                  DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+
+            # 8. デプロイ
+            # ビルド済みファイルをアップロードしてプレビューURLを発行（プレビュー環境）
+            - name: Deploy Project Artifacts to Vercel
+              run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+                  DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
