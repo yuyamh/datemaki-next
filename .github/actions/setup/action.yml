@@ -1,0 +1,36 @@
+name: "Setup and install"
+description: "Common setup steps for Actions"
+
+# 外から渡すパラメータ（変数）」を定義
+inputs:
+    node-version:
+        description: "Node.js version"
+        required: true
+    pnpm-version:
+        description: "PNPM version"
+        required: true
+
+runs:
+    using: composite
+    steps:
+        # pnpm のセットアップ
+        # 指定バージョンの pnpm をインストール
+        - name: Setup pnpm
+          uses: pnpm/action-setup@v4
+          with:
+              version: ${{ inputs.pnpm-version }}
+
+        # Node.js のセットアップ
+        - name: Setup Node.js
+          uses: actions/setup-node@v4
+          with:
+              node-version: ${{ inputs.node-version }}
+              # "pnpm" によって、依存パッケージ（node_modules）をキャッシュして、次のビルドを速くする
+              cache: "pnpm"
+
+        # 依存パッケージのインストール
+        # 実際に pnpm install を実行して、package.json の依存関係を全部インストール
+        - name: Install dependencies
+          shell: bash
+          # --frozen-lockfile は「pnpm-lock.yaml に書かれているバージョン以外は使うな！」という安全オプション（CI でのビルド再現性を高める）
+          run: pnpm install --frozen-lockfile

@@ -1,0 +1,70 @@
+name: Continuous Integration
+
+# このワークフローが動くタイミングを指定
+# push（コードをプッシュ）したときに実行（ただし、main ブランチへのプッシュは除外）
+on:
+    push:
+        branches-ignore:
+            - main
+
+# 全ジョブ共通の環境変数を定義
+env:
+    NODE_VERSION: "22.15.0"
+    PNPM_VERSION: "10.10.0"
+
+jobs:
+    # 1. setup ジョブ
+    # CI の実行環境を指定
+    setup:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            # ./.github/actions/setupを実行（Composite Action を再利用）
+            - name: Setup environment
+              uses: ./.github/actions/setup
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  pnpm-version: ${{ env.PNPM_VERSION }}
+
+    # 2. lint ジョブ
+    # pnpm run lint 実行
+    lint:
+        # setup ジョブの後に動く
+        needs: setup
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  pnpm-version: ${{ env.PNPM_VERSION }}
+            - run: pnpm run lint
+              env:
+                  DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+
+    # 3. format ジョブ
+    # コードを Prettier で整形
+    format:
+        needs: setup
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  pnpm-version: ${{ env.PNPM_VERSION }}
+            - run: pnpm run format
+
+    # 4. typecheck ジョブ
+    # TypeScript の型エラーをチェック
+    typecheck:
+        needs: setup
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  pnpm-version: ${{ env.PNPM_VERSION }}
+            - run: pnpm run typecheck

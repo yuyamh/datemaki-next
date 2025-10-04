@@ -3,11 +3,7 @@
 
 /** @type { PrettierConfig | SortImportsConfig } */
 const config = {
-    plugins: [
-        "@ianvs/prettier-plugin-sort-imports",
-        "prettier-plugin-tailwindcss",
-    ],
-    tailwindFunctions: ["cn", "cva"],
+    arrowParens: "always",
     importOrder: [
         "<TYPES>",
         "^(react/(.*)$)|^(react$)|^(react-native(.*)$)",
@@ -25,13 +21,17 @@ const config = {
     ],
     importOrderParserPlugins: ["typescript", "jsx", "decorators-legacy"],
     importOrderTypeScriptVersion: "5.8.3",
-    arrowParens: "always",
+    plugins: [
+        "@ianvs/prettier-plugin-sort-imports",
+        "prettier-plugin-tailwindcss",
+    ],
     printWidth: 80,
-    singleQuote: false,
-    semi: true,
-    trailingComma: "all",
-    tabWidth: 4,
     proseWrap: "always",
+    semi: true,
+    singleQuote: false,
+    tabWidth: 4,
+    tailwindFunctions: ["cn", "cva"],
+    trailingComma: "all",
 };
 
 export default config;
