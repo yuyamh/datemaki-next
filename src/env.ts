@@ -6,23 +6,42 @@ import { z } from "zod";
 export const env = createEnv({
     // 1. client: ブラウザで使っていい変数(ブラウザで見えてもOK)
     client: {
-        // NEXT_PUBLIC_CLIENTVAR: z.string(),
+        /**
+         * Supabase の匿名キー
+         */
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string(),
+        /**
+         * Supabase の URL
+         */
+        NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
     },
     // .env に空文字 ("") が書いてあっても、それを「空文字」ではなく「未定義（undefined）」として扱う
     emptyStringAsUndefined: true,
     // 2. runtimeEnv: 実際に環境変数を読み込む場所
     // createEnv() がこれを使って、「ちゃんと型に合ってる？」をチェック
     runtimeEnv: {
+        DATABASE_URL: process.env.DATABASE_URL,
         DEBUG_MESSAGE: process.env.DEBUG_MESSAGE,
+        DIRECT_URL: process.env.DIRECT_URL,
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+            process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+        NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NODE_ENV: process.env.NODE_ENV,
-        // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
     },
     // 3. server: サーバーだけで使う変数
     server: {
         /**
+         * Prisma Client がデータベースへ接続するためのデータベース接続先
+         */
+        DATABASE_URL: z.string().url(),
+        /**
          * テスト用のメッセージ
          */
         DEBUG_MESSAGE: z.string(),
+        /**
+         * Prisma CLI がデータベースの操作をするためのデータベース接続先
+         */
+        DIRECT_URL: z.string().url(),
         /**
          * 環境
          */
