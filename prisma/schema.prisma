@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"] // Vercelへのデプロイ用
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 教案
+model Post {
+  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title       String
+  description String?
+  level       CEFR?
+  textId      Int?
+  userId      String
+  user        User    @relation(fields: [userId], references: [id])
+
+  fileName1     String?
+  fileName2     String?
+  fileName3     String?
+  downloadCount Int       @default(0)
+  viewCount     Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+}
+
+model User {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
+  email     String    @unique
+  password  String
+  bio       String?
+  role      Role      @default(user)
+  avatar    String?
+  Posts     Post[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+// レベル（CEFRに準拠）
+enum CEFR {
+  A1
+  A2
+  B1
+  B2
+  C1
+  C2
+}
+
+// ロール
+enum Role {
+  admin
+  user
+  guest
+}
