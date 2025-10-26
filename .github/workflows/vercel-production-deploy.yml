@@ -54,7 +54,15 @@ jobs:
             - name: Set Vercel Environment Variables
               run: |
                   vercel env rm DEBUG_MESSAGE production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm DATABASE_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm DIRECT_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm NEXT_PUBLIC_SUPABASE_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   echo "${{ secrets.PROD_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE production --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PROD_DATABASE_URL }}" | vercel env add DATABASE_URL production --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PROD_DIRECT_URL }}" | vercel env add DIRECT_URL production --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_URL }}" | vercel env add NEXT_PUBLIC_SUPABASE_URL production --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_ANON_KEY }}" | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -69,7 +77,14 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-            # 7. ビルド
+            # 7. Prisma migrateを実施
+            - name: Run Prisma Migrations
+              run: pnpm prisma migrate deploy
+              env:
+                  DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+                  DIRECT_URL: ${{ secrets.PROD_DIRECT_URL }}
+
+            # 8. ビルド
             # Vercel のサーバーに送る前にGitHub Actions 上の一時的な仮想環境（＝Ubuntuのサーバー）で構築
             - name: Build Project Artifacts
               run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
@@ -77,8 +92,14 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
                   DEBUG_MESSAGE: ${{ secrets.PROD_DEBUG_MESSAGE }}
+                  DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+                  DIRECT_URL: ${{ secrets.PROD_DIRECT_URL }}
+                  NEXT_PUBLIC_SUPABASE_URL:
+                      ${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_URL }}
+                  NEXT_PUBLIC_SUPABASE_ANON_KEY:
+                      ${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-            # 8. デプロイ
+            # 9. デプロイ
             # ビルド済みファイルをアップロードして本番URLを発行（本番環境）
             - name: Deploy Project Artifacts to Vercel
               run:
@@ -88,3 +109,9 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
                   DEBUG_MESSAGE: ${{ secrets.PROD_DEBUG_MESSAGE }}
+                  DATABASE_URL: ${{ secrets.PROD_DATABASE_URL }}
+                  DIRECT_URL: ${{ secrets.PROD_DIRECT_URL }}
+                  NEXT_PUBLIC_SUPABASE_URL:
+                      ${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_URL }}
+                  NEXT_PUBLIC_SUPABASE_ANON_KEY:
+                      ${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_ANON_KEY }}

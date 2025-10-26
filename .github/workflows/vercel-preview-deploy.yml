@@ -54,7 +54,15 @@ jobs:
             - name: Set Vercel Environment Variables
               run: |
                   vercel env rm DEBUG_MESSAGE preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm DATABASE_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm DIRECT_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm NEXT_PUBLIC_SUPABASE_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   echo "${{ secrets.PREVIEW_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE preview --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PREVIEW_DATABASE_URL }}" | vercel env add DATABASE_URL preview --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PREVIEW_DIRECT_URL }}" | vercel env add DIRECT_URL preview --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_URL }}" | vercel env add NEXT_PUBLIC_SUPABASE_URL preview --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}" | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY preview --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -69,7 +77,21 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
-            # 7. ビルド
+            # 7. Prisma migrateを実施
+            - name: Build Project Artifacts
+              run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+              env:
+                  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+                  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+                  DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+                  DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
+                  DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
+                  NEXT_PUBLIC_SUPABASE_URL:
+                      ${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_URL }}
+                  NEXT_PUBLIC_SUPABASE_ANON_KEY:
+                      ${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+            # 8. ビルド
             # Vercel のサーバーに送る前にGitHub Actions 上の一時的な仮想環境（＝Ubuntuのサーバー）で構築
             - name: Build Project Artifacts
               run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
@@ -78,7 +100,7 @@ jobs:
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
                   DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
 
-            # 8. デプロイ
+            # 9. デプロイ
             # ビルド済みファイルをアップロードしてプレビューURLを発行（プレビュー環境）
             - name: Deploy Project Artifacts to Vercel
               run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
@@ -86,3 +108,9 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
                   DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+                  DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
+                  DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
+                  NEXT_PUBLIC_SUPABASE_URL:
+                      ${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_URL }}
+                  NEXT_PUBLIC_SUPABASE_ANON_KEY:
+                      ${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}

@@ -22,7 +22,7 @@ model Post {
   description String?
   level       CEFR?
   textId      Int?
-  userId      String
+  userId      String  @db.Uuid
   user        User    @relation(fields: [userId], references: [id])
 
   fileName1     String?
