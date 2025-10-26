@@ -46,6 +46,7 @@ const eslintConfig = tseslint.config(
     {
         extends: [unicornPlugin.configs.recommended],
         rules: {
+            "unicorn/no-null": "off",
             "unicorn/prevent-abbreviations": "off",
         },
     },
@@ -81,7 +82,7 @@ const eslintConfig = tseslint.config(
             "func-style": [
                 "error",
                 "declaration",
-                { allowArrowFunctions: false },
+                { allowArrowFunctions: true },
             ],
             "prefer-arrow-callback": ["error", { allowNamedFunctions: false }],
             "prefer-template": "error",

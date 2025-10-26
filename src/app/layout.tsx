@@ -14,7 +14,9 @@ export const metadata: Metadata = {
 function RootLayout(props: RootLayoutProps) {
     return (
         <html lang="ja">
-            <body className="">{props.children}</body>
+            <body className="px-8">
+                <div className="container mx-auto">{props.children}</div>
+            </body>
         </html>
     );
 }
