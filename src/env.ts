@@ -9,7 +9,7 @@ export const env = createEnv({
         /**
          * Supabase の匿名キー
          */
-        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string(),
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
         /**
          * Supabase の URL
          */
@@ -23,8 +23,8 @@ export const env = createEnv({
         DATABASE_URL: process.env.DATABASE_URL,
         DEBUG_MESSAGE: process.env.DEBUG_MESSAGE,
         DIRECT_URL: process.env.DIRECT_URL,
-        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
-            process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+        NEXT_PUBLIC_SUPABASE_ANON_KEY:
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NODE_ENV: process.env.NODE_ENV,
     },
