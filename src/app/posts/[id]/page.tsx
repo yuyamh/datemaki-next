@@ -1,18 +1,31 @@
-import { posts } from "@/app/lib/placeholder-data";
+console.log("This file is tempolally an empty file");
+// import { posts } from "@/app/lib/placeholder-data";
+// import type { Post } from "@/app/lib/interface/Post";
+// import PostDetail from '@/app/ui/PostDetail';
 
-// TODO: 後ほどtypeで指定
-export default function BlogPost({
-    params,
-}: {
-    params: {
-        id: string;
-    };
-}) {
-    const post = posts.find((p) => p.id === params.id);
+// async function getPost(id: string): Promise<Post | null> {
+//   const res = await fetch(`api/posts/${id}`, { cache: 'no-store' });
+//   if (!res.ok) {
+//     if (res.status === 404) return null;
+//     throw new Error('Failed to fetch post');
+//   }
+//   const data = await res.json();
+//   return data.post;
+// }
 
-    if (!post) {
-        return <div>投稿が見つかりません</div>;
-    }
+// // TODO: 後ほどtypeで指定
+// export default function ShowPost({
+//     params,
+// }: {
+//     params: {
+//         id: string;
+//     };
+// }) {
+//     const post = getPost(params.id);
 
-    return <p>{post.title}</p>;
-}
+//     if (!post) {
+//         return <div>投稿が見つかりません</div>;
+//     }
+
+//     return <PostDetail post={post} />
+// }

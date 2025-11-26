@@ -17,14 +17,14 @@ datasource db {
 
 // 教案
 model Post {
-  id          String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title       String
-  description String?
-  level       CEFR?
-  textId      Int?
-  userId      String  @db.Uuid
-  user        User    @relation(fields: [userId], references: [id])
-
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title         String
+  description   String?
+  level         CEFR?
+  textbookId    String?   @db.Uuid
+  textbook      Textbook? @relation(fields: [textbookId], references: [id])
+  userId        String    @db.Uuid
+  user          User      @relation(fields: [userId], references: [id])
   fileName1     String?
   fileName2     String?
   fileName3     String?
@@ -32,21 +32,25 @@ model Post {
   viewCount     Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  deletedAt     DateTime?
+}
+
+model Textbook {
+  id    String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name  String @unique
+  Posts Post[]
 }
 
 model User {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String
-  email     String    @unique
+  email     String   @unique
   password  String
   bio       String?
-  role      Role      @default(user)
+  role      Role     @default(user)
   avatar    String?
   Posts     Post[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // レベル（CEFRに準拠）

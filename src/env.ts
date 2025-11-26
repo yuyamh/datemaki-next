@@ -27,6 +27,7 @@ export const env = createEnv({
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NODE_ENV: process.env.NODE_ENV,
+        VERCEL_URL: process.env.VERCEL_URL,
     },
     // 3. server: サーバーだけで使う変数
     server: {
@@ -48,6 +49,10 @@ export const env = createEnv({
         NODE_ENV: z
             .enum(["development", "test", "production"])
             .default("development"),
+        /**
+         * VERCEL_URL はVercelが自動でセットしてくれる「システム環境変数」なので、自分で「設定」する必要はなし
+         */
+        VERCEL_URL: z.string().optional(),
     },
     // CI や特殊な環境で「今はチェックいらない！」というときに使う
     skipValidation: !!process.env.SKIP_ENV_VALIDATION,
