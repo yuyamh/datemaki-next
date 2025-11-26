@@ -53,7 +53,8 @@ const eslintConfig = tseslint.config(
     {
         extends: [perfectionist.configs["recommended-natural"]],
         rules: {
-            "perfectionist/sort-imports": "off",
+            "perfectionist/sort-imports": "off", // importの並び順のチェックをオフ
+            "perfectionist/sort-objects": "off", // オブジェクトの並び順のチェックをオフ
         },
     },
     {

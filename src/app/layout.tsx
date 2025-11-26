@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 
 import type { Metadata } from "next";
+import Navigation from "@/app/ui/navigation";
 
 interface RootLayoutProps {
     children: React.ReactNode;
@@ -14,8 +15,18 @@ export const metadata: Metadata = {
 function RootLayout(props: RootLayoutProps) {
     return (
         <html lang="ja">
-            <body className="px-8">
-                <div className="container mx-auto">{props.children}</div>
+            <body>
+                <div className="flex min-h-screen flex-col">
+                    <Navigation />
+                    <main className="container mx-auto flex-grow px-4 py-8">
+                        {props.children}
+                    </main>
+                    <footer className="border-2 p-4">
+                        <div className="container mx-auto text-center">
+                            &copy; 2025 だてまき. All rights reserved.
+                        </div>
+                    </footer>
+                </div>
             </body>
         </html>
     );
