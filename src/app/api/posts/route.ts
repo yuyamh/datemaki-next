@@ -5,7 +5,7 @@ import { z } from "zod";
 const postSchema = z.object({
     title: z.string().min(1),
     description: z.string().min(1),
-    level: z.string().nullable().optional(),
+    level: z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]).nullable().optional(),
     textbookId: z.string().nullable().optional(),
     // TODO: fileName1〜3 を後でここに追加
 });
