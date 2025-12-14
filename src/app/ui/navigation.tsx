@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -24,8 +25,14 @@ export default function Navigation() {
         <header className="bg-white px-2 py-4 text-gray-800 shadow-sm">
             <nav className="container mx-auto flex items-center justify-between">
                 <Link className="flex items-center space-x-2" href="/">
+                    <Image
+                        alt="ロゴ"
+                        height={50}
+                        src="/datemaki_logo.svg"
+                        width={50}
+                    ></Image>
                     <span className="text-2xl font-bold text-orange-400">
-                        ロゴ だてまき
+                        だてまき
                     </span>
                 </Link>
                 <div>

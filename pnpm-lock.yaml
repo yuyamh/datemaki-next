@@ -61,6 +61,9 @@ importers:
             "@t3-oss/env-nextjs":
                 specifier: ^0.13.8
                 version: 0.13.8(typescript@5.9.3)(zod@4.1.11)
+            bcryptjs:
+                specifier: ^3.0.3
+                version: 3.0.3
             class-variance-authority:
                 specifier: ^0.7.1
                 version: 0.7.1
@@ -76,6 +79,9 @@ importers:
             next:
                 specifier: 15.3.1
                 version: 15.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+            next-auth:
+                specifier: 5.0.0-beta.30
+                version: 5.0.0-beta.30(next@15.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0)
             next-themes:
                 specifier: ^0.4.6
                 version: 0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -187,6 +193,23 @@ packages:
                 integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==,
             }
         engines: { node: ">=10" }
+
+    "@auth/core@0.41.0":
+        resolution:
+            {
+                integrity: sha512-Wd7mHPQ/8zy6Qj7f4T46vg3aoor8fskJm6g2Zyj064oQ3+p0xNZXAV60ww0hY+MbTesfu29kK14Zk5d5JTazXQ==,
+            }
+        peerDependencies:
+            "@simplewebauthn/browser": ^9.0.1
+            "@simplewebauthn/server": ^9.0.2
+            nodemailer: ^6.8.0
+        peerDependenciesMeta:
+            "@simplewebauthn/browser":
+                optional: true
+            "@simplewebauthn/server":
+                optional: true
+            nodemailer:
+                optional: true
 
     "@babel/code-frame@7.27.1":
         resolution:
@@ -1023,6 +1046,12 @@ packages:
                 integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==,
             }
         engines: { node: ">=12.4.0" }
+
+    "@panva/hkdf@1.2.1":
+        resolution:
+            {
+                integrity: sha512-6oclG6Y3PiDFcoyk8srjLfVKyMfVCKJ27JwNPViuXziFpmdz+MZnZN/aKY0JGXgYuO/VghU0jcOAZgWXZ1Dmrw==,
+            }
 
     "@prisma/client@6.5.0":
         resolution:
@@ -2346,6 +2375,13 @@ packages:
             }
         hasBin: true
 
+    bcryptjs@3.0.3:
+        resolution:
+            {
+                integrity: sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g==,
+            }
+        hasBin: true
+
     brace-expansion@1.1.12:
         resolution:
             {
@@ -3541,6 +3577,12 @@ packages:
             }
         hasBin: true
 
+    jose@6.1.2:
+        resolution:
+            {
+                integrity: sha512-MpcPtHLE5EmztuFIqB0vzHAWJPpmN1E6L4oo+kze56LIs3MyXIj9ZHMDxqOvkP38gBR7K1v3jqd4WU2+nrfONQ==,
+            }
+
     js-tokens@4.0.0:
         resolution:
             {
@@ -3891,6 +3933,25 @@ packages:
             }
         engines: { node: ">=18" }
 
+    next-auth@5.0.0-beta.30:
+        resolution:
+            {
+                integrity: sha512-+c51gquM3F6nMVmoAusRJ7RIoY0K4Ts9HCCwyy/BRoe4mp3msZpOzYMyb5LAYc1wSo74PMQkGDcaghIO7W6Xjg==,
+            }
+        peerDependencies:
+            "@simplewebauthn/browser": ^9.0.1
+            "@simplewebauthn/server": ^9.0.2
+            next: ^14.0.0-0 || ^15.0.0 || ^16.0.0
+            nodemailer: ^7.0.7
+            react: ^18.2.0 || ^19.0.0
+        peerDependenciesMeta:
+            "@simplewebauthn/browser":
+                optional: true
+            "@simplewebauthn/server":
+                optional: true
+            nodemailer:
+                optional: true
+
     next-themes@0.4.6:
         resolution:
             {
@@ -3928,6 +3989,12 @@ packages:
         resolution:
             {
                 integrity: sha512-cCmFDMSm26S6tQSDpBCg/NR8NENrVPhAJSf+XbxBG4rPFaaonlEoE9wHQmun+cls499TQGSb7ZyPBRlzgKfpeg==,
+            }
+
+    oauth4webapi@3.8.3:
+        resolution:
+            {
+                integrity: sha512-pQ5BsX3QRTgnt5HxgHwgunIRaDXBdkT23tf8dfzmtTIL2LTpdmxgbpbBm0VgFWAIDlezQvQCTgnVIUmHupXHxw==,
             }
 
     object-assign@4.1.1:
@@ -4124,6 +4191,20 @@ packages:
                 integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==,
             }
         engines: { node: ^10 || ^12 || >=14 }
+
+    preact-render-to-string@6.5.11:
+        resolution:
+            {
+                integrity: sha512-ubnauqoGczeGISiOh6RjX0/cdaF8v/oDXIjO85XALCQjwQP+SB4RDXXtvZ6yTYSjG+PC1QRP2AhPgCEsM2EvUw==,
+            }
+        peerDependencies:
+            preact: ">=10"
+
+    preact@10.24.3:
+        resolution:
+            {
+                integrity: sha512-Z2dPnBnMUfyQfSQ+GBdsGa16hz35YmLmtTLhM169uW944hYL6xzTYkJjC07j+Wosz733pMWx0fgON3JNw1jJQA==,
+            }
 
     prelude-ls@1.2.1:
         resolution:
@@ -4969,6 +5050,14 @@ packages:
 snapshots:
     "@alloc/quick-lru@5.2.0": {}
 
+    "@auth/core@0.41.0":
+        dependencies:
+            "@panva/hkdf": 1.2.1
+            jose: 6.1.2
+            oauth4webapi: 3.8.3
+            preact: 10.24.3
+            preact-render-to-string: 6.5.11(preact@10.24.3)
+
     "@babel/code-frame@7.27.1":
         dependencies:
             "@babel/helper-validator-identifier": 7.27.1
@@ -5373,6 +5462,8 @@ snapshots:
             fastq: 1.19.1
 
     "@nolyfill/is-core-module@1.0.39": {}
+
+    "@panva/hkdf@1.2.1": {}
 
     "@prisma/client@6.5.0(prisma@6.5.0(typescript@5.9.3))(typescript@5.9.3)":
         optionalDependencies:
@@ -6293,6 +6384,8 @@ snapshots:
 
     baseline-browser-mapping@2.8.11: {}
 
+    bcryptjs@3.0.3: {}
+
     brace-expansion@1.1.12:
         dependencies:
             balanced-match: 1.0.2
@@ -7165,6 +7258,8 @@ snapshots:
 
     jiti@2.6.1: {}
 
+    jose@6.1.2: {}
+
     js-tokens@4.0.0: {}
 
     js-yaml@4.1.0:
@@ -7338,6 +7433,12 @@ snapshots:
 
     natural-orderby@5.0.0: {}
 
+    next-auth@5.0.0-beta.30(next@15.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react@19.2.0):
+        dependencies:
+            "@auth/core": 0.41.0
+            next: 15.3.1(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+            react: 19.2.0
+
     next-themes@0.4.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0):
         dependencies:
             react: 19.2.0
@@ -7369,6 +7470,8 @@ snapshots:
             - babel-plugin-macros
 
     node-releases@2.0.23: {}
+
+    oauth4webapi@3.8.3: {}
 
     object-assign@4.1.1: {}
 
@@ -7481,6 +7584,12 @@ snapshots:
             nanoid: 3.3.11
             picocolors: 1.1.1
             source-map-js: 1.2.1
+
+    preact-render-to-string@6.5.11(preact@10.24.3):
+        dependencies:
+            preact: 10.24.3
+
+    preact@10.24.3: {}
 
     prelude-ls@1.2.1: {}
 

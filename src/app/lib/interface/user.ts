@@ -6,9 +6,9 @@ export interface User {
     bio?: string;
     createdAt: string;
     email: string;
+    hashedPassword: string;
     id: string;
     name: string;
-    password: string;
     posts?: Post[];
     role: "admin" | "guest" | "user";
     updatedAt: string;

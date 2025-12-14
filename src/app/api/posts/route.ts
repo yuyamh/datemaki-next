@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
@@ -13,6 +14,14 @@ const postSchema = z.object({
 const prisma = new PrismaClient();
 
 export async function GET() {
+    // ログインチェック
+    const session = await auth();
+
+    if (!session?.user) {
+        // 未ログインなら 401 を返す
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     try {
         const posts = await prisma.post.findMany({
             include: {
