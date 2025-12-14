@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,13 +14,22 @@ import {
 } from "@/components/ui/card";
 import { signIn } from "next-auth/react";
 
+// useSearchParamsを使用する場合は、Suspenseでラップする必要がある
 export default function LoginPage() {
+    return (
+        <Suspense fallback={null}>
+            <LoginPageInner />
+        </Suspense>
+    );
+}
+
+function LoginPageInner() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [error, setError] = useState<null | string>(null);
 
-    // ログイン後に戻すパス（なければ / ）
-    const redirectTo = searchParams.get("redirectTo") ?? "/";
+    // ログイン後に戻すパス（なければ /posts ）
+    const redirectTo = searchParams.get("redirectTo") ?? "/posts";
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
