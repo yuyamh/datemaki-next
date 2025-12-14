@@ -41,16 +41,16 @@ model Textbook {
 }
 
 model User {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String
-  email     String   @unique
-  password  String
-  bio       String?
-  role      Role     @default(user)
-  avatar    String?
-  Posts     Post[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  email          String   @unique
+  hashedPassword String   @map("password")
+  bio            String?
+  role           Role     @default(user)
+  avatar         String?
+  Posts          Post[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 // レベル（CEFRに準拠）
