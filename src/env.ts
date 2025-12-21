@@ -1,5 +1,5 @@
+import { z } from "@/app/lib/zod";
 import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
 
 // env に書いた変数を「型付き」で安全に扱う
 //「どの変数がサーバー用？」「どれがブラウザで見えていい？」を明示する
