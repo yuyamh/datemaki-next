@@ -1,9 +1,15 @@
-import type { Textbook } from "@/app/lib/interface/textbook";
-import { getBaseUrl } from "@/app/actions/get-base-url";
+import { redirect } from "next/navigation";
 import { PostForm } from "@/app/ui/post-form";
+import { auth } from "@/auth";
 
 export default async function NewPost() {
-    const textbooks = await getTextbooks();
+    // セッション取得
+    const session = await auth();
+
+    // 未ログインならログインページへ
+    if (!session?.user) {
+        redirect("/login");
+    }
 
     return (
         <div className="mx-auto w-10/12">
@@ -16,22 +22,7 @@ export default async function NewPost() {
                 </h2>
             </div>
 
-            <PostForm textbooks={textbooks} />
+            <PostForm />
         </div>
     );
-}
-
-async function getTextbooks(): Promise<Textbook[]> {
-    const res = await fetch(`${getBaseUrl()}/api/textbooks`, {
-        cache: "no-store",
-        method: "GET",
-    });
-
-    if (!res.ok) {
-        throw new Error("使用テキストの取得に失敗しました。");
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const data: { textbooks: Textbook[] } = await res.json();
-    return data.textbooks;
 }

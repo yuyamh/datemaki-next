@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { loginSchema } from "@/app/lib/validations/login";
+import { loginSchema } from "@/app/lib/validations/login.schema";
 import { prisma } from "@/server/db/prisma/prisma";
 import bcrypt from "bcryptjs";
 

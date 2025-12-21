@@ -1,7 +1,7 @@
 "use client";
 
 import type { Textbook } from "@/app/lib/interface/textbook";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,35 +26,72 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 
-export function PostForm({ textbooks }: { textbooks: Textbook[] }) {
+type FieldErrors = Partial<
+    Record<"description" | "level" | "textbookId" | "title", string[]>
+>;
+
+export function PostForm() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [level, setLevel] = useState("");
     const [textbookId, setTextbookId] = useState("");
+    const [textbookList, setTextbookList] = useState<Textbook[]>([]);
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setFieldErrors({}); // 前回のエラーを消す
 
         const response = await fetch("/api/posts", {
-            body: JSON.stringify({ description, level, textbookId, title }),
+            body: JSON.stringify({
+                title,
+                description,
+                level: level || null,
+                textbookId: textbookId || null,
+            }),
             headers: {
                 "Content-Type": "application/json",
             },
             method: "POST",
         });
 
-        console.log();
-
         if (response.ok) {
             // 教案一覧画面にリダイレクト
             router.push("/posts");
             router.refresh();
-            toast("教案が作成されました");
-        } else {
-            console.error("教案登録に失敗しました。");
+            toast.success("教案が作成されました");
+            return;
         }
+
+        if (response.status === 422) {
+            const data = (await response.json()) as { errors?: FieldErrors };
+            setFieldErrors(data.errors ?? {});
+            return;
+        }
+
+        toast.error("教案登録に失敗しました。再度登録してください。");
     };
+
+    const getTextbooks = async () => {
+        const res = await fetch(`/api/textbooks`, {
+            cache: "no-store",
+            method: "GET",
+        });
+
+        if (!res.ok) {
+            throw new Error("使用テキストの取得に失敗しました。");
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const data: { textbooks: Textbook[] } = await res.json();
+        setTextbookList(data.textbooks);
+    };
+
+    useEffect(() => {
+        void getTextbooks();
+    }, []);
 
     return (
         <form onSubmit={handleSubmit}>
@@ -72,12 +109,23 @@ export function PostForm({ textbooks }: { textbooks: Textbook[] }) {
                             <Input
                                 className="w-full rounded-lg border px-3 py-2"
                                 id="title"
-                                onChange={(e) => setTitle(e.target.value)}
+                                onChange={(e) => {
+                                    setTitle(e.target.value);
+                                    setFieldErrors((prev) => ({
+                                        ...prev,
+                                        title: undefined,
+                                    })); // 入力されたらエラーだけ消す
+                                }}
                                 placeholder="例：「〜てもいいです」の導入"
                                 required
                                 type="text"
                                 value={title}
                             />
+                            {fieldErrors.title?.[0] && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {fieldErrors.title[0]}
+                                </p>
+                            )}
                         </div>
                         <div className="flex flex-col space-y-2">
                             <Label className="mb-2 block" htmlFor="description">
@@ -86,19 +134,36 @@ export function PostForm({ textbooks }: { textbooks: Textbook[] }) {
                             <Textarea
                                 className="min-h-[400px] w-full rounded-lg border px-3 py-2"
                                 id="description"
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={(e) => {
+                                    setDescription(e.target.value);
+                                    setFieldErrors((prev) => ({
+                                        ...prev,
+                                        description: undefined,
+                                    }));
+                                }}
                                 placeholder="教案の説明を記入しましょう"
                                 required
                                 rows={20}
                                 value={description}
                             ></Textarea>
+                            {fieldErrors.description?.[0] && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {fieldErrors.description[0]}
+                                </p>
+                            )}
                         </div>
                         <div className="flex flex-col space-y-2">
                             <Label className="mb-2 block" htmlFor="level">
                                 レベル
                             </Label>
                             <Select
-                                onValueChange={(value) => setLevel(value)}
+                                onValueChange={(value) => {
+                                    setLevel(value);
+                                    setFieldErrors((prev) => ({
+                                        ...prev,
+                                        level: undefined,
+                                    }));
+                                }}
                                 value={level}
                             >
                                 <SelectTrigger className="w-2/6">
@@ -116,13 +181,24 @@ export function PostForm({ textbooks }: { textbooks: Textbook[] }) {
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
+                            {fieldErrors.level?.[0] && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {fieldErrors.level[0]}
+                                </p>
+                            )}
                         </div>
                         <div className="flex flex-col space-y-2">
                             <Label className="mb-2 block" htmlFor="level">
                                 使用テキスト
                             </Label>
                             <Select
-                                onValueChange={(value) => setTextbookId(value)}
+                                onValueChange={(value) => {
+                                    setTextbookId(value);
+                                    setFieldErrors((prev) => ({
+                                        ...prev,
+                                        textbookId: undefined,
+                                    }));
+                                }}
                                 value={textbookId}
                             >
                                 <SelectTrigger className="w-2/6">
@@ -131,17 +207,19 @@ export function PostForm({ textbooks }: { textbooks: Textbook[] }) {
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectLabel>テキスト名</SelectLabel>
-                                        {textbooks.map((textbook: Textbook) => (
-                                            <SelectItem
-                                                key={textbook.id}
-                                                value={textbook.id}
-                                            >
-                                                {textbook.name}
+                                        {textbookList.map((t: Textbook) => (
+                                            <SelectItem key={t.id} value={t.id}>
+                                                {t.name}
                                             </SelectItem>
                                         ))}
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>
+                            {fieldErrors.textbookId?.[0] && (
+                                <p className="mt-1 text-sm text-red-500">
+                                    {fieldErrors.textbookId[0]}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </CardContent>

@@ -6,13 +6,8 @@ export default async function PostIndex() {
     // セッション取得
     const session = await auth();
 
-    console.log(session);
-
     // 未ログインならログインページへ
-    if (session?.user) {
-        console.log("ユーザあり");
-    } else {
-        console.log("ユーザなし");
+    if (!session?.user) {
         redirect("/login");
     }
 
