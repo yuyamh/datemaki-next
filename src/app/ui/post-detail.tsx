@@ -1,39 +1,36 @@
-import type { Post } from "@/app/lib/interface/post";
+"use client";
 
-export default function PostDetail({ post }: { post: Post }) {
-    const createdDate = new Date(post.createdAt);
-    const updatedDate = new Date(post.updatedAt);
+import type { Post } from "@/app/lib/interface/post";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+
+export function PostDetail({ post }: { post: Post }) {
+    // const createdDate = new Date(post.createdAt);
+    // const updatedDate = new Date(post.updatedAt);
+
+    const router = useRouter();
 
     return (
-        <article className="mx-auto max-w-2xl">
-            <header>
-                <h1 className="mb-4 text-3xl font-bold">{post.title}</h1>
-                <div className="mb-4 text-gray-600">
-                    <span>By {post.user?.name}</span> •
-                    <time dateTime={post.createdAt}>
-                        {createdDate.toLocaleDateString()}
-                    </time>
-                    {post.updatedAt && updatedDate > createdDate && (
-                        <span>
-                            {" "}
-                            • Updated:
-                            <time dateTime={post.updatedAt}>
-                                {updatedDate.toLocaleDateString()}
-                            </time>
-                        </span>
-                    )}
-                </div>
-            </header>
-            <div className="prose lg:prose-xl">
-                {post.description?.split("\n").map(
-                    (paragraph, index) =>
-                        paragraph.trim() && (
-                            <p className="mb-4" key={index}>
-                                {paragraph}
-                            </p>
-                        ),
-                )}
-            </div>
-        </article>
+        <Card>
+            <CardHeader>
+                <CardTitle className="text-xl">{post.title ?? "-"}</CardTitle>
+                <CardDescription>教案の詳細</CardDescription>
+            </CardHeader>
+            <CardContent>a</CardContent>
+            <CardFooter className="flex justify-between">
+                <Button onClick={() => router.back()} variant="outline">
+                    一覧に戻る
+                </Button>
+                {/* <Button type="submit">編集する</Button> */}
+            </CardFooter>
+        </Card>
     );
 }
