@@ -1,16 +1,21 @@
+import type { Role } from "@prisma/client";
+
 import type { Post } from "./post";
 
 // ユーザー（users）の型指定
 export interface User {
-    avatar?: string;
-    bio?: string;
-    createdAt: string;
+    avatar: null | string;
+    bio: null | string;
+    createdAt: Date;
     email: string;
+
     hashedPassword: string;
     id: string;
+
     name: string;
+
     posts?: Post[];
-    role: "admin" | "guest" | "user";
-    updatedAt: string;
-    user?: User;
+    role: Role;
+
+    updatedAt: Date;
 }

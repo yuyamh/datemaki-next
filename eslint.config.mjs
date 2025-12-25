@@ -98,7 +98,11 @@ const eslintConfig = tseslint.config(
         },
     },
     {
-        ignores: ["**/.next/**", "**/node_modules/**"],
+        ignores: [
+            "**/.next/**",
+            "**/node_modules/**",
+            "src/server/db/prisma/generated/zod/**",
+        ],
     },
 );
 

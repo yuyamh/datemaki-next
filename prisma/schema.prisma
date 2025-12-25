@@ -15,6 +15,14 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+generator zod {
+  provider          = "zod-prisma-types"
+  useMultipleFiles  = true
+  writeBarrelFiles  = false
+  useTypeAssertions = true
+  output            = "../src/server/db/prisma/generated/zod"
+}
+
 // 教案
 model Post {
   id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid

@@ -12,7 +12,7 @@ on:
 # 全ジョブ共通の環境変数を定義
 env:
     NODE_VERSION: "22.15.0"
-    PNPM_VERSION: "10.10.0"
+    PNPM_VERSION: "10.15.0"
 
 # 権限設定
 permissions:
@@ -84,14 +84,21 @@ jobs:
                   DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
                   DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
 
-            # 8. Prisma seed を実行
+            # 8. Prisma generate
+            - name: Generate Prisma Client
+              run: pnpm prisma generate
+              env:
+                  DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
+                  DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
+
+            # 9. Prisma seed を実行
             - name: Run Prisma Seed
               run: pnpm prisma db seed
               env:
                   DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
                   DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
 
-            # 9. ビルド
+            # 10. ビルド
             # Vercel のサーバーに送る前にGitHub Actions 上の一時的な仮想環境（＝Ubuntuのサーバー）で構築
             - name: Build Project Artifacts
               run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
@@ -106,7 +113,7 @@ jobs:
                   NEXT_PUBLIC_SUPABASE_ANON_KEY:
                       ${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
-            # 10. デプロイ
+            # 11. デプロイ
             # ビルド済みファイルをアップロードしてプレビューURLを発行（プレビュー環境）
             - name: Deploy Project Artifacts to Vercel
               run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}

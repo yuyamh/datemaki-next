@@ -7,16 +7,16 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs && prisma validate",
+        "lint": "prisma generate && pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs && prisma validate",
         "lint:fix": "pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs --fix",
-        "typecheck": "tsc --skipLibCheck true --noEmit",
-        "typecheck:full": "tsc --skipLibCheck false --noEmit",
+        "typecheck": "prisma generate && tsc --skipLibCheck true --noEmit",
+        "typecheck:full": "prisma generate && tsc --skipLibCheck false --noEmit",
         "format": "prettier --check \"**/*.{ts,tsx,js,jsx,cjs,mjs,md,json,lintstagedrc,yml,yaml}\" --cache",
         "format:fix": "prettier --write \"**/*.{ts,tsx,js,jsx,cjs,mjs,md,json,lintstagedrc,yml,yaml}\" --cache && prisma format",
         "clean": "git clean -xdf node_modules dist .next",
         "prepare": "husky",
         "db:seed": "prisma db seed",
-        "postinstall": "prisma generate"
+        "db:generate": "prisma generate"
     },
     "prisma": {
         "seed": "pnpm tsx src/server/db/prisma/seed.ts"
@@ -55,7 +55,8 @@
         "sonner": "^2.0.7",
         "tailwind-merge": "^3.3.1",
         "tailwindcss-animate": "^1.0.7",
-        "zod": "^4.1.11"
+        "zod": "^4.1.11",
+        "zod-prisma-types": "^3.3.10"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",

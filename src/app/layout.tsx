@@ -1,7 +1,9 @@
 import "@/styles/globals.css";
 
 import type { Metadata } from "next";
+import { FabCreate } from "@/app/ui/fab-create-post";
 import Navigation from "@/app/ui/navigation";
+import { Toaster } from "sonner";
 
 interface RootLayoutProps {
     children: React.ReactNode;
@@ -19,7 +21,9 @@ function RootLayout(props: RootLayoutProps) {
                 <div className="flex min-h-screen flex-col">
                     <Navigation />
                     <main className="container mx-auto flex-grow px-4 py-8">
+                        <Toaster position="top-right" richColors />
                         {props.children}
+                        <FabCreate />
                     </main>
                     <footer className="border-2 p-4">
                         <div className="container mx-auto text-center">

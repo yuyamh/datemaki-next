@@ -1,28 +1,22 @@
 import { NextResponse } from "next/server";
+import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
 import { PrismaClient } from "@prisma/client";
-import { z } from "zod";
-
-const postSchema = z.object({
-    title: z.string().min(1),
-    description: z.string().min(1),
-    level: z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]).nullable().optional(),
-    textbookId: z.string().nullable().optional(),
-    // TODO: fileName1〜3 を後でここに追加
-});
 
 const prisma = new PrismaClient();
 
 export async function GET() {
-    // ログインチェック
-    const session = await auth();
-
-    if (!session?.user) {
-        // 未ログインなら 401 を返す
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     try {
+        // ログインチェック
+        const session = await auth();
+
+        if (!session?.user) {
+            // 未ログインなら 401 を返す
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
         const posts = await prisma.post.findMany({
             include: {
                 user: true,
@@ -43,17 +37,34 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const { description, level, textbookId, title } = postSchema.parse(
-            await request.json(),
-        );
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const userId = session.user.id;
+
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const body = await request.json();
+
+        const result = PostCreateInputSchema.safeParse(body);
+
+        if (!result.success) {
+            const errors = result.error.flatten().fieldErrors;
+            return NextResponse.json({ errors }, { status: 422 });
+        }
+
+        const { description, level, textbookId, title } = result.data;
 
         // TODO:ファイル添付を実装したらここを修正
         const fileName1 = null;
         const fileName2 = null;
         const fileName3 = null;
-        // TODO: ログイン認証を実装したらここを修正
-        // const userId = session.user.id;
-        const userId = "0d4c9cc2-6725-41d4-af11-fba4dbec2d1b";
+
         const post = await prisma.post.create({
             data: {
                 title: title,
