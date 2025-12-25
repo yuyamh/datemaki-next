@@ -1,4 +1,4 @@
-import type { User } from "@/app/lib/interface/user";
+import type { User as PrismaUser } from "@prisma/client";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { loginSchema } from "@/app/lib/validations/login.schema";
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const { name, email, password } = result.data;
 
     // 既存ユーザー確認
-    const existing: null | User = await prisma.user.findUnique({
+    const existing: null | PrismaUser = await prisma.user.findUnique({
         where: { email },
     });
 
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     // パスワードをハッシュ化
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user: null | User = await prisma.user.create({
+    const user: PrismaUser = await prisma.user.create({
         data: {
             name,
             email,

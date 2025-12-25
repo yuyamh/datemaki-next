@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/server/db/prisma/prisma";
 
 const data = [
     { name: "みんなの日本語 初級Ⅰ" },

@@ -1,14 +1,13 @@
+import type { Post as PrismaPost } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/server/db/prisma/prisma";
 
 export async function GET(
     request: Request,
     { params }: { params: { id: string } },
 ) {
     try {
-        const post = await prisma.post.findUnique({
+        const post: null | PrismaPost = await prisma.post.findUnique({
             where: { id: params.id },
         });
 
