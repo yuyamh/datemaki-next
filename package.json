@@ -7,7 +7,7 @@
         "dev": "next dev --turbopack",
         "build": "next build",
         "start": "next start",
-        "lint": "pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs && prisma validate",
+        "lint": "prisma generate && pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs && prisma validate",
         "lint:fix": "pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs --fix",
         "typecheck": "tsc --skipLibCheck true --noEmit",
         "typecheck:full": "tsc --skipLibCheck false --noEmit",
