@@ -32,8 +32,15 @@ type PostWithUser = Prisma.PostGetPayload<{
     };
 }>;
 
-const formatYmd = (d: Date | null | string | undefined) =>
-    d ? new Date(d).toLocaleDateString().slice(0, 10) : "-";
+const formatYmd = (d: Date | null | string | undefined) => {
+    if (!d) return "-";
+    return new Date(d).toLocaleDateString("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+    });
+};
 
 export function PostDetail({
     post,

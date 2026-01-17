@@ -12,25 +12,32 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Bookmark, Download } from "lucide-react";
 
 export default function PostList() {
     const [posts, setPosts] = useState<Post[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const getPosts = async () => {
-        const res = await fetch(`/api/posts`, {
-            cache: "no-store",
-            method: "GET",
-        });
+        setIsLoading(true);
+        try {
+            const res = await fetch(`/api/posts`, {
+                cache: "no-store",
+                method: "GET",
+            });
 
-        if (!res.ok) {
-            throw new Error("教案の一覧取得に失敗しました。");
+            if (!res.ok) {
+                throw new Error("教案の一覧取得に失敗しました。");
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+            const data: { posts: Post[] } = await res.json();
+
+            setPosts(data.posts);
+        } finally {
+            setIsLoading(false);
         }
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const data: { posts: Post[] } = await res.json();
-
-        setPosts(data.posts);
     };
 
     useEffect(() => {
@@ -39,7 +46,13 @@ export default function PostList() {
 
     return (
         <>
-            {posts.length === 0 ? (
+            {isLoading ? (
+                <div className="grid grid-cols-1 items-start justify-center gap-8 md:grid-cols-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                        <PostCardSkeleton key={i} />
+                    ))}
+                </div>
+            ) : posts.length === 0 ? (
                 <div>まだ投稿されていません。教案を投稿してみましょう！</div>
             ) : (
                 <div className="grid grid-cols-1 items-start justify-center gap-8 md:grid-cols-3">
@@ -52,9 +65,14 @@ export default function PostList() {
                                 </CardTitle>
                                 <CardDescription></CardDescription>
                             </CardHeader>
-                            <CardContent>
-                                <p className="text-sm">
-                                    {post.description ?? "--"}
+                            <CardContent className="h-18">
+                                <p className="text-sm break-all whitespace-pre-wrap">
+                                    {/* 100文字以上を省略する */}
+                                    {post.description
+                                        ? post.description.length > 100
+                                            ? `${post.description.slice(0, 100)}...`
+                                            : post.description
+                                        : "--"}
                                 </p>
                             </CardContent>
                             <CardFooter className="flex flex-col text-sm text-gray-400">
@@ -92,5 +110,44 @@ export default function PostList() {
                 </div>
             )}
         </>
+    );
+}
+
+function PostCardSkeleton() {
+    return (
+        <Card className="col-span-1">
+            <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                    <Skeleton className="h-5 w-3/5" />
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                </CardTitle>
+                <CardDescription>
+                    <Skeleton className="mt-2 h-4 w-2/5" />
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="mt-2 h-4 w-11/12" />
+                <Skeleton className="mt-2 h-4 w-4/5" />
+            </CardContent>
+            <CardFooter className="flex flex-col text-sm text-gray-400">
+                <div className="mb-2 flex w-full items-center justify-between">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-20" />
+                </div>
+                <div className="flex w-full items-center justify-between">
+                    <div className="flex flex-row">
+                        <div className="flex items-center justify-center pr-2">
+                            <Skeleton className="h-4 w-4 rounded" />
+                            <Skeleton className="ml-2 h-4 w-6" />
+                        </div>
+                        <div className="flex items-center justify-center">
+                            <Skeleton className="h-4 w-4 rounded" />
+                        </div>
+                    </div>
+                    <Skeleton className="h-9 w-20 rounded-md" />
+                </div>
+            </CardFooter>
+        </Card>
     );
 }
