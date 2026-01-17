@@ -10,6 +10,10 @@ export default async function ShowPost({
 }) {
     // セッション取得
     const session = await auth();
+    if (!session?.user) redirect("/login");
+
+    const sessionUserId = session.user.id;
+    if (!sessionUserId) redirect("/login");
 
     // 未ログインならログインページへ
     if (!session?.user) {
@@ -20,9 +24,19 @@ export default async function ShowPost({
 
     const post = await prisma.post.findUnique({
         where: { id },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                    avatar: true,
+                    bio: true,
+                },
+            },
+        },
     });
 
     if (!post) notFound();
 
-    return <PostDetail post={post} />;
+    return <PostDetail post={post} sessionUserId={sessionUserId} />;
 }
