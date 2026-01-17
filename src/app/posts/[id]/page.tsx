@@ -33,6 +33,11 @@ export default async function ShowPost({
                     bio: true,
                 },
             },
+            textbook: {
+                select: {
+                    name: true,
+                },
+            },
         },
     });
 
