@@ -66,13 +66,8 @@ export default function PostList() {
                                 <CardDescription></CardDescription>
                             </CardHeader>
                             <CardContent className="h-18">
-                                <p className="text-sm break-all whitespace-pre-wrap">
-                                    {/* 100文字以上を省略する */}
-                                    {post.description
-                                        ? post.description.length > 100
-                                            ? `${post.description.slice(0, 100)}...`
-                                            : post.description
-                                        : "--"}
+                                <p className="line-clamp-4 overflow-hidden text-sm break-words text-ellipsis whitespace-pre-wrap">
+                                    {post.description ?? "--"}
                                 </p>
                             </CardContent>
                             <CardFooter className="flex flex-col text-sm text-gray-400">

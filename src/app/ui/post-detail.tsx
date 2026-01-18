@@ -99,7 +99,16 @@ export function PostDetail({
                     </Card>
 
                     <div className="space-x-5 text-center">
-                        {isOwner && <Button type="button">編集する</Button>}
+                        {isOwner && (
+                            <Button
+                                onClick={() =>
+                                    router.push(`/posts/${post.id}/edit`)
+                                }
+                                type="button"
+                            >
+                                編集する
+                            </Button>
+                        )}
                         <Button onClick={() => router.back()} variant="outline">
                             一覧に戻る
                         </Button>
