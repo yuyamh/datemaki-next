@@ -4,6 +4,59 @@ import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
 import { prisma } from "@/server/db/prisma/prisma";
 
+// 教案削除処理
+export async function DELETE(
+    _request: Request,
+    { params }: { params: Promise<{ id: string }> },
+) {
+    try {
+        const { id: postId } = await params;
+        if (!postId) {
+            return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+        }
+
+        const session = await auth();
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                {
+                    error: "正しく認証されていません。再度ログインしてもう一度試してください",
+                },
+                { status: 401 },
+            );
+        }
+        const userId = session.user.id;
+
+        // 存在 + 所有者チェック
+        const existing = await prisma.post.findUnique({
+            where: { id: postId },
+            select: { id: true, userId: true },
+        });
+
+        if (!existing) {
+            return NextResponse.json(
+                { error: "対象の教案が見つかりません。" },
+                { status: 404 },
+            );
+        }
+        if (existing.userId !== userId) {
+            return NextResponse.json(
+                { error: "対象の教案の更新権限がありません。" },
+                { status: 403 },
+            );
+        }
+
+        // 物理削除
+        await prisma.post.delete({
+            where: { id: postId },
+        });
+
+        return NextResponse.json({ ok: true }, { status: 200 });
+    } catch (error) {
+        console.error("教案削除失敗:", error);
+        return NextResponse.json({ error: "内部エラー" }, { status: 500 });
+    }
+}
+
 // 教案詳細取得
 export async function GET({ params }: { params: { id: string } }) {
     try {
@@ -31,7 +84,7 @@ export async function GET({ params }: { params: { id: string } }) {
 // 教案更新処理
 export async function PATCH(
     request: Request,
-    { params }: { params: Promise<{ id: string }> },
+    { params }: { params: Promise<{ id: string }> }, // Next15からparamはPromiseになった
 ) {
     try {
         const { id: postId } = await params;
@@ -44,7 +97,7 @@ export async function PATCH(
         if (!session?.user?.id) {
             return NextResponse.json(
                 {
-                    error: "正しく認証されていません。再認証してもう一度試してください",
+                    error: "正しく認証されていません。再度ログインしてもう一度試してください",
                 },
                 { status: 401 },
             );

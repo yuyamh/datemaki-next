@@ -1,8 +1,20 @@
 "use client";
 
 import type { Prisma } from "@prisma/client";
+import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -13,7 +25,9 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CalendarDays, UserRound } from "lucide-react";
+import { toast } from "sonner";
 
+// Prismaの返却値から型を作成
 type PostWithUser = Prisma.PostGetPayload<{
     include: {
         textbook: {
@@ -32,6 +46,7 @@ type PostWithUser = Prisma.PostGetPayload<{
     };
 }>;
 
+// 日付のフォーマッタ
 const formatYmd = (d: Date | null | string | undefined) => {
     if (!d) return "-";
     return new Date(d).toLocaleDateString("ja-JP", {
@@ -51,6 +66,36 @@ export function PostDetail({
 }) {
     const router = useRouter();
     const isOwner = sessionUserId === post.user.id;
+
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    // 削除処理
+    const handleDelete = async () => {
+        if (isDeleting) return; // 二重送信防止
+        setIsDeleting(true);
+
+        try {
+            const res = await fetch(`/api/posts/${post.id}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                toast.success("教案を1件削除しました");
+                router.push("/posts");
+                router.refresh();
+                return;
+            }
+
+            const text = await res.text();
+            console.error("Delete failed:", res.status, text);
+            toast.error(`教案削除に失敗しました（${res.status}）`);
+        } catch (error) {
+            console.error("Delete error:", error);
+            toast.error("教案削除1件に失敗しました");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -99,19 +144,59 @@ export function PostDetail({
                     </Card>
 
                     <div className="space-x-5 text-center">
-                        {isOwner && (
-                            <Button
-                                onClick={() =>
-                                    router.push(`/posts/${post.id}/edit`)
-                                }
-                                type="button"
-                            >
-                                編集する
-                            </Button>
-                        )}
                         <Button onClick={() => router.back()} variant="outline">
                             一覧に戻る
                         </Button>
+                        {isOwner && (
+                            <>
+                                <Button
+                                    onClick={() =>
+                                        router.push(`/posts/${post.id}/edit`)
+                                    }
+                                    type="button"
+                                >
+                                    編集する
+                                </Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button
+                                            className="bg-red-600"
+                                            disabled={isDeleting}
+                                            type="button"
+                                        >
+                                            削除する
+                                        </Button>
+                                    </AlertDialogTrigger>
+
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                この教案を削除しますか？
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                この操作は取り消せません。削除すると教案は完全に消えます。
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel
+                                                disabled={isDeleting}
+                                            >
+                                                いいえ
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction
+                                                disabled={isDeleting}
+                                                onClick={handleDelete}
+                                            >
+                                                {isDeleting
+                                                    ? "削除中..."
+                                                    : "はい"}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </>
+                        )}
                     </div>
                 </div>
 
