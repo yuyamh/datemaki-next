@@ -13,6 +13,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { signIn } from "next-auth/react";
+import { toast } from "sonner";
 
 // useSearchParamsを使用する場合は、Suspenseでラップする必要がある
 export default function LoginPage() {
@@ -55,6 +56,7 @@ function LoginPageInner() {
 
         router.push(redirectTo);
         router.refresh(); // サーバーコンポーネント側の session を更新
+        toast.success("ログインしました");
     }
 
     return (
@@ -95,6 +97,15 @@ function LoginPageInner() {
                     <Button className="w-full" type="submit">
                         ログイン
                     </Button>
+                    <p className="my-4 flex flex-col items-center text-sm">
+                        アカウントをお持ちでない場合{" "}
+                        <a
+                            className="my-2 text-blue-600 underline"
+                            href="/signup"
+                        >
+                            新規登録はこちら
+                        </a>
+                    </p>
                 </CardFooter>
             </Card>
         </form>

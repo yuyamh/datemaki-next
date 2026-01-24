@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "next dev --turbopack",
-        "build": "next build",
+        "build": "prisma generate && next build",
         "start": "next start",
         "lint": "prisma generate && pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs && prisma validate",
         "lint:fix": "pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs --fix",

@@ -30,38 +30,70 @@ type FieldErrors = Partial<
     Record<"description" | "level" | "textbookId" | "title", string[]>
 >;
 
-export function PostForm() {
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [level, setLevel] = useState("");
-    const [textbookId, setTextbookId] = useState("");
+interface PostFormProps {
+    initialValues?: PostFormValues;
+    mode?: "create" | "edit";
+    postId?: string;
+}
+
+interface PostFormValues {
+    description: null | string;
+    level: null | string;
+    textbookId: null | string;
+    title: string;
+}
+
+export function PostForm({
+    mode = "create",
+    postId,
+    initialValues,
+}: PostFormProps) {
+    const router = useRouter();
+    const isEdit = mode === "edit";
+
+    // stateの初期値に props を使う（key={post.id} があるのでkey が変わると React は「別のコンポーネント」として扱う。）
+    const [title, setTitle] = useState(initialValues?.title ?? "");
+    const [description, setDescription] = useState(
+        initialValues?.description ?? "",
+    );
+    const [level, setLevel] = useState(initialValues?.level ?? "");
+    const [textbookId, setTextbookId] = useState(
+        initialValues?.textbookId ?? "",
+    );
+
     const [textbookList, setTextbookList] = useState<Textbook[]>([]);
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-    const router = useRouter();
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setFieldErrors({}); // 前回のエラーを消す
+        setFieldErrors({});
 
-        const response = await fetch("/api/posts", {
+        if (isEdit && !postId) {
+            toast.error("更新対象のIDが見つかりません。");
+            return;
+        }
+
+        // 保存処理と更新処理のURLを分ける
+        const url = isEdit ? `/api/posts/${postId}` : "/api/posts";
+        const method = isEdit ? "PATCH" : "POST";
+
+        const response = await fetch(url, {
+            method,
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 title,
                 description,
-                level: level || null,
-                textbookId: textbookId || null,
+                level: level || null, // "" -> null
+                textbookId: textbookId || null, // "" -> null
             }),
-            headers: {
-                "Content-Type": "application/json",
-            },
-            method: "POST",
         });
 
         if (response.ok) {
-            // 教案一覧画面にリダイレクト
             router.push("/posts");
             router.refresh();
-            toast.success("教案が作成されました");
+            toast.success(
+                isEdit ? "教案が更新されました" : "教案が作成されました",
+            );
             return;
         }
 
@@ -71,7 +103,11 @@ export function PostForm() {
             return;
         }
 
-        toast.error("教案登録に失敗しました。再度登録してください。");
+        toast.error(
+            isEdit
+                ? "教案更新に失敗しました。再度更新してください。"
+                : "教案登録に失敗しました。再度登録してください。",
+        );
     };
 
     const getTextbooks = async () => {
@@ -99,9 +135,12 @@ export function PostForm() {
                 <CardHeader>
                     <CardTitle className="text-xl">基本情報</CardTitle>
                     <CardDescription>
-                        教案の基本的な情報を入力してください
+                        {isEdit
+                            ? "教案の内容を編集してください"
+                            : "教案の基本的な情報を入力してください"}
                     </CardDescription>
                 </CardHeader>
+
                 <CardContent>
                     <div className="grid w-full items-center gap-4 space-y-2">
                         <div className="flex flex-col space-y-3">
@@ -114,7 +153,7 @@ export function PostForm() {
                                     setFieldErrors((prev) => ({
                                         ...prev,
                                         title: undefined,
-                                    })); // 入力されたらエラーだけ消す
+                                    }));
                                 }}
                                 placeholder="例：「〜てもいいです」の導入"
                                 required
@@ -127,6 +166,7 @@ export function PostForm() {
                                 </p>
                             )}
                         </div>
+
                         <div className="flex flex-col space-y-2">
                             <Label className="mb-2 block" htmlFor="description">
                                 概要
@@ -145,13 +185,14 @@ export function PostForm() {
                                 required
                                 rows={20}
                                 value={description}
-                            ></Textarea>
+                            />
                             {fieldErrors.description?.[0] && (
                                 <p className="mt-1 text-sm text-red-500">
                                     {fieldErrors.description[0]}
                                 </p>
                             )}
                         </div>
+
                         <div className="flex flex-col space-y-2">
                             <Label className="mb-2 block" htmlFor="level">
                                 レベル
@@ -187,8 +228,9 @@ export function PostForm() {
                                 </p>
                             )}
                         </div>
+
                         <div className="flex flex-col space-y-2">
-                            <Label className="mb-2 block" htmlFor="level">
+                            <Label className="mb-2 block" htmlFor="textbookId">
                                 使用テキスト
                             </Label>
                             <Select
@@ -223,11 +265,18 @@ export function PostForm() {
                         </div>
                     </div>
                 </CardContent>
+
                 <CardFooter className="flex justify-between">
-                    <Button onClick={() => router.back()} variant="outline">
+                    <Button
+                        onClick={() => router.back()}
+                        type="button"
+                        variant="outline"
+                    >
                         キャンセル
                     </Button>
-                    <Button type="submit">投稿する</Button>
+                    <Button type="submit">
+                        {isEdit ? "更新する" : "投稿する"}
+                    </Button>
                 </CardFooter>
             </Card>
         </form>
