@@ -97,6 +97,15 @@ function LoginPageInner() {
                     <Button className="w-full" type="submit">
                         ログイン
                     </Button>
+                    <p className="my-4 flex flex-col items-center text-sm">
+                        アカウントをお持ちでない場合{" "}
+                        <a
+                            className="my-2 text-blue-600 underline"
+                            href="/signup"
+                        >
+                            新規登録はこちら
+                        </a>
+                    </p>
                 </CardFooter>
             </Card>
         </form>
