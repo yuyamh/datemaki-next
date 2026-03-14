@@ -54,11 +54,13 @@ jobs:
             - name: Set Vercel Environment Variables
               run: |
                   vercel env rm DEBUG_MESSAGE preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm AUTH_SECRET preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm DATABASE_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm DIRECT_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm NEXT_PUBLIC_SUPABASE_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   echo "${{ secrets.PREVIEW_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE preview --token=${{ secrets.VERCEL_TOKEN }}
+                  echo "${{ secrets.PREVIEW_AUTH_SECRET }}" | vercel env add AUTH_SECRET preview --token=${{ secrets.VERCEL_TOKEN }}
                   echo "${{ secrets.PREVIEW_DATABASE_URL }}" | vercel env add DATABASE_URL preview --token=${{ secrets.VERCEL_TOKEN }}
                   echo "${{ secrets.PREVIEW_DIRECT_URL }}" | vercel env add DIRECT_URL preview --token=${{ secrets.VERCEL_TOKEN }}
                   echo "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_URL }}" | vercel env add NEXT_PUBLIC_SUPABASE_URL preview --token=${{ secrets.VERCEL_TOKEN }}
@@ -106,6 +108,7 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
                   DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+                  AUTH_SECRET: ${{ secrets.PREVIEW_AUTH_SECRET }}
                   DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
                   DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
                   NEXT_PUBLIC_SUPABASE_URL:
@@ -121,6 +124,7 @@ jobs:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
                   DEBUG_MESSAGE: ${{ secrets.PREVIEW_DEBUG_MESSAGE }}
+                  AUTH_SECRET: ${{ secrets.PREVIEW_AUTH_SECRET }}
                   DATABASE_URL: ${{ secrets.PREVIEW_DATABASE_URL }}
                   DIRECT_URL: ${{ secrets.PREVIEW_DIRECT_URL }}
                   NEXT_PUBLIC_SUPABASE_URL:
