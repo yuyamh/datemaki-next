@@ -59,12 +59,12 @@ jobs:
                   vercel env rm DIRECT_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm NEXT_PUBLIC_SUPABASE_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
-                  printf "%s\n\n" "${{ secrets.PREVIEW_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE preview --token=${{ secrets.VERCEL_TOKEN }}
-                  printf "%s\n\n" "${{ secrets.PREVIEW_AUTH_SECRET }}" | vercel env add AUTH_SECRET preview --token=${{ secrets.VERCEL_TOKEN }}
-                  printf "%s\n\n" "${{ secrets.PREVIEW_DATABASE_URL }}" | vercel env add DATABASE_URL preview --token=${{ secrets.VERCEL_TOKEN }}
-                  printf "%s\n\n" "${{ secrets.PREVIEW_DIRECT_URL }}" | vercel env add DIRECT_URL preview --token=${{ secrets.VERCEL_TOKEN }}
-                  printf "%s\n\n" "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_URL }}" | vercel env add NEXT_PUBLIC_SUPABASE_URL preview --token=${{ secrets.VERCEL_TOKEN }}
-                  printf "%s\n\n" "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}" | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY preview --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE preview --git-branch "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_AUTH_SECRET }}" | vercel env add AUTH_SECRET preview --git-branch "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_DATABASE_URL }}" | vercel env add DATABASE_URL preview --git-branch "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_DIRECT_URL }}" | vercel env add DIRECT_URL preview --git-branch "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_URL }}" | vercel env add NEXT_PUBLIC_SUPABASE_URL preview --git-branch "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}" | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY preview --git-branch "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
