@@ -1,6 +1,7 @@
 "use client";
 
-import type { Textbook } from "@/app/lib/interface/textbook";
+import type { PostFormProps } from "@/app/lib/interfaces/post-form";
+import type { Textbook } from "@/app/lib/interfaces/textbook";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -29,19 +30,6 @@ import { toast } from "sonner";
 type FieldErrors = Partial<
     Record<"description" | "level" | "textbookId" | "title", string[]>
 >;
-
-interface PostFormProps {
-    initialValues?: PostFormValues;
-    mode?: "create" | "edit";
-    postId?: string;
-}
-
-interface PostFormValues {
-    description: null | string;
-    level: null | string;
-    textbookId: null | string;
-    title: string;
-}
 
 export function PostForm({
     mode = "create",

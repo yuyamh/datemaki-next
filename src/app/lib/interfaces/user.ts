@@ -8,14 +8,10 @@ export interface User {
     bio: null | string;
     createdAt: Date;
     email: string;
-
     hashedPassword: string;
     id: string;
-
     name: string;
-
     posts?: Post[];
     role: Role;
-
     updatedAt: Date;
 }

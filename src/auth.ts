@@ -1,4 +1,4 @@
-import type { User } from "@/app/lib/interface/user";
+import type { User } from "@/app/lib/interfaces/user";
 import type { NextAuthConfig } from "next-auth";
 import { prisma } from "@/server/db/prisma/prisma";
 import bcrypt from "bcryptjs";
