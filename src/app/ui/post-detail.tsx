@@ -5,6 +5,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BookmarkToggleButton } from "@/app/ui/bookmark-toggle-button";
+import { MarkdownContent } from "@/app/ui/markdown-content";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -120,8 +121,8 @@ export function PostDetail({ post, sessionUserId }: PostDetailProps) {
                 {/* 本文エリア */}
                 <div className="space-y-6">
                     <Card>
-                        <CardContent className="pt-6 break-all whitespace-pre-wrap">
-                            {post.description ?? null}
+                        <CardContent className="pt-6">
+                            <MarkdownContent content={post.description} />
                         </CardContent>
                         <CardFooter className="flex justify-between" />
                     </Card>
