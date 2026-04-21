@@ -1,4 +1,4 @@
-import type { Post as PrismaPost } from "@prisma/client";
+import type { PostDetailData } from "@/app/lib/interfaces/post";
 import { NextResponse } from "next/server";
 import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
@@ -58,10 +58,28 @@ export async function DELETE(
 }
 
 // 教案詳細取得
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(
+    _request: Request,
+    { params }: { params: Promise<{ id: string }> },
+) {
     try {
-        const post: null | PrismaPost = await prisma.post.findUnique({
-            where: { id: params.id },
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const { id: postId } = await params;
+        if (!postId) {
+            return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+        }
+
+        const post = await getPostDetail({
+            postId,
+            sessionUserId: session.user.id,
         });
 
         if (!post) {
@@ -79,6 +97,66 @@ export async function GET({ params }: { params: { id: string } }) {
             { status: 500 },
         );
     }
+}
+
+export async function getPostDetail({
+    postId,
+    sessionUserId,
+}: {
+    postId: string;
+    sessionUserId: string;
+}): Promise<null | PostDetailData> {
+    const post = await prisma.post.findUnique({
+        select: {
+            _count: {
+                select: {
+                    bookmarks: true,
+                },
+            },
+            bookmarks: {
+                select: {
+                    id: true,
+                },
+                where: {
+                    userId: sessionUserId,
+                },
+            },
+            createdAt: true,
+            description: true,
+            downloadCount: true,
+            id: true,
+            level: true,
+            textbook: {
+                select: {
+                    name: true,
+                },
+            },
+            title: true,
+            updatedAt: true,
+            user: {
+                select: {
+                    avatar: true,
+                    bio: true,
+                    id: true,
+                    name: true,
+                },
+            },
+            viewCount: true,
+        },
+        where: { id: postId },
+    });
+
+    if (!post) {
+        return null;
+    }
+
+    const { _count, bookmarks, ...postData } = post;
+
+    return {
+        ...postData,
+        bookmarkCount: _count.bookmarks,
+        isBookmarked: bookmarks.length > 0,
+    };
 }
 
 // 教案更新処理

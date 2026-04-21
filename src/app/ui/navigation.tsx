@@ -23,7 +23,7 @@ export default function Navigation() {
 
     return (
         <header className="bg-white px-2 py-4 text-gray-800 shadow-sm">
-            <nav className="container mx-auto flex items-center justify-between">
+            <nav className="flex w-full items-center justify-between px-4">
                 <Link className="flex items-center space-x-2" href="/">
                     <Image
                         alt="ロゴ"

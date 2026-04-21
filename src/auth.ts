@@ -96,9 +96,43 @@ const authConfig: NextAuthConfig = {
                     id?: string;
                     role?: User["role"];
                 };
+                const sessionEmail =
+                    typeof session.user.email === "string"
+                        ? session.user.email
+                        : undefined;
+                const tokenId =
+                    typeof token.id === "string" ? token.id : undefined;
+                const currentUser =
+                    (tokenId
+                        ? await prisma.user.findUnique({
+                              select: {
+                                  id: true,
+                                  role: true,
+                              },
+                              where: {
+                                  id: tokenId,
+                              },
+                          })
+                        : null) ??
+                    (sessionEmail
+                        ? await prisma.user.findUnique({
+                              select: {
+                                  id: true,
+                                  role: true,
+                              },
+                              where: {
+                                  email: sessionEmail,
+                              },
+                          })
+                        : null);
 
-                u.id = token.id as string;
-                u.role = token.role as User["role"];
+                if (currentUser) {
+                    u.id = currentUser.id;
+                    u.role = currentUser.role;
+                } else {
+                    u.id = undefined;
+                    u.role = undefined;
+                }
             }
             return session;
         },

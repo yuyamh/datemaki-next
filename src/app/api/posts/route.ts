@@ -12,7 +12,7 @@ export async function GET(request: Request) {
         // ログインチェック
         const session = await auth();
 
-        if (!session?.user) {
+        if (!session?.user?.id) {
             // 未ログインなら 401 を返す
             return NextResponse.json(
                 { error: "Unauthorized" },
@@ -29,6 +29,7 @@ export async function GET(request: Request) {
         const data = await getPaginatedPosts({
             page: requestedPage,
             pageSize: requestedPageSize,
+            sessionUserId: session.user.id,
         });
 
         return NextResponse.json(data);
@@ -45,10 +46,12 @@ export async function GET(request: Request) {
 export async function getPaginatedPosts({
     page = 1,
     pageSize = DEFAULT_POSTS_PAGE_SIZE,
+    sessionUserId,
 }: {
     page?: number;
     pageSize?: number;
-} = {}): Promise<PostsResponse> {
+    sessionUserId: string;
+}): Promise<PostsResponse> {
     const safePageSize = Math.min(pageSize, MAX_POSTS_PAGE_SIZE);
     // 教案の総数
     const totalCount = await prisma.post.count();
@@ -61,15 +64,46 @@ export async function getPaginatedPosts({
     const skip = (currentPage - 1) * safePageSize;
 
     const posts = await prisma.post.findMany({
-        include: {
-            user: true,
-        },
         orderBy: {
             updatedAt: "desc",
+        },
+        select: {
+            _count: {
+                select: {
+                    bookmarks: true,
+                },
+            },
+            bookmarks: {
+                select: {
+                    id: true,
+                },
+                where: {
+                    userId: sessionUserId,
+                },
+            },
+            description: true,
+            downloadCount: true,
+            id: true,
+            title: true,
+            updatedAt: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
         },
         skip,
         take: safePageSize,
     });
+
+    const postsWithBookmarkState = posts.map(
+        ({ _count, bookmarks, ...post }) => ({
+            ...post,
+            bookmarkCount: _count.bookmarks,
+            isBookmarked: bookmarks.length > 0,
+        }),
+    );
 
     return {
         pagination: {
@@ -80,7 +114,7 @@ export async function getPaginatedPosts({
             totalCount,
             totalPages,
         },
-        posts,
+        posts: postsWithBookmarkState,
     };
 }
 

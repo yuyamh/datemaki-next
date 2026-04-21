@@ -4,7 +4,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "next dev --turbopack",
+        "dev": "prisma generate && next dev --turbopack",
         "build": "prisma generate && next build",
         "start": "next start",
         "lint": "prisma generate && pnpm eslint . --ext .js,.jsx,.ts,.tsx,.mjs && prisma validate",

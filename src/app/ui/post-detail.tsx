@@ -1,9 +1,10 @@
 "use client";
 
-import type { Prisma } from "@prisma/client";
+import type { PostDetailProps } from "@/app/lib/interfaces/post-detail";
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { BookmarkToggleButton } from "@/app/ui/bookmark-toggle-button";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -27,25 +28,6 @@ import { Separator } from "@/components/ui/separator";
 import { CalendarDays, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
-// Prismaの返却値から型を作成
-type PostWithUser = Prisma.PostGetPayload<{
-    include: {
-        textbook: {
-            select: {
-                name: true;
-            };
-        };
-        user: {
-            select: {
-                avatar: true;
-                bio: true;
-                id: true;
-                name: true;
-            };
-        };
-    };
-}>;
-
 // 日付のフォーマッタ
 const formatYmd = (d: Date | null | string | undefined) => {
     if (!d) return "-";
@@ -57,13 +39,7 @@ const formatYmd = (d: Date | null | string | undefined) => {
     });
 };
 
-export function PostDetail({
-    post,
-    sessionUserId,
-}: {
-    post: PostWithUser;
-    sessionUserId: string;
-}) {
+export function PostDetail({ post, sessionUserId }: PostDetailProps) {
     const router = useRouter();
     const isOwner = sessionUserId === post.user.id;
 
@@ -99,8 +75,15 @@ export function PostDetail({
 
     return (
         <div className="space-y-6">
-            {/* タイトルは全幅 */}
-            <h1 className="text-3xl font-bold">{post.title ?? "-"}</h1>
+            <div className="flex items-start justify-between gap-4">
+                <h1 className="text-3xl font-bold">{post.title ?? "-"}</h1>
+                <BookmarkToggleButton
+                    className="shrink-0"
+                    initialIsBookmarked={post.isBookmarked}
+                    postId={post.id}
+                    size={22}
+                />
+            </div>
             <div className="flex items-start gap-4">
                 <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-slate-200">
                     {post.user?.avatar ? (
@@ -231,6 +214,13 @@ export function PostDetail({
                                 <dt className="text-slate-500">閲覧数</dt>
                                 <dd className="font-medium text-slate-900">
                                     {post.viewCount ?? "-"}
+                                </dd>
+
+                                <dt className="text-slate-500">
+                                    ブックマーク数
+                                </dt>
+                                <dd className="font-medium text-slate-900">
+                                    {post.bookmarkCount ?? "-"}
                                 </dd>
 
                                 <dt className="text-slate-500">

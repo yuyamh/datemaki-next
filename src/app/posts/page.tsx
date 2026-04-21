@@ -9,7 +9,7 @@ export default async function PostIndex({ searchParams }: PostIndexProps) {
     const session = await auth();
 
     // 未ログインならログインページへ
-    if (!session?.user) {
+    if (!session?.user?.id) {
         redirect("/login");
     }
 
@@ -19,7 +19,10 @@ export default async function PostIndex({ searchParams }: PostIndexProps) {
         ? resolvedSearchParams.page[0]
         : resolvedSearchParams.page;
     const page = parsePositiveInteger(pageParam ?? null) ?? 1;
-    const { pagination, posts } = await getPaginatedPosts({ page });
+    const { pagination, posts } = await getPaginatedPosts({
+        page,
+        sessionUserId: session.user.id,
+    });
 
     return <PostList pagination={pagination} posts={posts} />;
 }

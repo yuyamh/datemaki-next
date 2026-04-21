@@ -25,21 +25,33 @@ generator zod {
 
 // 教案
 model Post {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title         String
   description   String?
   level         CEFR?
-  textbookId    String?   @db.Uuid
-  textbook      Textbook? @relation(fields: [textbookId], references: [id])
-  userId        String    @db.Uuid
-  user          User      @relation(fields: [userId], references: [id])
+  textbookId    String?    @db.Uuid
+  textbook      Textbook?  @relation(fields: [textbookId], references: [id])
+  userId        String     @db.Uuid
+  user          User       @relation(fields: [userId], references: [id])
   fileName1     String?
   fileName2     String?
   fileName3     String?
-  downloadCount Int       @default(0)
-  viewCount     Int       @default(0)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  downloadCount Int        @default(0)
+  viewCount     Int        @default(0)
+  bookmarks     Bookmark[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Bookmark {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  postId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
 }
 
 model Textbook {
@@ -49,16 +61,17 @@ model Textbook {
 }
 
 model User {
-  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String
-  email          String   @unique
-  hashedPassword String   @map("password")
+  email          String     @unique
+  hashedPassword String     @map("password")
   bio            String?
-  role           Role     @default(user)
+  role           Role       @default(user)
   avatar         String?
+  bookmarks      Bookmark[]
   Posts          Post[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 }
 
 // レベル（CEFRに準拠）

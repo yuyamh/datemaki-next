@@ -1,4 +1,4 @@
-import type { Post } from "./post";
+import type { PostListItem } from "./post";
 
 export interface Pagination {
     currentPage: number;
@@ -11,14 +11,10 @@ export interface Pagination {
 
 export interface PostListProps {
     pagination: Pagination;
-    posts: Post[];
+    posts: PostListItem[];
 }
 
 export interface PostsResponse {
     pagination: Pagination;
-    posts: Post[];
-}
-
-export interface SearchParamsLike {
-    toString(): string;
+    posts: PostListItem[];
 }

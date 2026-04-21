@@ -1,5 +1,6 @@
 import type { PostListProps } from "@/app/lib/interfaces/post-list";
 import Link from "next/link";
+import { BookmarkToggleButton } from "@/app/ui/bookmark-toggle-button";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -29,10 +30,19 @@ export default function PostList({ pagination, posts }: PostListProps) {
                         {posts.map((post) => (
                             <Card className="col-span-1" key={post.id}>
                                 <CardHeader>
-                                    <CardTitle className="flex items-center justify-between">
-                                        <h1>{post.title ?? "--"}</h1>
-                                        <Bookmark />
-                                    </CardTitle>
+                                    <div className="flex items-start justify-between gap-3">
+                                        <CardTitle className="min-w-0 flex-1">
+                                            {post.title ?? "--"}
+                                        </CardTitle>
+                                        <BookmarkToggleButton
+                                            className="shrink-0"
+                                            initialIsBookmarked={
+                                                post.isBookmarked
+                                            }
+                                            postId={post.id}
+                                            size={24}
+                                        />
+                                    </div>
                                     <CardDescription></CardDescription>
                                 </CardHeader>
                                 <CardContent className="h-18">
@@ -62,9 +72,13 @@ export default function PostList({ pagination, posts }: PostListProps) {
                                                 </p>
                                             </div>
                                             <div className="flex items-center justify-center">
-                                                {/* TODO: ブックマーク実装時にここも編集 */}
-                                                <Bookmark size={16} />
-                                                {/* <p className="pl-1">{post.bookmarkCount}</p> */}
+                                                <Bookmark
+                                                    className="text-gray-400"
+                                                    size={16}
+                                                />
+                                                <p className="pl-1">
+                                                    {post.bookmarkCount}
+                                                </p>
                                             </div>
                                         </div>
                                         <Button asChild>

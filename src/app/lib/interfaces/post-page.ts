@@ -7,3 +7,7 @@ export interface PostIndexProps {
         page?: string | string[];
     }>;
 }
+
+export interface ShowPostPageProps {
+    params: Promise<{ id: string }>;
+}
