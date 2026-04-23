@@ -1,0 +1,33 @@
+import { notFound, redirect } from "next/navigation";
+import { getProfileByUserId } from "@/app/api/profile/route";
+import { ProfileForm } from "@/app/ui/profile-form";
+import { auth } from "@/auth";
+
+export default async function EditProfilePage() {
+    const session = await auth();
+
+    if (!session?.user?.id) {
+        redirect("/login");
+    }
+
+    const profile = await getProfileByUserId(session.user.id);
+
+    if (!profile) {
+        notFound();
+    }
+
+    return (
+        <div className="mx-auto w-full max-w-6xl space-y-8">
+            <div className="space-y-2">
+                <h1 className="text-4xl font-bold text-slate-900">
+                    プロフィール編集
+                </h1>
+                <p className="text-base text-slate-500">
+                    プロフィール情報を更新できます。
+                </p>
+            </div>
+
+            <ProfileForm initialValues={profile} />
+        </div>
+    );
+}

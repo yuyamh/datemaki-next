@@ -2,8 +2,8 @@
 
 import type { PostDetailProps } from "@/app/lib/interfaces/post-detail";
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { AvatarImage } from "@/app/ui/avatar-image";
 import { BookmarkToggleButton } from "@/app/ui/bookmark-toggle-button";
 import { MarkdownContent } from "@/app/ui/markdown-content";
 import {
@@ -86,22 +86,12 @@ export function PostDetail({ post, sessionUserId }: PostDetailProps) {
                 />
             </div>
             <div className="flex items-start gap-4">
-                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-slate-200">
-                    {post.user?.avatar ? (
-                        <Image
-                            alt={post.user?.name ?? "user"}
-                            className="object-cover"
-                            fill
-                            src={post.user.avatar}
-                        />
-                    ) : (
-                        <div className="flex h-full w-full items-center justify-center text-slate-500">
-                            <span className="font-semibold">
-                                {(post.user?.name ?? "").slice(0, 1)}
-                            </span>
-                        </div>
-                    )}
-                </div>
+                <AvatarImage
+                    alt={post.user?.name ?? "user"}
+                    className="h-12 w-12"
+                    fallbackText={post.user?.name ?? ""}
+                    src={post.user?.avatar ?? null}
+                />
 
                 <div className="min-w-0">
                     <div className="leading-tight font-normal text-slate-900">
@@ -240,24 +230,12 @@ export function PostDetail({ post, sessionUserId }: PostDetailProps) {
                                 </div>
 
                                 <div className="flex items-start gap-4">
-                                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full bg-slate-200">
-                                        {post.user?.avatar ? (
-                                            <Image
-                                                alt={post.user?.name ?? "user"}
-                                                className="object-cover"
-                                                fill
-                                                src={post.user.avatar}
-                                            />
-                                        ) : (
-                                            <div className="flex h-full w-full items-center justify-center text-slate-500">
-                                                <span className="font-semibold">
-                                                    {(
-                                                        post.user?.name ?? ""
-                                                    ).slice(0, 1)}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
+                                    <AvatarImage
+                                        alt={post.user?.name ?? "user"}
+                                        className="h-12 w-12"
+                                        fallbackText={post.user?.name ?? ""}
+                                        src={post.user?.avatar ?? null}
+                                    />
 
                                     <div className="min-w-0">
                                         <div className="font-semibold text-slate-900">

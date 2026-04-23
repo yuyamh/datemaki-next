@@ -67,8 +67,10 @@ export default function Navigation() {
                                             <NavigationMenuLink>
                                                 投稿した教案
                                             </NavigationMenuLink>
-                                            <NavigationMenuLink>
-                                                設定
+                                            <NavigationMenuLink asChild>
+                                                <Link href="/profile/edit">
+                                                    設定
+                                                </Link>
                                             </NavigationMenuLink>
                                             <NavigationMenuLink>
                                                 ログアウト
