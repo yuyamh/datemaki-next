@@ -1,28 +1,49 @@
 "use client";
 
+import type { NavigationProps } from "@/app/lib/interfaces/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AvatarImage } from "@/app/ui/avatar-image";
+import { Button } from "@/components/ui/button";
 import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet";
 import clsx from "clsx";
+import { Menu } from "lucide-react";
 
-export default function Navigation() {
+export default function Navigation({ currentUser }: NavigationProps) {
     const pathname = usePathname();
 
-    const navLinkClasses = (href: string) =>
+    const desktopNavLinkClasses = (href: string) =>
         clsx("hover:text-orange-300", {
             underline: pathname === href,
         });
+    const desktopDisabledMenuItemClasses = "text-slate-400";
+    const mobileMenuLinkClasses = (href: string) =>
+        clsx(
+            "block rounded-md px-4 py-3 text-base font-medium text-slate-700 transition-colors",
+            {
+                "bg-orange-50 text-orange-500": pathname === href,
+                "hover:bg-slate-100": pathname !== href,
+            },
+        );
+    const mobileDisabledItemClasses =
+        "block cursor-default rounded-md px-4 py-3 text-base font-medium text-slate-400";
 
     return (
-        <header className="bg-white px-2 py-4 text-gray-800 shadow-sm">
+        <header className="relative z-40 bg-white px-2 py-4 text-gray-800 shadow-sm">
             <nav className="flex w-full items-center justify-between px-4">
                 <Link className="flex items-center space-x-2" href="/">
                     <Image
@@ -30,57 +51,198 @@ export default function Navigation() {
                         height={50}
                         src="/datemaki_logo.svg"
                         width={50}
-                    ></Image>
+                    />
                     <span className="text-2xl font-bold text-orange-400">
                         だてまき
                     </span>
                 </Link>
-                <div>
+
+                <div className="hidden md:block">
                     <ul className="flex items-center space-x-4">
                         <li className="textalign-middle-center">
                             <Link
-                                className={navLinkClasses("/posts")}
+                                className={desktopNavLinkClasses("/posts")}
                                 href="/posts"
                             >
                                 教案を探す
                             </Link>
                         </li>
                         <li>
-                            <Link className={navLinkClasses("#")} href="#">
+                            <Link
+                                className={desktopNavLinkClasses("#")}
+                                href="#"
+                            >
                                 先生を探す
                             </Link>
                         </li>
                         <li>
-                            <NavigationMenu>
-                                <NavigationMenuList>
-                                    <NavigationMenuItem>
-                                        <NavigationMenuTrigger className="rounded-full">
-                                            プロフ
-                                        </NavigationMenuTrigger>
-                                        <NavigationMenuContent className="text-nowrap">
-                                            <NavigationMenuLink>
-                                                プロフィール
-                                            </NavigationMenuLink>
-                                            <NavigationMenuLink>
-                                                ブックマーク
-                                            </NavigationMenuLink>
-                                            <NavigationMenuLink>
-                                                投稿した教案
-                                            </NavigationMenuLink>
-                                            <NavigationMenuLink asChild>
-                                                <Link href="/profile/edit">
-                                                    設定
-                                                </Link>
-                                            </NavigationMenuLink>
-                                            <NavigationMenuLink>
-                                                ログアウト
-                                            </NavigationMenuLink>
-                                        </NavigationMenuContent>
-                                    </NavigationMenuItem>
-                                </NavigationMenuList>
-                            </NavigationMenu>
+                            {currentUser ? (
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <button
+                                            className="h-14 w-14 rounded-full p-0 transition-colors outline-none hover:bg-slate-100 focus-visible:bg-slate-100"
+                                            type="button"
+                                        >
+                                            <AvatarImage
+                                                alt={`${currentUser.name}のプロフィール画像`}
+                                                className="h-14 w-14"
+                                                fallbackText={currentUser.name}
+                                                src={currentUser.avatar}
+                                            />
+                                        </button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                        align="end"
+                                        className="z-50"
+                                    >
+                                        <DropdownMenuItem
+                                            className={
+                                                desktopDisabledMenuItemClasses
+                                            }
+                                            disabled
+                                        >
+                                            プロフィール
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className={
+                                                desktopDisabledMenuItemClasses
+                                            }
+                                            disabled
+                                        >
+                                            ブックマーク
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className={
+                                                desktopDisabledMenuItemClasses
+                                            }
+                                            disabled
+                                        >
+                                            投稿した教案
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/profile/edit">
+                                                設定
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            className={
+                                                desktopDisabledMenuItemClasses
+                                            }
+                                            disabled
+                                        >
+                                            ログアウト
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            ) : (
+                                <Link
+                                    className="inline-flex items-center rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-400"
+                                    href="/login"
+                                >
+                                    ログイン
+                                </Link>
+                            )}
                         </li>
                     </ul>
+                </div>
+
+                <div className="md:hidden">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button
+                                aria-label="メニューを開く"
+                                size="icon"
+                                type="button"
+                                variant="ghost"
+                            >
+                                <Menu className="size-5" />
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent className="p-0" side="right">
+                            <SheetHeader className="border-b border-slate-200 pb-4">
+                                <SheetTitle>メニュー</SheetTitle>
+                            </SheetHeader>
+
+                            <div className="space-y-6 p-6">
+                                {currentUser ? (
+                                    <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-4">
+                                        <AvatarImage
+                                            alt={`${currentUser.name}のプロフィール画像`}
+                                            className="h-12 w-12"
+                                            fallbackText={currentUser.name}
+                                            src={currentUser.avatar}
+                                        />
+                                        <div className="min-w-0">
+                                            <p className="text-sm text-slate-500">
+                                                ログイン中
+                                            </p>
+                                            <p className="truncate font-medium text-slate-900">
+                                                {currentUser.name}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="rounded-xl bg-slate-50 p-4">
+                                        <p className="mb-3 text-sm text-slate-500">
+                                            アカウントにログインすると、設定や教案管理にアクセスできます。
+                                        </p>
+                                        <SheetClose asChild>
+                                            <Link
+                                                className="inline-flex items-center rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-400"
+                                                href="/login"
+                                            >
+                                                ログイン
+                                            </Link>
+                                        </SheetClose>
+                                    </div>
+                                )}
+
+                                <div className="space-y-2">
+                                    <SheetClose asChild>
+                                        <Link
+                                            className={mobileMenuLinkClasses(
+                                                "/posts",
+                                            )}
+                                            href="/posts"
+                                        >
+                                            教案を探す
+                                        </Link>
+                                    </SheetClose>
+
+                                    <span className={mobileDisabledItemClasses}>
+                                        先生を探す
+                                    </span>
+
+                                    <span className={mobileDisabledItemClasses}>
+                                        プロフィール
+                                    </span>
+
+                                    <span className={mobileDisabledItemClasses}>
+                                        ブックマーク
+                                    </span>
+
+                                    <span className={mobileDisabledItemClasses}>
+                                        投稿した教案
+                                    </span>
+
+                                    <SheetClose asChild>
+                                        <Link
+                                            className={mobileMenuLinkClasses(
+                                                "/profile/edit",
+                                            )}
+                                            href="/profile/edit"
+                                        >
+                                            設定
+                                        </Link>
+                                    </SheetClose>
+
+                                    <span className={mobileDisabledItemClasses}>
+                                        ログアウト
+                                    </span>
+                                </div>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
                 </div>
             </nav>
         </header>

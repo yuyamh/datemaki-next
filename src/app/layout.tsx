@@ -4,6 +4,8 @@ import type { RootLayoutProps } from "@/app/lib/interfaces/layout";
 import type { Metadata } from "next";
 import { FabCreate } from "@/app/ui/fab-create-post";
 import Navigation from "@/app/ui/navigation";
+import { auth } from "@/auth";
+import { prisma } from "@/server/db/prisma/prisma";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -11,12 +13,33 @@ export const metadata: Metadata = {
     title: "だてまき",
 };
 
-function RootLayout(props: RootLayoutProps) {
+async function RootLayout(props: RootLayoutProps) {
+    const session = await auth();
+    const currentUser = session?.user?.id
+        ? await prisma.user.findUnique({
+              select: {
+                  avatar: true,
+                  name: true,
+              },
+              where: {
+                  id: session.user.id,
+              },
+          })
+        : null;
+    const navigationUser =
+        currentUser ??
+        (session?.user?.name
+            ? {
+                  avatar: null,
+                  name: session.user.name,
+              }
+            : null);
+
     return (
         <html lang="ja">
             <body>
                 <div className="flex min-h-screen flex-col">
-                    <Navigation />
+                    <Navigation currentUser={navigationUser} />
                     <main className="container mx-auto flex-grow px-4 py-8">
                         <Toaster position="top-right" richColors />
                         {props.children}
