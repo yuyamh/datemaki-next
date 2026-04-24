@@ -1,5 +1,13 @@
-import type { PostsResponse } from "@/app/lib/interfaces/post-list";
+import type {
+    PostSortOption,
+    PostsResponse,
+} from "@/app/lib/interfaces/post-list";
+import type { CEFR, Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
+import {
+    DEFAULT_POST_SORT,
+    parsePostListRequestSearchParams,
+} from "@/app/lib/post-search";
 import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
 import { prisma } from "@/server/db/prisma/prisma";
@@ -21,15 +29,16 @@ export async function GET(request: Request) {
         }
 
         const { searchParams } = new URL(request.url);
-        const requestedPage =
-            parsePositiveInteger(searchParams.get("page")) ?? 1;
-        const requestedPageSize =
-            parsePositiveInteger(searchParams.get("pageSize")) ??
-            DEFAULT_POSTS_PAGE_SIZE;
+        const parsedSearchParams =
+            parsePostListRequestSearchParams(searchParams);
         const data = await getPaginatedPosts({
-            page: requestedPage,
-            pageSize: requestedPageSize,
+            level: parsedSearchParams.level,
+            page: parsedSearchParams.page,
+            pageSize: parsedSearchParams.pageSize,
+            q: parsedSearchParams.q,
             sessionUserId: session.user.id,
+            sort: parsedSearchParams.sort,
+            textbookId: parsedSearchParams.textbookId,
         });
 
         return NextResponse.json(data);
@@ -44,93 +53,50 @@ export async function GET(request: Request) {
 
 // ページネーションに合わせた教案の取得
 export async function getPaginatedPosts({
+    level,
     page = 1,
     pageSize = DEFAULT_POSTS_PAGE_SIZE,
+    q,
     sessionUserId,
+    sort = DEFAULT_POST_SORT,
+    textbookId,
 }: {
+    level?: CEFR;
     page?: number;
     pageSize?: number;
+    q?: string;
     sessionUserId: string;
+    sort?: PostSortOption;
+    textbookId?: string;
 }): Promise<PostsResponse> {
     const safePageSize = Math.min(pageSize, MAX_POSTS_PAGE_SIZE);
-    // 教案の総数
-    const totalCount = await prisma.post.count();
-    // 教案の総ページ数
-    const totalPages =
-        totalCount === 0 ? 0 : Math.ceil(totalCount / safePageSize);
-    // 現在のページ（ページ指定が大きすぎたら最終ページまでに丸める）
-    const currentPage = totalPages === 0 ? 1 : Math.min(page, totalPages);
-    // スキップ数
-    const skip = (currentPage - 1) * safePageSize;
+    const where = buildPostSearchWhere({
+        level,
+        q,
+        textbookId,
+    });
+    const orderBy = buildPostOrderBy(sort);
 
-    const posts = await prisma.post.findMany({
-        orderBy: {
-            updatedAt: "desc",
-        },
-        select: {
-            _count: {
-                select: {
-                    bookmarks: true,
-                },
-            },
-            bookmarks: {
-                select: {
-                    id: true,
-                },
-                where: {
-                    userId: sessionUserId,
-                },
-            },
-            description: true,
-            downloadCount: true,
-            id: true,
-            title: true,
-            updatedAt: true,
-            user: {
-                select: {
-                    id: true,
-                    name: true,
-                },
-            },
-        },
-        skip,
-        take: safePageSize,
+    // まず総件数を数えて、ページネーション情報を確定する
+    const totalCount = await prisma.post.count({ where });
+    const pagination = buildPagination({
+        page,
+        pageSize: safePageSize,
+        totalCount,
     });
 
-    const postsWithBookmarkState = posts.map(
-        ({ _count, bookmarks, ...post }) => ({
-            ...post,
-            bookmarkCount: _count.bookmarks,
-            isBookmarked: bookmarks.length > 0,
-        }),
-    );
+    const posts = await getPostListRows({
+        orderBy,
+        sessionUserId,
+        skip: getSkipCount(pagination.currentPage, safePageSize),
+        take: safePageSize,
+        where,
+    });
 
     return {
-        pagination: {
-            currentPage,
-            hasNextPage: currentPage < totalPages,
-            hasPreviousPage: currentPage > 1,
-            pageSize: safePageSize,
-            totalCount,
-            totalPages,
-        },
-        posts: postsWithBookmarkState,
+        pagination,
+        posts: formatPostListItems(posts),
     };
-}
-
-// 整数に直す
-export function parsePositiveInteger(value: null | string) {
-    if (!value) {
-        return;
-    }
-
-    const parsedValue = Number.parseInt(value, 10);
-
-    if (Number.isNaN(parsedValue) || parsedValue < 1) {
-        return;
-    }
-
-    return parsedValue;
 }
 
 export async function POST(request: Request) {
@@ -183,4 +149,160 @@ export async function POST(request: Request) {
             { status: 500 },
         );
     }
+}
+
+function buildPagination({
+    page,
+    pageSize,
+    totalCount,
+}: {
+    page: number;
+    pageSize: number;
+    totalCount: number;
+}) {
+    const totalPages = totalCount === 0 ? 0 : Math.ceil(totalCount / pageSize);
+    const currentPage = totalPages === 0 ? 1 : Math.min(page, totalPages);
+
+    return {
+        currentPage,
+        hasNextPage: currentPage < totalPages,
+        hasPreviousPage: currentPage > 1,
+        pageSize,
+        totalCount,
+        totalPages,
+    };
+}
+
+function buildPostOrderBy(sort: PostSortOption) {
+    switch (sort) {
+        case "bookmarks_desc": {
+            return [
+                { bookmarks: { _count: "desc" } },
+                { updatedAt: "desc" },
+                { id: "desc" },
+            ] satisfies Prisma.PostOrderByWithRelationInput[];
+        }
+
+        case "downloads_desc": {
+            return [
+                { downloadCount: "desc" },
+                { updatedAt: "desc" },
+                { id: "desc" },
+            ] satisfies Prisma.PostOrderByWithRelationInput[];
+        }
+
+        case "updated_asc": {
+            return [
+                { updatedAt: "asc" },
+                { id: "desc" },
+            ] satisfies Prisma.PostOrderByWithRelationInput[];
+        }
+
+        default: {
+            return [
+                { updatedAt: "desc" },
+                { id: "desc" },
+            ] satisfies Prisma.PostOrderByWithRelationInput[];
+        }
+    }
+}
+
+function buildPostSearchWhere({
+    level,
+    q,
+    textbookId,
+}: {
+    level?: CEFR;
+    q?: string;
+    textbookId?: string;
+}) {
+    const where: Prisma.PostWhereInput = {};
+
+    if (q) {
+        where.OR = [
+            {
+                title: {
+                    contains: q,
+                    mode: "insensitive",
+                },
+            },
+            {
+                description: {
+                    contains: q,
+                    mode: "insensitive",
+                },
+            },
+        ];
+    }
+
+    if (level) {
+        where.level = level;
+    }
+
+    if (textbookId) {
+        where.textbookId = textbookId;
+    }
+
+    return where;
+}
+
+function formatPostListItems(
+    posts: Awaited<ReturnType<typeof getPostListRows>>,
+) {
+    return posts.map(({ _count, bookmarks, ...post }) => ({
+        ...post,
+        bookmarkCount: _count.bookmarks,
+        isBookmarked: bookmarks.length > 0,
+    }));
+}
+
+async function getPostListRows({
+    orderBy,
+    sessionUserId,
+    skip,
+    take,
+    where,
+}: {
+    orderBy: Prisma.PostOrderByWithRelationInput[];
+    sessionUserId: string;
+    skip: number;
+    take: number;
+    where: Prisma.PostWhereInput;
+}) {
+    return prisma.post.findMany({
+        orderBy,
+        select: {
+            _count: {
+                select: {
+                    bookmarks: true,
+                },
+            },
+            bookmarks: {
+                select: {
+                    id: true,
+                },
+                where: {
+                    userId: sessionUserId,
+                },
+            },
+            description: true,
+            downloadCount: true,
+            id: true,
+            title: true,
+            updatedAt: true,
+            user: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+        },
+        skip,
+        take,
+        where,
+    });
+}
+
+function getSkipCount(currentPage: number, pageSize: number) {
+    return (currentPage - 1) * pageSize;
 }

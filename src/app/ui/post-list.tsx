@@ -1,6 +1,8 @@
 import type { PostListProps } from "@/app/lib/interfaces/post-list";
 import Link from "next/link";
+import { DEFAULT_POST_SORT } from "@/app/lib/post-search";
 import { BookmarkToggleButton } from "@/app/ui/bookmark-toggle-button";
+import { PostSearchToolbar } from "@/app/ui/post-search-toolbar";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -19,11 +21,35 @@ import {
 } from "@/components/ui/pagination";
 import { Bookmark, Download } from "lucide-react";
 
-export default function PostList({ pagination, posts }: PostListProps) {
+export default function PostList({
+    filters,
+    pagination,
+    posts,
+    textbooks,
+}: PostListProps) {
+    const hasActiveFilters =
+        Boolean(filters.q) ||
+        Boolean(filters.level) ||
+        Boolean(filters.textbookId) ||
+        filters.sort !== DEFAULT_POST_SORT;
+
     return (
-        <>
+        <div className="space-y-8 px-4 pb-10 md:px-8">
+            <div className="space-y-3">
+                <h1 className="text-4xl font-bold text-slate-950">教案一覧</h1>
+                <p className="text-md text-slate-500">
+                    日本語教師が作成した教案を検索・閲覧できます
+                </p>
+            </div>
+
+            <PostSearchToolbar filters={filters} textbooks={textbooks} />
+
             {posts.length === 0 ? (
-                <div>まだ投稿されていません。教案を投稿してみましょう！</div>
+                <div className="px-6 py-16 text-center text-slate-500">
+                    {hasActiveFilters
+                        ? "条件に一致する教案が見つかりませんでした。"
+                        : "まだ投稿されていません。教案を投稿してみましょう！"}
+                </div>
             ) : (
                 <div className="space-y-8">
                     <div className="grid grid-cols-1 items-start justify-center gap-8 md:grid-cols-3">
@@ -118,11 +144,12 @@ export default function PostList({ pagination, posts }: PostListProps) {
                                                 ? undefined
                                                 : "pointer-events-none opacity-50"
                                         }
-                                        href={getPostsPageUrl(
-                                            pagination.hasPreviousPage
+                                        href={getPostsPageUrl({
+                                            filters,
+                                            page: pagination.hasPreviousPage
                                                 ? pagination.currentPage - 1
                                                 : pagination.currentPage,
-                                        )}
+                                        })}
                                         tabIndex={
                                             pagination.hasPreviousPage
                                                 ? undefined
@@ -147,11 +174,12 @@ export default function PostList({ pagination, posts }: PostListProps) {
                                                 ? undefined
                                                 : "pointer-events-none opacity-50"
                                         }
-                                        href={getPostsPageUrl(
-                                            pagination.hasNextPage
+                                        href={getPostsPageUrl({
+                                            filters,
+                                            page: pagination.hasNextPage
                                                 ? pagination.currentPage + 1
                                                 : pagination.currentPage,
-                                        )}
+                                        })}
                                         tabIndex={
                                             pagination.hasNextPage
                                                 ? undefined
@@ -165,10 +193,41 @@ export default function PostList({ pagination, posts }: PostListProps) {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }
 
-function getPostsPageUrl(page: number) {
-    return page <= 1 ? "/posts" : `/posts?page=${page}`;
+// フィルター条件とページ番号から、教案一覧ページのURLを生成する
+function getPostsPageUrl({
+    filters,
+    page,
+}: {
+    filters: PostListProps["filters"];
+    page: number;
+}) {
+    const searchParams = new URLSearchParams();
+
+    if (page > 1) {
+        searchParams.set("page", page.toString());
+    }
+
+    if (filters.q) {
+        searchParams.set("q", filters.q);
+    }
+
+    if (filters.level) {
+        searchParams.set("level", filters.level);
+    }
+
+    if (filters.textbookId) {
+        searchParams.set("textbookId", filters.textbookId);
+    }
+
+    if (filters.sort !== DEFAULT_POST_SORT) {
+        searchParams.set("sort", filters.sort);
+    }
+
+    const queryString = searchParams.toString();
+
+    return queryString ? `/posts?${queryString}` : "/posts";
 }

@@ -4,6 +4,7 @@ import type { PostFormProps } from "@/app/lib/interfaces/post-form";
 import type { Textbook } from "@/app/lib/interfaces/textbook";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { POST_LEVEL_OPTIONS } from "@/app/lib/post-level";
 import { MarkdownContent } from "@/app/ui/markdown-content";
 import { Button } from "@/components/ui/button";
 import {
@@ -252,12 +253,14 @@ export function PostForm({
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectLabel>レベル</SelectLabel>
-                                        <SelectItem value="A1">A1</SelectItem>
-                                        <SelectItem value="A2">A2</SelectItem>
-                                        <SelectItem value="B1">B1</SelectItem>
-                                        <SelectItem value="B2">B2</SelectItem>
-                                        <SelectItem value="C1">C1</SelectItem>
-                                        <SelectItem value="C2">C2</SelectItem>
+                                        {POST_LEVEL_OPTIONS.map((level) => (
+                                            <SelectItem
+                                                key={level}
+                                                value={level}
+                                            >
+                                                {level}
+                                            </SelectItem>
+                                        ))}
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>

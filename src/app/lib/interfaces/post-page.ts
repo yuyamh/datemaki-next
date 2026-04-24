@@ -4,7 +4,11 @@ export interface EditPostPageProps {
 
 export interface PostIndexProps {
     searchParams: Promise<{
+        level?: string | string[];
         page?: string | string[];
+        q?: string | string[];
+        sort?: string | string[];
+        textbookId?: string | string[];
     }>;
 }
 
