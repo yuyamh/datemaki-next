@@ -139,6 +139,7 @@ export async function getPostDetail({
                     bio: true,
                     id: true,
                     name: true,
+                    role: true,
                 },
             },
             viewCount: true,

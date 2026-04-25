@@ -1,3 +1,5 @@
+import type { Role } from "@prisma/client";
+
 // 教案（posts）の型指定
 export interface Post {
     createdAt: Date;
@@ -20,6 +22,7 @@ export interface PostAuthorSummary {
     bio: null | string;
     id: string;
     name: string;
+    role: Role;
 }
 
 export interface PostDetailData {

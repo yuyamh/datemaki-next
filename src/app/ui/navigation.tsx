@@ -69,8 +69,8 @@ export default function Navigation({ currentUser }: NavigationProps) {
                         </li>
                         <li>
                             <Link
-                                className={desktopNavLinkClasses("#")}
-                                href="#"
+                                className={desktopNavLinkClasses("/users")}
+                                href="/users"
                             >
                                 先生を探す
                             </Link>
@@ -209,9 +209,16 @@ export default function Navigation({ currentUser }: NavigationProps) {
                                         </Link>
                                     </SheetClose>
 
-                                    <span className={mobileDisabledItemClasses}>
-                                        先生を探す
-                                    </span>
+                                    <SheetClose asChild>
+                                        <Link
+                                            className={mobileMenuLinkClasses(
+                                                "/users",
+                                            )}
+                                            href="/users"
+                                        >
+                                            先生を探す
+                                        </Link>
+                                    </SheetClose>
 
                                     <span className={mobileDisabledItemClasses}>
                                         プロフィール

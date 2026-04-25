@@ -47,7 +47,7 @@ async function RootLayout(props: RootLayoutProps) {
                     </main>
                     <footer className="border-2 p-4">
                         <div className="container mx-auto text-center">
-                            &copy; 2025 だてまき. All rights reserved.
+                            &copy; 2026 だてまき. All rights reserved.
                         </div>
                     </footer>
                 </div>

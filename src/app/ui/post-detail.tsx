@@ -43,6 +43,8 @@ const formatYmd = (d: Date | null | string | undefined) => {
 export function PostDetail({ post, sessionUserId }: PostDetailProps) {
     const router = useRouter();
     const isOwner = sessionUserId === post.user.id;
+    // 投稿者のロールが一般ユーザーの場合のみ、プロフィールへのリンクを表示する
+    const canShowPublicProfile = post.user.role === "user";
 
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -247,16 +249,20 @@ export function PostDetail({ post, sessionUserId }: PostDetailProps) {
                                     </div>
                                 </div>
 
-                                <Button
-                                    className="w-full"
-                                    onClick={() =>
-                                        router.push(`/users/${post.user.id}`)
-                                    }
-                                    variant="outline"
-                                >
-                                    <UserRound className="mr-2 h-4 w-4" />
-                                    プロフィールを見る
-                                </Button>
+                                {canShowPublicProfile && (
+                                    <Button
+                                        className="w-full"
+                                        onClick={() =>
+                                            router.push(
+                                                `/users/${post.user.id}`,
+                                            )
+                                        }
+                                        variant="outline"
+                                    >
+                                        <UserRound className="mr-2 h-4 w-4" />
+                                        プロフィールを見る
+                                    </Button>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
