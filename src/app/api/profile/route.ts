@@ -1,3 +1,4 @@
+import type { NavigationUser } from "@/app/lib/interfaces/navigation";
 import type {
     ProfileFieldErrors,
     ProfileFormValues,
@@ -16,6 +17,28 @@ import { createSupabaseServerClient } from "@/server/supabase/client";
 
 // ファイルサイズは2MBまでに制限
 const MAX_AVATAR_FILE_SIZE = 2 * 1024 * 1024;
+
+// navbar 表示用の最小ユーザー情報を取得する
+export async function getNavigationUserByUserId(
+    userId: string,
+): Promise<NavigationUser | null> {
+    const user = await prisma.user.findUnique({
+        select: {
+            avatar: true,
+            id: true,
+            name: true,
+        },
+        where: {
+            id: userId,
+        },
+    });
+
+    if (!user) {
+        return null;
+    }
+
+    return user;
+}
 
 // ユーザーIDからプロフィールを取得する
 export async function getProfileByUserId(

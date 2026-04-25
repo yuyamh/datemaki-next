@@ -2,10 +2,10 @@ import "@/styles/globals.css";
 
 import type { RootLayoutProps } from "@/app/lib/interfaces/layout";
 import type { Metadata } from "next";
+import { getNavigationUserByUserId } from "@/app/api/profile/route";
 import { FabCreate } from "@/app/ui/fab-create-post";
 import Navigation from "@/app/ui/navigation";
 import { auth } from "@/auth";
-import { prisma } from "@/server/db/prisma/prisma";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -16,21 +16,14 @@ export const metadata: Metadata = {
 async function RootLayout(props: RootLayoutProps) {
     const session = await auth();
     const currentUser = session?.user?.id
-        ? await prisma.user.findUnique({
-              select: {
-                  avatar: true,
-                  name: true,
-              },
-              where: {
-                  id: session.user.id,
-              },
-          })
+        ? await getNavigationUserByUserId(session.user.id)
         : null;
     const navigationUser =
         currentUser ??
-        (session?.user?.name
+        (session?.user?.id && session.user.name
             ? {
                   avatar: null,
+                  id: session.user.id,
                   name: session.user.name,
               }
             : null);

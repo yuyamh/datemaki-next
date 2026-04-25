@@ -4,5 +4,6 @@ export interface NavigationProps {
 
 export interface NavigationUser {
     avatar: null | string;
+    id: string;
     name: string;
 }

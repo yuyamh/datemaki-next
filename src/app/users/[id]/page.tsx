@@ -20,6 +20,7 @@ export default async function ShowUser({
         q: parsedSearchParams.filters.q || undefined,
         sort: parsedSearchParams.filters.sort,
         userId: id,
+        viewerUserId: session?.user?.id,
     });
 
     if (!profile) {

@@ -5,6 +5,7 @@ import {
     DEFAULT_USER_PROFILE_POST_SORT,
     parseUserProfileRequestSearchParams,
 } from "@/app/lib/user-search";
+import { auth } from "@/auth";
 import { prisma } from "@/server/db/prisma/prisma";
 
 const MAX_PROFILE_POSTS_PAGE_SIZE = 30;
@@ -24,6 +25,7 @@ export async function GET(
         const { searchParams } = new URL(request.url);
         const parsedSearchParams =
             parseUserProfileRequestSearchParams(searchParams);
+        const session = await auth();
         const profile = await getPublicUserProfile({
             level: parsedSearchParams.level,
             page: parsedSearchParams.page,
@@ -31,6 +33,7 @@ export async function GET(
             q: parsedSearchParams.q,
             sort: parsedSearchParams.sort,
             userId,
+            viewerUserId: session?.user?.id,
         });
 
         if (!profile) {
@@ -58,6 +61,7 @@ export async function getPublicUserProfile({
     q,
     sort = DEFAULT_USER_PROFILE_POST_SORT,
     userId,
+    viewerUserId,
 }: {
     level?: CEFR | null;
     page?: number;
@@ -65,7 +69,18 @@ export async function getPublicUserProfile({
     q?: string;
     sort?: "updated_asc" | "updated_desc";
     userId: string;
+    viewerUserId?: string;
 }): Promise<null | PublicUserProfileData> {
+    // 自分のプロフィールは見れるが、他人のプロフィールはroleが"user"のユーザ（一般ユーザ）に限って見れるようにする
+    const userWhere: Prisma.UserWhereInput =
+        viewerUserId === userId
+            ? {
+                  id: userId,
+              }
+            : {
+                  id: userId,
+                  role: "user",
+              };
     const user = await prisma.user.findFirst({
         select: {
             _count: {
@@ -79,10 +94,7 @@ export async function getPublicUserProfile({
             id: true,
             name: true,
         },
-        where: {
-            id: userId,
-            role: "user",
-        },
+        where: userWhere,
     });
 
     if (!user) {
