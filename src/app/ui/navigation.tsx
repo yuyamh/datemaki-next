@@ -43,7 +43,6 @@ export default function Navigation({ currentUser }: NavigationProps) {
         clsx("hover:text-orange-300", {
             underline: pathname === href,
         });
-    const desktopDisabledMenuItemClasses = "text-slate-400";
     const mobileMenuLinkClasses = (href: string) =>
         clsx(
             "block rounded-md px-4 py-3 text-base font-medium text-slate-700 transition-colors",
@@ -52,8 +51,6 @@ export default function Navigation({ currentUser }: NavigationProps) {
                 "hover:bg-slate-100": pathname !== href,
             },
         );
-    const mobileDisabledItemClasses =
-        "block cursor-default rounded-md px-4 py-3 text-base font-medium text-slate-400";
     const profileDetailHref = currentUser
         ? `/users/${currentUser.id}?tab=details`
         : "#";
@@ -125,13 +122,10 @@ export default function Navigation({ currentUser }: NavigationProps) {
                                                     プロフィール
                                                 </Link>
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem
-                                                className={
-                                                    desktopDisabledMenuItemClasses
-                                                }
-                                                disabled
-                                            >
-                                                ブックマーク
+                                            <DropdownMenuItem asChild>
+                                                <Link href="/bookmarks">
+                                                    ブックマーク
+                                                </Link>
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild>
                                                 <Link href={profilePostsHref}>
@@ -251,13 +245,16 @@ export default function Navigation({ currentUser }: NavigationProps) {
                                             </SheetClose>
                                         ) : null}
 
-                                        <span
-                                            className={
-                                                mobileDisabledItemClasses
-                                            }
-                                        >
-                                            ブックマーク
-                                        </span>
+                                        <SheetClose asChild>
+                                            <Link
+                                                className={mobileMenuLinkClasses(
+                                                    "/bookmarks",
+                                                )}
+                                                href="/bookmarks"
+                                            >
+                                                ブックマーク
+                                            </Link>
+                                        </SheetClose>
 
                                         {currentUser ? (
                                             <SheetClose asChild>

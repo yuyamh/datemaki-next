@@ -1,4 +1,4 @@
-import { DEFAULT_POSTS_PAGE_SIZE } from "@/app/api/posts/route";
+import { DEFAULT_POSTS_PAGE_SIZE } from "@/app/lib/post-list-query";
 import {
     Card,
     CardContent,

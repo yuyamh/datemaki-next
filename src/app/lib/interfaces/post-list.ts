@@ -21,10 +21,14 @@ export interface PostListFilters {
 }
 
 export interface PostListProps {
+    basePath: string;
+    description: string;
+    emptyUnfilteredMessage: string;
     filters: PostListFilters;
     pagination: Pagination;
     posts: PostListItem[];
     textbooks: Textbook[];
+    title: string;
 }
 
 // 検索ツールバーの型定義

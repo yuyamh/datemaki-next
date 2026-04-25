@@ -17,17 +17,14 @@ import {
     DEFAULT_POST_SORT,
     parsePostListRequestSearchParams,
 } from "@/app/lib/post-search";
-import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
 import { prisma } from "@/server/db/prisma/prisma";
 
 export async function GET(request: Request) {
     try {
-        // ログインチェック
         const session = await auth();
 
         if (!session?.user?.id) {
-            // 未ログインなら 401 を返す
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
@@ -37,7 +34,7 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const parsedSearchParams =
             parsePostListRequestSearchParams(searchParams);
-        const data = await getPaginatedPosts({
+        const data = await getPaginatedBookmarkedPosts({
             level: parsedSearchParams.level,
             page: parsedSearchParams.page,
             pageSize: parsedSearchParams.pageSize,
@@ -49,7 +46,7 @@ export async function GET(request: Request) {
 
         return NextResponse.json(data);
     } catch (error) {
-        console.error("教案取得失敗:", error);
+        console.error("ブックマーク一覧取得失敗:", error);
         return NextResponse.json(
             { error: "Internal Server Error" },
             { status: 500 },
@@ -57,8 +54,7 @@ export async function GET(request: Request) {
     }
 }
 
-// ページネーションに合わせた教案の取得
-export async function getPaginatedPosts({
+export async function getPaginatedBookmarkedPosts({
     level,
     page = 1,
     pageSize = DEFAULT_POSTS_PAGE_SIZE,
@@ -76,14 +72,14 @@ export async function getPaginatedPosts({
     textbookId?: string;
 }): Promise<PostsResponse> {
     const safePageSize = getSafePostsPageSize(pageSize);
-    const where = buildPostSearchWhere({
+    const where = buildBookmarkedPostWhere({
         level,
         q,
+        sessionUserId,
         textbookId,
     });
     const orderBy = buildPostOrderBy(sort);
 
-    // まず総件数を数えて、ページネーション情報を確定する
     const totalCount = await prisma.post.count({ where });
     const pagination = buildPagination({
         page,
@@ -91,7 +87,7 @@ export async function getPaginatedPosts({
         totalCount,
     });
 
-    const posts = await getPostListRows({
+    const posts = await getBookmarkedPostListRows({
         orderBy,
         sessionUserId,
         skip: getSkipCount(pagination.currentPage, safePageSize),
@@ -105,59 +101,34 @@ export async function getPaginatedPosts({
     };
 }
 
-export async function POST(request: Request) {
-    try {
-        const session = await auth();
+function buildBookmarkedPostWhere({
+    level,
+    q,
+    sessionUserId,
+    textbookId,
+}: {
+    level?: CEFR;
+    q?: string;
+    sessionUserId: string;
+    textbookId?: string;
+}) {
+    const baseWhere = buildPostSearchWhere({
+        level,
+        q,
+        textbookId,
+    });
 
-        if (!session?.user?.id) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 },
-            );
-        }
-
-        const userId = session.user.id;
-
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const body = await request.json();
-
-        const result = PostCreateInputSchema.safeParse(body);
-
-        if (!result.success) {
-            const errors = result.error.flatten().fieldErrors;
-            return NextResponse.json({ errors }, { status: 422 });
-        }
-
-        const { description, level, textbookId, title } = result.data;
-
-        // TODO:ファイル添付を実装したらここを修正
-        const fileName1 = null;
-        const fileName2 = null;
-        const fileName3 = null;
-
-        const post = await prisma.post.create({
-            data: {
-                title: title,
-                description: description,
-                fileName1: fileName1,
-                fileName2: fileName2,
-                fileName3: fileName3,
-                level: level ?? null,
-                textbookId: textbookId ?? null,
-                userId,
+    return {
+        ...baseWhere,
+        bookmarks: {
+            some: {
+                userId: sessionUserId,
             },
-        });
-        return NextResponse.json({ post });
-    } catch (error) {
-        console.error("教案登録失敗:", error);
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 },
-        );
-    }
+        },
+    } satisfies Prisma.PostWhereInput;
 }
 
-async function getPostListRows({
+async function getBookmarkedPostListRows({
     orderBy,
     sessionUserId,
     skip,

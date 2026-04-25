@@ -1,16 +1,14 @@
 import type { PostIndexProps } from "@/app/lib/interfaces/post-page";
 import { redirect } from "next/navigation";
-import { getPaginatedPosts } from "@/app/api/posts/route";
+import { getPaginatedBookmarkedPosts } from "@/app/api/bookmarks/route";
 import { getAllTextbooks } from "@/app/api/textbooks/route";
 import { parsePostIndexSearchParams } from "@/app/lib/post-search";
 import PostList from "@/app/ui/post-list";
 import { auth } from "@/auth";
 
-export default async function PostIndex({ searchParams }: PostIndexProps) {
-    // セッション取得
+export default async function BookmarkIndex({ searchParams }: PostIndexProps) {
     const session = await auth();
 
-    // 未ログインならログインページへ
     if (!session?.user?.id) {
         redirect("/login");
     }
@@ -19,8 +17,7 @@ export default async function PostIndex({ searchParams }: PostIndexProps) {
     const parsedSearchParams = parsePostIndexSearchParams(resolvedSearchParams);
     const [textbooks, { pagination, posts }] = await Promise.all([
         getAllTextbooks(),
-        // URL変更をトリガーにして、サーバーコンポーネントが再実行されることでデータ取得する
-        getPaginatedPosts({
+        getPaginatedBookmarkedPosts({
             level: parsedSearchParams.filters.level ?? undefined,
             page: parsedSearchParams.page,
             q: parsedSearchParams.filters.q || undefined,
@@ -32,14 +29,14 @@ export default async function PostIndex({ searchParams }: PostIndexProps) {
 
     return (
         <PostList
-            basePath="/posts"
-            description="日本語教師が作成した教案を検索・閲覧できます"
-            emptyUnfilteredMessage="まだ投稿されていません。教案を投稿してみましょう！"
+            basePath="/bookmarks"
+            description="ブックマークした教案を検索・閲覧できます"
+            emptyUnfilteredMessage="まだブックマークした教案はありません。"
             filters={parsedSearchParams.filters}
             pagination={pagination}
             posts={posts}
             textbooks={textbooks}
-            title="教案一覧"
+            title="ブックマーク一覧"
         />
     );
 }

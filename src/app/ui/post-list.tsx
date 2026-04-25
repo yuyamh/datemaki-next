@@ -22,10 +22,14 @@ import {
 import { Bookmark, Download } from "lucide-react";
 
 export default function PostList({
+    basePath,
+    description,
+    emptyUnfilteredMessage,
     filters,
     pagination,
     posts,
     textbooks,
+    title,
 }: PostListProps) {
     const hasActiveFilters =
         Boolean(filters.q) ||
@@ -36,10 +40,8 @@ export default function PostList({
     return (
         <div className="space-y-8 px-4 pb-10 md:px-8">
             <div className="space-y-3">
-                <h1 className="text-4xl font-bold text-slate-950">教案一覧</h1>
-                <p className="text-md text-slate-500">
-                    日本語教師が作成した教案を検索・閲覧できます
-                </p>
+                <h1 className="text-4xl font-bold text-slate-950">{title}</h1>
+                <p className="text-md text-slate-500">{description}</p>
             </div>
 
             <PostSearchToolbar filters={filters} textbooks={textbooks} />
@@ -48,7 +50,7 @@ export default function PostList({
                 <div className="px-6 py-16 text-center text-slate-500">
                     {hasActiveFilters
                         ? "条件に一致する教案が見つかりませんでした。"
-                        : "まだ投稿されていません。教案を投稿してみましょう！"}
+                        : emptyUnfilteredMessage}
                 </div>
             ) : (
                 <div className="space-y-8">
@@ -145,6 +147,7 @@ export default function PostList({
                                                 : "pointer-events-none opacity-50"
                                         }
                                         href={getPostsPageUrl({
+                                            basePath,
                                             filters,
                                             page: pagination.hasPreviousPage
                                                 ? pagination.currentPage - 1
@@ -175,6 +178,7 @@ export default function PostList({
                                                 : "pointer-events-none opacity-50"
                                         }
                                         href={getPostsPageUrl({
+                                            basePath,
                                             filters,
                                             page: pagination.hasNextPage
                                                 ? pagination.currentPage + 1
@@ -199,9 +203,11 @@ export default function PostList({
 
 // フィルター条件とページ番号から、教案一覧ページのURLを生成する
 function getPostsPageUrl({
+    basePath,
     filters,
     page,
 }: {
+    basePath: string;
     filters: PostListProps["filters"];
     page: number;
 }) {
@@ -229,5 +235,5 @@ function getPostsPageUrl({
 
     const queryString = searchParams.toString();
 
-    return queryString ? `/posts?${queryString}` : "/posts";
+    return queryString ? `${basePath}?${queryString}` : basePath;
 }
