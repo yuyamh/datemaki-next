@@ -1,47 +1,51 @@
+import type { ShowPostPageProps } from "@/app/lib/interfaces/post-page";
 import { notFound, redirect } from "next/navigation";
+import { getPostDetail } from "@/app/api/posts/[id]/route";
+import {
+    getSingleSearchParamValue,
+    parsePositiveInteger,
+} from "@/app/lib/search-params";
 import { PostDetail } from "@/app/ui/post-detail";
 import { auth } from "@/auth";
-import { prisma } from "@/server/db/prisma/prisma";
+import { isUuid } from "@/lib/uuid";
 
 export default async function ShowPost({
     params,
-}: {
-    params: Promise<{ id: string }>;
-}) {
+    searchParams,
+}: ShowPostPageProps) {
     // セッション取得
     const session = await auth();
-    if (!session?.user) redirect("/login");
-
-    const sessionUserId = session.user.id;
-    if (!sessionUserId) redirect("/login");
-
-    // 未ログインならログインページへ
-    if (!session?.user) {
+    if (!session?.user?.id) {
         redirect("/login");
     }
 
     const { id } = await params;
-
-    const post = await prisma.post.findUnique({
-        where: { id },
-        include: {
-            user: {
-                select: {
-                    id: true,
-                    name: true,
-                    avatar: true,
-                    bio: true,
-                },
-            },
-            textbook: {
-                select: {
-                    name: true,
-                },
-            },
-        },
+    if (!isUuid(id)) {
+        notFound();
+    }
+    const resolvedSearchParams = await searchParams;
+    // 有効化されているタブを判定（教案 or コメント）
+    const activeTab =
+        getSingleSearchParamValue(resolvedSearchParams.tab) === "comments"
+            ? "comments"
+            : "content";
+    const commentPage =
+        parsePositiveInteger(
+            getSingleSearchParamValue(resolvedSearchParams.page) ?? null,
+        ) ?? 1;
+    const post = await getPostDetail({
+        commentPage,
+        postId: id,
+        sessionUserId: session.user.id,
     });
 
     if (!post) notFound();
 
-    return <PostDetail post={post} sessionUserId={sessionUserId} />;
+    return (
+        <PostDetail
+            activeTab={activeTab}
+            post={post}
+            sessionUserId={session.user.id}
+        />
+    );
 }

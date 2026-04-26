@@ -3,6 +3,7 @@
 import type { FormEvent } from "react";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { PasswordInput } from "@/app/ui/password-input";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -83,12 +84,11 @@ function LoginPageInner() {
 
                     <label className="flex flex-col gap-1">
                         <span>パスワード</span>
-                        <input
+                        <PasswordInput
                             autoComplete="current-password"
                             className="rounded border px-3 py-2"
                             name="password"
                             required
-                            type="password"
                         />
                     </label>
                     {error && <p className="text-sm text-red-600">{error}</p>}

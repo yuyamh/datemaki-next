@@ -27,6 +27,7 @@ export const env = createEnv({
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NODE_ENV: process.env.NODE_ENV,
+        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         VERCEL_URL: process.env.VERCEL_URL,
     },
     // 3. server: サーバーだけで使う変数
@@ -49,6 +50,10 @@ export const env = createEnv({
         NODE_ENV: z
             .enum(["development", "test", "production"])
             .default("development"),
+        /**
+         * サーバー経由でSupabase Storageを操作するための秘密鍵
+         */
+        SUPABASE_SERVICE_ROLE_KEY: z.string(),
         /**
          * VERCEL_URL はVercelが自動でセットしてくれる「システム環境変数」なので、自分で「設定」する必要はなし
          */

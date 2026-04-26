@@ -1,6 +1,6 @@
 export const posts = [
     {
-        bookmarkCounte: 54,
+        bookmarkCount: 54,
         description: "これは最初の投稿です。",
         downloadCount: 123,
         id: "1",

@@ -1,8 +1,11 @@
 "use client";
 
-import type { Textbook } from "@/app/lib/interface/textbook";
+import type { PostFormProps } from "@/app/lib/interfaces/post-form";
+import type { Textbook } from "@/app/lib/interfaces/textbook";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { POST_LEVEL_OPTIONS } from "@/app/lib/post-level";
+import { MarkdownContent } from "@/app/ui/markdown-content";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -30,19 +33,6 @@ type FieldErrors = Partial<
     Record<"description" | "level" | "textbookId" | "title", string[]>
 >;
 
-interface PostFormProps {
-    initialValues?: PostFormValues;
-    mode?: "create" | "edit";
-    postId?: string;
-}
-
-interface PostFormValues {
-    description: null | string;
-    level: null | string;
-    textbookId: null | string;
-    title: string;
-}
-
 export function PostForm({
     mode = "create",
     postId,
@@ -56,6 +46,9 @@ export function PostForm({
     const [description, setDescription] = useState(
         initialValues?.description ?? "",
     );
+    const [descriptionViewMode, setDescriptionViewMode] = useState<
+        "edit" | "preview"
+    >("edit");
     const [level, setLevel] = useState(initialValues?.level ?? "");
     const [textbookId, setTextbookId] = useState(
         initialValues?.textbookId ?? "",
@@ -168,24 +161,71 @@ export function PostForm({
                         </div>
 
                         <div className="flex flex-col space-y-2">
-                            <Label className="mb-2 block" htmlFor="description">
-                                概要
-                            </Label>
-                            <Textarea
-                                className="min-h-[400px] w-full rounded-lg border px-3 py-2"
-                                id="description"
-                                onChange={(e) => {
-                                    setDescription(e.target.value);
-                                    setFieldErrors((prev) => ({
-                                        ...prev,
-                                        description: undefined,
-                                    }));
-                                }}
-                                placeholder="教案の説明を記入しましょう"
-                                required
-                                rows={20}
-                                value={description}
-                            />
+                            <div className="mb-0 flex items-center justify-between gap-4">
+                                <Label
+                                    className="mb-2 block"
+                                    htmlFor="description"
+                                >
+                                    概要
+                                </Label>
+                                <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+                                    <Button
+                                        className="h-8 px-3"
+                                        onClick={() =>
+                                            setDescriptionViewMode("edit")
+                                        }
+                                        type="button"
+                                        variant={
+                                            descriptionViewMode === "edit"
+                                                ? "default"
+                                                : "ghost"
+                                        }
+                                    >
+                                        編集
+                                    </Button>
+                                    <Button
+                                        className="h-8 px-3"
+                                        onClick={() =>
+                                            setDescriptionViewMode("preview")
+                                        }
+                                        type="button"
+                                        variant={
+                                            descriptionViewMode === "preview"
+                                                ? "default"
+                                                : "ghost"
+                                        }
+                                    >
+                                        プレビュー
+                                    </Button>
+                                </div>
+                            </div>
+                            <p className="text-sm text-slate-500">
+                                マークダウン記法でも入力できます。
+                            </p>
+                            {descriptionViewMode === "edit" ? (
+                                <Textarea
+                                    className="min-h-[400px] w-full rounded-lg border px-3 py-2"
+                                    id="description"
+                                    onChange={(e) => {
+                                        setDescription(e.target.value);
+                                        setFieldErrors((prev) => ({
+                                            ...prev,
+                                            description: undefined,
+                                        }));
+                                    }}
+                                    placeholder="教案の説明を記入しましょう"
+                                    required
+                                    rows={20}
+                                    value={description}
+                                />
+                            ) : (
+                                <div className="min-h-[400px] rounded-lg border bg-white px-4 py-4">
+                                    <MarkdownContent
+                                        content={description}
+                                        emptyMessage="プレビューする内容がまだありません。"
+                                    />
+                                </div>
+                            )}
                             {fieldErrors.description?.[0] && (
                                 <p className="mt-1 text-sm text-red-500">
                                     {fieldErrors.description[0]}
@@ -213,12 +253,14 @@ export function PostForm({
                                 <SelectContent>
                                     <SelectGroup>
                                         <SelectLabel>レベル</SelectLabel>
-                                        <SelectItem value="A1">A1</SelectItem>
-                                        <SelectItem value="A2">A2</SelectItem>
-                                        <SelectItem value="B1">B1</SelectItem>
-                                        <SelectItem value="B2">B2</SelectItem>
-                                        <SelectItem value="C1">C1</SelectItem>
-                                        <SelectItem value="C2">C2</SelectItem>
+                                        {POST_LEVEL_OPTIONS.map((level) => (
+                                            <SelectItem
+                                                key={level}
+                                                value={level}
+                                            >
+                                                {level}
+                                            </SelectItem>
+                                        ))}
                                     </SelectGroup>
                                 </SelectContent>
                             </Select>

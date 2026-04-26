@@ -1,15 +1,13 @@
+import type { EditPostPageProps } from "@/app/lib/interfaces/post-page";
 import { notFound, redirect } from "next/navigation";
 import { PostForm } from "@/app/ui/post-form";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 import { prisma } from "@/server/db/prisma/prisma";
 
-interface PageProps {
-    params: Promise<{ id: string }>;
-}
-
-export default async function EditPostPage({ params }: PageProps) {
+export default async function EditPostPage({ params }: EditPostPageProps) {
     const { id } = await params;
-    if (!id) notFound();
+    if (!isUuid(id)) notFound();
 
     const session = await auth();
 

@@ -59,16 +59,9 @@ export default function Page() {
                             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
                                 <Link
                                     className="inline-flex h-11 w-full items-center justify-center rounded-md bg-orange-500 px-6 text-sm font-medium text-white shadow-sm transition hover:bg-orange-600 sm:w-auto"
-                                    href="/login"
-                                >
-                                    始めてみる
-                                </Link>
-
-                                <Link
-                                    className="inline-flex h-11 w-full items-center justify-center rounded-md border border-slate-300 bg-white px-6 text-sm font-medium text-slate-900 shadow-sm transition hover:bg-slate-50 sm:w-auto"
                                     href="/posts"
                                 >
-                                    教案を探す
+                                    始めてみる
                                 </Link>
                             </div>
                         </div>

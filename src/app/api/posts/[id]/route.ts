@@ -1,7 +1,13 @@
-import type { Post as PrismaPost } from "@prisma/client";
+import type { PostDetailData } from "@/app/lib/interfaces/post";
 import { NextResponse } from "next/server";
+import {
+    buildPagination,
+    DEFAULT_POSTS_PAGE_SIZE,
+    getSkipCount,
+} from "@/app/lib/post-list-query";
 import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 import { prisma } from "@/server/db/prisma/prisma";
 
 // 教案削除処理
@@ -11,7 +17,7 @@ export async function DELETE(
 ) {
     try {
         const { id: postId } = await params;
-        if (!postId) {
+        if (!isUuid(postId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 
@@ -58,10 +64,38 @@ export async function DELETE(
 }
 
 // 教案詳細取得
-export async function GET({ params }: { params: { id: string } }) {
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> },
+) {
     try {
-        const post: null | PrismaPost = await prisma.post.findUnique({
-            where: { id: params.id },
+        const session = await auth();
+
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { error: "Unauthorized" },
+                { status: 401 },
+            );
+        }
+
+        const { id: postId } = await params;
+        if (!isUuid(postId)) {
+            return NextResponse.json({ error: "Bad Request" }, { status: 400 });
+        }
+        const { searchParams } = new URL(request.url);
+        const requestedCommentPage = Number.parseInt(
+            searchParams.get("page") ?? "1",
+            10,
+        );
+        const commentPage =
+            Number.isNaN(requestedCommentPage) || requestedCommentPage < 1
+                ? 1
+                : requestedCommentPage;
+
+        const post = await getPostDetail({
+            commentPage,
+            postId,
+            sessionUserId: session.user.id,
         });
 
         if (!post) {
@@ -81,6 +115,96 @@ export async function GET({ params }: { params: { id: string } }) {
     }
 }
 
+export async function getPostDetail({
+    commentPage = 1,
+    postId,
+    sessionUserId,
+}: {
+    commentPage?: number;
+    postId: string;
+    sessionUserId: string;
+}): Promise<null | PostDetailData> {
+    const commentPageSize = DEFAULT_POSTS_PAGE_SIZE;
+    const post = await prisma.post.findUnique({
+        select: {
+            _count: {
+                select: {
+                    bookmarks: true,
+                    comments: true,
+                },
+            },
+            bookmarks: {
+                select: {
+                    id: true,
+                },
+                where: {
+                    userId: sessionUserId,
+                },
+            },
+            createdAt: true,
+            comments: {
+                orderBy: {
+                    createdAt: "asc",
+                },
+                skip: getSkipCount(commentPage, commentPageSize),
+                select: {
+                    content: true,
+                    createdAt: true,
+                    id: true,
+                    updatedAt: true,
+                    user: {
+                        select: {
+                            avatar: true,
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
+                take: commentPageSize,
+            },
+            description: true,
+            downloadCount: true,
+            id: true,
+            level: true,
+            textbook: {
+                select: {
+                    name: true,
+                },
+            },
+            title: true,
+            updatedAt: true,
+            user: {
+                select: {
+                    avatar: true,
+                    bio: true,
+                    id: true,
+                    name: true,
+                    role: true,
+                },
+            },
+            viewCount: true,
+        },
+        where: { id: postId },
+    });
+
+    if (!post) {
+        return null;
+    }
+
+    const { _count, bookmarks, ...postData } = post;
+
+    return {
+        ...postData,
+        bookmarkCount: _count.bookmarks,
+        commentsPagination: buildPagination({
+            page: commentPage,
+            pageSize: commentPageSize,
+            totalCount: _count.comments,
+        }),
+        isBookmarked: bookmarks.length > 0,
+    };
+}
+
 // 教案更新処理
 export async function PATCH(
     request: Request,
@@ -88,7 +212,7 @@ export async function PATCH(
 ) {
     try {
         const { id: postId } = await params;
-        if (!postId) {
+        if (!isUuid(postId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 

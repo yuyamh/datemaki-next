@@ -4,6 +4,7 @@
 import type { FormEvent } from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { PasswordInput } from "@/app/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { signIn } from "next-auth/react";
 
@@ -103,13 +104,12 @@ export default function SignupPage() {
 
                 <label className="flex flex-col gap-1">
                     <span>パスワード</span>
-                    <input
+                    <PasswordInput
                         autoComplete="new-password"
                         className="rounded border px-3 py-2"
                         minLength={8}
                         name="password"
                         required
-                        type="password"
                     />
                 </label>
 
