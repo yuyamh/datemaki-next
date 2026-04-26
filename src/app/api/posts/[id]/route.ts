@@ -122,6 +122,24 @@ export async function getPostDetail({
                 },
             },
             createdAt: true,
+            comments: {
+                orderBy: {
+                    createdAt: "asc",
+                },
+                select: {
+                    content: true,
+                    createdAt: true,
+                    id: true,
+                    updatedAt: true,
+                    user: {
+                        select: {
+                            avatar: true,
+                            id: true,
+                            name: true,
+                        },
+                    },
+                },
+            },
             description: true,
             downloadCount: true,
             id: true,

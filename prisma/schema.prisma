@@ -39,6 +39,7 @@ model Post {
   downloadCount Int        @default(0)
   viewCount     Int        @default(0)
   bookmarks     Bookmark[]
+  comments      Comment[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 }
@@ -52,6 +53,17 @@ model Bookmark {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
+}
+
+model Comment {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  content   String
+  userId    String   @db.Uuid
+  postId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Textbook {
@@ -69,6 +81,7 @@ model User {
   role           Role       @default(user)
   avatar         String?
   bookmarks      Bookmark[]
+  comments       Comment[]
   Posts          Post[]
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt

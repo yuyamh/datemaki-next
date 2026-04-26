@@ -1,10 +1,14 @@
 import type { ShowPostPageProps } from "@/app/lib/interfaces/post-page";
 import { notFound, redirect } from "next/navigation";
 import { getPostDetail } from "@/app/api/posts/[id]/route";
+import { getSingleSearchParamValue } from "@/app/lib/search-params";
 import { PostDetail } from "@/app/ui/post-detail";
 import { auth } from "@/auth";
 
-export default async function ShowPost({ params }: ShowPostPageProps) {
+export default async function ShowPost({
+    params,
+    searchParams,
+}: ShowPostPageProps) {
     // セッション取得
     const session = await auth();
     if (!session?.user?.id) {
@@ -12,6 +16,12 @@ export default async function ShowPost({ params }: ShowPostPageProps) {
     }
 
     const { id } = await params;
+    const resolvedSearchParams = await searchParams;
+    // 有効化されているタブを判定（教案 or コメント）
+    const activeTab =
+        getSingleSearchParamValue(resolvedSearchParams.tab) === "comments"
+            ? "comments"
+            : "content";
     const post = await getPostDetail({
         postId: id,
         sessionUserId: session.user.id,
@@ -19,5 +29,11 @@ export default async function ShowPost({ params }: ShowPostPageProps) {
 
     if (!post) notFound();
 
-    return <PostDetail post={post} sessionUserId={session.user.id} />;
+    return (
+        <PostDetail
+            activeTab={activeTab}
+            post={post}
+            sessionUserId={session.user.id}
+        />
+    );
 }

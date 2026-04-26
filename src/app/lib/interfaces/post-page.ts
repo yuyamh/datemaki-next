@@ -14,4 +14,7 @@ export interface PostIndexProps {
 
 export interface ShowPostPageProps {
     params: Promise<{ id: string }>;
+    searchParams: Promise<{
+        tab?: string | string[];
+    }>;
 }

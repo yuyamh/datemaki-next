@@ -1,5 +1,7 @@
 import type { Role } from "@prisma/client";
 
+import type { CommentListItem } from "./comment";
+
 // 教案（posts）の型指定
 export interface Post {
     createdAt: Date;
@@ -27,6 +29,7 @@ export interface PostAuthorSummary {
 
 export interface PostDetailData {
     bookmarkCount: number;
+    comments: CommentListItem[];
     createdAt: Date | string;
     description: null | string;
     downloadCount: number;
