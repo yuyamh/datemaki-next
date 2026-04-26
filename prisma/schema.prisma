@@ -25,23 +25,29 @@ generator zod {
 
 // 教案
 model Post {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  title         String
-  description   String?
-  level         CEFR?
-  textbookId    String?    @db.Uuid
-  textbook      Textbook?  @relation(fields: [textbookId], references: [id])
-  userId        String     @db.Uuid
-  user          User       @relation(fields: [userId], references: [id])
-  fileName1     String?
-  fileName2     String?
-  fileName3     String?
-  downloadCount Int        @default(0)
-  viewCount     Int        @default(0)
-  bookmarks     Bookmark[]
-  comments      Comment[]
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id                String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title             String
+  description       String?
+  level             CEFR?
+  textbookId        String?    @db.Uuid
+  textbook          Textbook?  @relation(fields: [textbookId], references: [id])
+  userId            String     @db.Uuid
+  user              User       @relation(fields: [userId], references: [id])
+  fileName1         String?
+  fileName2         String?
+  fileName3         String?
+  fileOriginalName1 String?
+  fileOriginalName2 String?
+  fileOriginalName3 String?
+  fileSize1         Int?
+  fileSize2         Int?
+  fileSize3         Int?
+  downloadCount     Int        @default(0)
+  viewCount         Int        @default(0)
+  bookmarks         Bookmark[]
+  comments          Comment[]
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
 }
 
 model Bookmark {

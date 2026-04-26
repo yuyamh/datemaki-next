@@ -43,6 +43,12 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
                     fileName1: post.fileName1,
                     fileName2: post.fileName2,
                     fileName3: post.fileName3,
+                    fileOriginalName1: post.fileOriginalName1,
+                    fileOriginalName2: post.fileOriginalName2,
+                    fileOriginalName3: post.fileOriginalName3,
+                    fileSize1: post.fileSize1,
+                    fileSize2: post.fileSize2,
+                    fileSize3: post.fileSize3,
                     level: post.level,
                     textbookId: post.textbookId,
                 }}

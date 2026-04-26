@@ -169,6 +169,12 @@ export async function uploadPostFiles({
             fileName1,
             fileName2,
             fileName3,
+            fileOriginalName1: files.file1?.name ?? null,
+            fileOriginalName2: files.file2?.name ?? null,
+            fileOriginalName3: files.file3?.name ?? null,
+            fileSize1: files.file1?.size ?? null,
+            fileSize2: files.file2?.size ?? null,
+            fileSize3: files.file3?.size ?? null,
             uploadedPaths,
         };
     } catch (error) {

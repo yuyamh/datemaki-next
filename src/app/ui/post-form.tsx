@@ -63,13 +63,25 @@ export function PostForm({
         initialValues?.textbookId ?? "",
     );
     const [file1State, setFile1State] = useState<FileSlotState>(
-        createInitialFileSlotState(initialValues?.fileName1 ?? null),
+        createInitialFileSlotState({
+            existingOriginalName: initialValues?.fileOriginalName1 ?? null,
+            existingPath: initialValues?.fileName1 ?? null,
+            existingSize: initialValues?.fileSize1 ?? null,
+        }),
     );
     const [file2State, setFile2State] = useState<FileSlotState>(
-        createInitialFileSlotState(initialValues?.fileName2 ?? null),
+        createInitialFileSlotState({
+            existingOriginalName: initialValues?.fileOriginalName2 ?? null,
+            existingPath: initialValues?.fileName2 ?? null,
+            existingSize: initialValues?.fileSize2 ?? null,
+        }),
     );
     const [file3State, setFile3State] = useState<FileSlotState>(
-        createInitialFileSlotState(initialValues?.fileName3 ?? null),
+        createInitialFileSlotState({
+            existingOriginalName: initialValues?.fileOriginalName3 ?? null,
+            existingPath: initialValues?.fileName3 ?? null,
+            existingSize: initialValues?.fileSize3 ?? null,
+        }),
     );
 
     const [textbookList, setTextbookList] = useState<Textbook[]>([]);
@@ -448,7 +460,9 @@ export function PostForm({
                 <CardContent className="space-y-5">
                     <PostFileUploadSlot
                         error={fieldErrors.file1?.[0]}
+                        existingOriginalName={file1State.existingOriginalName}
                         existingPath={file1State.existingPath}
+                        existingSize={file1State.existingSize}
                         file={file1State.selectedFile}
                         inputId="file1"
                         isMarkedForRemoval={file1State.removeExisting}
@@ -462,7 +476,9 @@ export function PostForm({
                     />
                     <PostFileUploadSlot
                         error={fieldErrors.file2?.[0]}
+                        existingOriginalName={file2State.existingOriginalName}
                         existingPath={file2State.existingPath}
+                        existingSize={file2State.existingSize}
                         file={file2State.selectedFile}
                         inputId="file2"
                         isMarkedForRemoval={file2State.removeExisting}
@@ -475,7 +491,9 @@ export function PostForm({
                     />
                     <PostFileUploadSlot
                         error={fieldErrors.file3?.[0]}
+                        existingOriginalName={file3State.existingOriginalName}
                         existingPath={file3State.existingPath}
+                        existingSize={file3State.existingSize}
                         file={file3State.selectedFile}
                         inputId="file3"
                         isMarkedForRemoval={file3State.removeExisting}
@@ -505,12 +523,20 @@ export function PostForm({
     );
 }
 
-// 既存のファイルパスを受け取り、FileSlotStateの初期状態を作成する
-function createInitialFileSlotState(
-    existingPath: null | string,
-): FileSlotState {
+// 既存の添付情報を受け取り、FileSlotStateの初期状態を作成する
+function createInitialFileSlotState({
+    existingOriginalName,
+    existingPath,
+    existingSize,
+}: {
+    existingOriginalName: null | string;
+    existingPath: null | string;
+    existingSize: null | number;
+}): FileSlotState {
     return {
+        existingOriginalName,
         existingPath,
+        existingSize,
         removeExisting: false, // すでに登録済みのファイルを削除するかどうかのフラグ
         selectedFile: null,
     };
@@ -530,7 +556,9 @@ function getDisplayFileName(filePath: string) {
 // ファイルアップロードのコンポーネント
 function PostFileUploadSlot({
     error,
+    existingOriginalName,
     existingPath,
+    existingSize,
     file,
     inputId,
     isMarkedForRemoval,
@@ -546,11 +574,18 @@ function PostFileUploadSlot({
     // 表示するファイル名
     const currentFileName =
         file?.name ??
-        (hasExistingFile && existingPath
-            ? getDisplayFileName(existingPath)
+        (hasExistingFile
+            ? (existingOriginalName ??
+              (existingPath ? getDisplayFileName(existingPath) : null))
             : null);
     // 表示するファイルサイズ
-    const currentFileSize = file ? formatFileSize(file.size) : null;
+    let currentFileSize: null | string = null;
+
+    if (file) {
+        currentFileSize = formatFileSize(file.size);
+    } else if (existingSize !== null) {
+        currentFileSize = formatFileSize(existingSize);
+    }
 
     return (
         <div className="space-y-3">
@@ -570,7 +605,7 @@ function PostFileUploadSlot({
                             >
                                 削除を取り消す
                             </Button>
-                        ) : (
+                        ) : hasExistingFile || file ? (
                             <Button
                                 onClick={(event) => {
                                     event.preventDefault();
@@ -583,7 +618,7 @@ function PostFileUploadSlot({
                                 <Trash2 className="mr-1 h-4 w-4" />
                                 削除する
                             </Button>
-                        )}
+                        ) : null}
                     </div>
                 )}
             </div>

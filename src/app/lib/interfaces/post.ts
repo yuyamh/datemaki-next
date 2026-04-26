@@ -11,6 +11,12 @@ export interface Post {
     fileName1: null | string;
     fileName2: null | string;
     fileName3: null | string;
+    fileOriginalName1: null | string;
+    fileOriginalName2: null | string;
+    fileOriginalName3: null | string;
+    fileSize1: null | number;
+    fileSize2: null | number;
+    fileSize3: null | number;
     id: string;
     level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null;
     textbookId: null | string;
@@ -18,6 +24,13 @@ export interface Post {
     updatedAt: Date;
     userId: string;
     viewCount: number;
+}
+
+export interface PostAttachmentItem {
+    originalName: string;
+    path: string;
+    size: null | number;
+    slot: 1 | 2 | 3;
 }
 
 export interface PostAuthorSummary {
@@ -29,6 +42,7 @@ export interface PostAuthorSummary {
 }
 
 export interface PostDetailData {
+    attachments: PostAttachmentItem[];
     bookmarkCount: number;
     comments: CommentListItem[];
     commentsPagination: Pagination;

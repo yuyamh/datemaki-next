@@ -47,6 +47,12 @@ export async function DELETE(
                 fileName1: true,
                 fileName2: true,
                 fileName3: true,
+                fileOriginalName1: true,
+                fileOriginalName2: true,
+                fileOriginalName3: true,
+                fileSize1: true,
+                fileSize2: true,
+                fileSize3: true,
                 id: true,
                 userId: true,
             },
@@ -142,6 +148,12 @@ export async function getEditablePostById(postId: string) {
             fileName1: true,
             fileName2: true,
             fileName3: true,
+            fileOriginalName1: true,
+            fileOriginalName2: true,
+            fileOriginalName3: true,
+            fileSize1: true,
+            fileSize2: true,
+            fileSize3: true,
             id: true,
             level: true,
             textbookId: true,
@@ -152,6 +164,7 @@ export async function getEditablePostById(postId: string) {
     });
 }
 
+// 教案の詳細を取得する
 export async function getPostDetail({
     commentPage = 1,
     postId,
@@ -201,6 +214,15 @@ export async function getPostDetail({
             },
             description: true,
             downloadCount: true,
+            fileName1: true,
+            fileName2: true,
+            fileName3: true,
+            fileOriginalName1: true,
+            fileOriginalName2: true,
+            fileOriginalName3: true,
+            fileSize1: true,
+            fileSize2: true,
+            fileSize3: true,
             id: true,
             level: true,
             textbook: {
@@ -232,6 +254,7 @@ export async function getPostDetail({
 
     return {
         ...postData,
+        attachments: buildPostAttachments(post),
         bookmarkCount: _count.bookmarks,
         commentsPagination: buildPagination({
             page: commentPage,
@@ -275,6 +298,12 @@ export async function PATCH(
                 fileName1: true,
                 fileName2: true,
                 fileName3: true,
+                fileOriginalName1: true,
+                fileOriginalName2: true,
+                fileOriginalName3: true,
+                fileSize1: true,
+                fileSize2: true,
+                fileSize3: true,
                 id: true,
                 userId: true,
             },
@@ -347,6 +376,24 @@ export async function PATCH(
         const nextFileName3 =
             uploadedFilePaths.fileName3 ??
             (removeFile3 ? null : existing.fileName3);
+        const nextFileOriginalName1 =
+            uploadedFilePaths.fileOriginalName1 ??
+            (removeFile1 ? null : existing.fileOriginalName1);
+        const nextFileOriginalName2 =
+            uploadedFilePaths.fileOriginalName2 ??
+            (removeFile2 ? null : existing.fileOriginalName2);
+        const nextFileOriginalName3 =
+            uploadedFilePaths.fileOriginalName3 ??
+            (removeFile3 ? null : existing.fileOriginalName3);
+        const nextFileSize1 =
+            uploadedFilePaths.fileSize1 ??
+            (removeFile1 ? null : existing.fileSize1);
+        const nextFileSize2 =
+            uploadedFilePaths.fileSize2 ??
+            (removeFile2 ? null : existing.fileSize2);
+        const nextFileSize3 =
+            uploadedFilePaths.fileSize3 ??
+            (removeFile3 ? null : existing.fileSize3);
 
         // あとで本当に削除する古いファイル名リストを作る
         const oldPathsToRemove: string[] = [
@@ -386,6 +433,12 @@ export async function PATCH(
                 fileName1: nextFileName1,
                 fileName2: nextFileName2,
                 fileName3: nextFileName3,
+                fileOriginalName1: nextFileOriginalName1,
+                fileOriginalName2: nextFileOriginalName2,
+                fileOriginalName3: nextFileOriginalName3,
+                fileSize1: nextFileSize1,
+                fileSize2: nextFileSize2,
+                fileSize3: nextFileSize3,
                 level: level ?? null,
                 textbookId: textbookId ?? null,
             },
@@ -401,4 +454,65 @@ export async function PATCH(
         console.error("教案更新失敗:", error);
         return NextResponse.json({ error: "内部エラー" }, { status: 500 });
     }
+}
+
+// 教案の添付ファイルを扱いやすい形に構築する
+function buildPostAttachmentItem({
+    originalName,
+    path,
+    size,
+    slot,
+}: {
+    originalName: null | string;
+    path: null | string;
+    size: null | number;
+    slot: 1 | 2 | 3;
+}) {
+    if (!path) {
+        return null;
+    }
+
+    return {
+        originalName: originalName ?? path.split("/").pop() ?? "添付ファイル",
+        path,
+        size,
+        slot,
+    };
+}
+
+// 教案に添付されているファイルを、配列に構築して返却する
+function buildPostAttachments(post: {
+    fileName1: null | string;
+    fileName2: null | string;
+    fileName3: null | string;
+    fileOriginalName1: null | string;
+    fileOriginalName2: null | string;
+    fileOriginalName3: null | string;
+    fileSize1: null | number;
+    fileSize2: null | number;
+    fileSize3: null | number;
+}) {
+    return [
+        buildPostAttachmentItem({
+            originalName: post.fileOriginalName1,
+            path: post.fileName1,
+            size: post.fileSize1,
+            slot: 1,
+        }),
+        buildPostAttachmentItem({
+            originalName: post.fileOriginalName2,
+            path: post.fileName2,
+            size: post.fileSize2,
+            slot: 2,
+        }),
+        buildPostAttachmentItem({
+            originalName: post.fileOriginalName3,
+            path: post.fileName3,
+            size: post.fileSize3,
+            slot: 3,
+        }),
+    ].filter(
+        (attachment): attachment is NonNullable<typeof attachment> =>
+            attachment !== null,
+    );
 }
