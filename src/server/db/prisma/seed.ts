@@ -69,7 +69,6 @@ const postSeedTemplates = [
         textbookName: "みんなの日本語 初級Ⅰ",
         title: "自己紹介と「〜は〜です」の導入",
         userEmail: "seed.yamada@datemaki.local",
-        viewCount: 126,
     },
     {
         description:
@@ -79,7 +78,6 @@ const postSeedTemplates = [
         textbookName: "いろどり 入門（A1）",
         title: "買い物ロールプレイで学ぶ数え方",
         userEmail: "seed.yamada@datemaki.local",
-        viewCount: 143,
     },
     {
         description:
@@ -89,7 +87,6 @@ const postSeedTemplates = [
         textbookName: "初級日本語 げんき 1",
         title: "教室ルールで学ぶ許可と禁止",
         userEmail: "seed.yamada@datemaki.local",
-        viewCount: 208,
     },
     {
         description:
@@ -99,7 +96,6 @@ const postSeedTemplates = [
         textbookName: "まるごと 初級1（A2）",
         title: "趣味トークで練習する普通形",
         userEmail: "seed.yamada@datemaki.local",
-        viewCount: 97,
     },
     {
         description:
@@ -109,7 +105,6 @@ const postSeedTemplates = [
         textbookName: "みんなの日本語 初級Ⅱ",
         title: "旅行計画で学ぶ予定表現",
         userEmail: "seed.yamada@datemaki.local",
-        viewCount: 188,
     },
     {
         description:
@@ -119,7 +114,6 @@ const postSeedTemplates = [
         textbookName: "まるごと 中級1（B1）",
         title: "時事記事で行う要約読解",
         userEmail: "seed.suzuki@datemaki.local",
-        viewCount: 256,
     },
     {
         description:
@@ -129,7 +123,6 @@ const postSeedTemplates = [
         textbookName: "できる日本語 初中級",
         title: "商品レビュー作文で学ぶ比較表現",
         userEmail: "seed.suzuki@datemaki.local",
-        viewCount: 134,
     },
     {
         description:
@@ -139,7 +132,6 @@ const postSeedTemplates = [
         textbookName: "Japanese for busy people Ⅲ",
         title: "就活メールで学ぶビジネス敬語",
         userEmail: "seed.suzuki@datemaki.local",
-        viewCount: 274,
     },
     {
         description:
@@ -149,7 +141,6 @@ const postSeedTemplates = [
         textbookName: "できる日本語 中級",
         title: "N2長文読解の設問分析トレーニング",
         userEmail: "seed.suzuki@datemaki.local",
-        viewCount: 341,
     },
     {
         description:
@@ -159,7 +150,6 @@ const postSeedTemplates = [
         textbookName: "つなぐにほんご 初級2",
         title: "ミニ発表で練習する接続表現",
         userEmail: "seed.suzuki@datemaki.local",
-        viewCount: 112,
     },
     {
         description:
@@ -169,7 +159,6 @@ const postSeedTemplates = [
         textbookName: "その他",
         title: "会議での意見表明トレーニング",
         userEmail: "seed.admin@datemaki.local",
-        viewCount: 221,
     },
     {
         description:
@@ -179,7 +168,6 @@ const postSeedTemplates = [
         textbookName: "みんなの日本語 中級Ⅱ",
         title: "ディベートで学ぶ反論と譲歩",
         userEmail: "seed.admin@datemaki.local",
-        viewCount: 198,
     },
 ] as const;
 
@@ -204,7 +192,6 @@ function buildPostSeeds() {
                 textbookName: postTemplate.textbookName,
                 title: `${postTemplate.title} サンプル${paddedPostNumber}`,
                 userEmail: postTemplate.userEmail,
-                viewCount: postTemplate.viewCount + batchIndex * 15,
             });
         }
     }
@@ -284,7 +271,6 @@ async function seedPosts(
             textbookId,
             title: post.title,
             userId,
-            viewCount: post.viewCount,
         };
     });
 

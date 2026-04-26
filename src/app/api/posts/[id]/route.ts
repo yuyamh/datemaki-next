@@ -241,7 +241,6 @@ export async function getPostDetail({
                     role: true,
                 },
             },
-            viewCount: true,
         },
         where: { id: postId },
     });

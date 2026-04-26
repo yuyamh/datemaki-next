@@ -91,16 +91,13 @@ export async function GET(
             );
         }
 
-        await prisma.post.update({
-            data: {
-                downloadCount: {
-                    increment: 1,
-                },
-            },
-            where: {
-                id: postId,
-            },
-        });
+        // 更新日時（updatedAt）に影響ないように、downloadCountのみをインクリメントする
+        // prismaの$executeRawを使って、downloadCountのみをインクリメントするクエリを実行する
+        await prisma.$executeRaw`
+            UPDATE "Post"
+            SET "downloadCount" = "downloadCount" + 1
+            WHERE "id" = ${postId}::uuid
+        `;
 
         // 生成したURLにリダイレクトして、ファイルをダウンロードさせる
         return NextResponse.redirect(data.signedUrl);

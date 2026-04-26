@@ -543,9 +543,19 @@ function createInitialFileSlotState({
 }
 
 // ファイルサイズをフォーマットする
-// 例: 10485760 -> "10.0MB"
+// 例: 10485760 -> "10.0 MB", 1536 -> "1.5 KB"
 function formatFileSize(size: number) {
-    return `${(size / 1024 / 1024).toFixed(1)}MB`;
+    if (size >= 1024 * 1024) {
+        return `${(size / 1024 / 1024).toFixed(1)} MB`;
+    }
+
+    // 1KB以上10MB未満の場合はKBで表示
+    if (size >= 1024) {
+        return `${(size / 1024).toFixed(1)} KB`;
+    }
+
+    // 1KB未満の場合はBで表示
+    return `${size} B`;
 }
 
 // ファイルパスから表示用のファイル名を取得する（popで列の最後の要素を取り出す）
@@ -642,13 +652,24 @@ function PostFileUploadSlot({
                             : "border-slate-200 hover:border-orange-200 hover:bg-white",
                         error && "border-red-300 bg-red-50",
                     )}
-                    onDragLeave={() => setIsDragging(false)}
+                    onDragEnter={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setIsDragging(true);
+                    }}
+                    onDragLeave={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setIsDragging(false);
+                    }}
                     onDragOver={(event) => {
                         event.preventDefault();
+                        event.stopPropagation();
                         setIsDragging(true);
                     }}
                     onDrop={(event) => {
                         event.preventDefault();
+                        event.stopPropagation();
                         setIsDragging(false);
                         onFileChange(event.dataTransfer.files?.[0] ?? null);
                     }}

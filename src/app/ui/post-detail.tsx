@@ -255,15 +255,7 @@ export function PostDetail({
             open={commentToDelete !== null}
         >
             <div className="space-y-6">
-                <div className="flex items-start justify-between gap-4">
-                    <h1 className="text-3xl font-bold">{post.title ?? "-"}</h1>
-                    <BookmarkToggleButton
-                        className="shrink-0"
-                        initialIsBookmarked={post.isBookmarked}
-                        postId={post.id}
-                        size={22}
-                    />
-                </div>
+                <h1 className="text-3xl font-bold">{post.title ?? "-"}</h1>
 
                 <div className="flex items-start gap-4">
                     <AvatarImage
@@ -289,29 +281,40 @@ export function PostDetail({
 
                 <div className="grid gap-6 md:grid-cols-[1fr_360px]">
                     <div className="space-y-6">
-                        <div className="inline-flex rounded-[10px] bg-slate-100 p-2 shadow-xs">
-                            <Link
-                                className={buildTabClasses({
-                                    isActive: activeTab === "content",
-                                })}
-                                href={buildPostDetailTabUrl({
-                                    postId: post.id,
-                                    tab: "content",
-                                })}
-                            >
-                                教案内容
-                            </Link>
-                            <Link
-                                className={buildTabClasses({
-                                    isActive: activeTab === "comments",
-                                })}
-                                href={buildPostDetailTabUrl({
-                                    postId: post.id,
-                                    tab: "comments",
-                                })}
-                            >
-                                コメント（{post.commentsPagination.totalCount}）
-                            </Link>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="inline-flex rounded-[10px] bg-slate-100 p-2 shadow-xs">
+                                <Link
+                                    className={buildTabClasses({
+                                        isActive: activeTab === "content",
+                                    })}
+                                    href={buildPostDetailTabUrl({
+                                        postId: post.id,
+                                        tab: "content",
+                                    })}
+                                >
+                                    教案内容
+                                </Link>
+                                <Link
+                                    className={buildTabClasses({
+                                        isActive: activeTab === "comments",
+                                    })}
+                                    href={buildPostDetailTabUrl({
+                                        postId: post.id,
+                                        tab: "comments",
+                                    })}
+                                >
+                                    コメント（
+                                    {post.commentsPagination.totalCount}）
+                                </Link>
+                            </div>
+
+                            <BookmarkToggleButton
+                                className="shrink-0"
+                                initialIsBookmarked={post.isBookmarked}
+                                label="保存"
+                                postId={post.id}
+                                size={20}
+                            />
                         </div>
 
                         {activeTab === "content" ? (
@@ -812,11 +815,6 @@ export function PostDetail({
                                     <dt className="text-slate-500">更新日</dt>
                                     <dd className="font-medium text-slate-900">
                                         {formatYmd(post.updatedAt)}
-                                    </dd>
-
-                                    <dt className="text-slate-500">閲覧数</dt>
-                                    <dd className="font-medium text-slate-900">
-                                        {post.viewCount ?? "-"}
                                     </dd>
 
                                     <dt className="text-slate-500">

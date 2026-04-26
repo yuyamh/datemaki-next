@@ -23,7 +23,6 @@ export interface Post {
     title: string;
     updatedAt: Date;
     userId: string;
-    viewCount: number;
 }
 
 export interface PostAttachmentItem {
@@ -56,7 +55,6 @@ export interface PostDetailData {
     title: string;
     updatedAt: Date | string;
     user: PostAuthorSummary;
-    viewCount: number;
 }
 
 export interface PostListItem {
