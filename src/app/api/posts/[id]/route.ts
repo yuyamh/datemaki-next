@@ -1,5 +1,10 @@
 import type { PostDetailData } from "@/app/lib/interfaces/post";
 import { NextResponse } from "next/server";
+import {
+    buildPagination,
+    DEFAULT_POSTS_PAGE_SIZE,
+    getSkipCount,
+} from "@/app/lib/post-list-query";
 import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
 import { prisma } from "@/server/db/prisma/prisma";
@@ -59,7 +64,7 @@ export async function DELETE(
 
 // 教案詳細取得
 export async function GET(
-    _request: Request,
+    request: Request,
     { params }: { params: Promise<{ id: string }> },
 ) {
     try {
@@ -76,8 +81,18 @@ export async function GET(
         if (!postId) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
+        const { searchParams } = new URL(request.url);
+        const requestedCommentPage = Number.parseInt(
+            searchParams.get("page") ?? "1",
+            10,
+        );
+        const commentPage =
+            Number.isNaN(requestedCommentPage) || requestedCommentPage < 1
+                ? 1
+                : requestedCommentPage;
 
         const post = await getPostDetail({
+            commentPage,
             postId,
             sessionUserId: session.user.id,
         });
@@ -100,17 +115,21 @@ export async function GET(
 }
 
 export async function getPostDetail({
+    commentPage = 1,
     postId,
     sessionUserId,
 }: {
+    commentPage?: number;
     postId: string;
     sessionUserId: string;
 }): Promise<null | PostDetailData> {
+    const commentPageSize = DEFAULT_POSTS_PAGE_SIZE;
     const post = await prisma.post.findUnique({
         select: {
             _count: {
                 select: {
                     bookmarks: true,
+                    comments: true,
                 },
             },
             bookmarks: {
@@ -126,6 +145,7 @@ export async function getPostDetail({
                 orderBy: {
                     createdAt: "asc",
                 },
+                skip: getSkipCount(commentPage, commentPageSize),
                 select: {
                     content: true,
                     createdAt: true,
@@ -139,6 +159,7 @@ export async function getPostDetail({
                         },
                     },
                 },
+                take: commentPageSize,
             },
             description: true,
             downloadCount: true,
@@ -174,6 +195,11 @@ export async function getPostDetail({
     return {
         ...postData,
         bookmarkCount: _count.bookmarks,
+        commentsPagination: buildPagination({
+            page: commentPage,
+            pageSize: commentPageSize,
+            totalCount: _count.comments,
+        }),
         isBookmarked: bookmarks.length > 0,
     };
 }

@@ -1,6 +1,7 @@
 import type { Role } from "@prisma/client";
 
 import type { CommentListItem } from "./comment";
+import type { Pagination } from "./post-list";
 
 // 教案（posts）の型指定
 export interface Post {
@@ -30,6 +31,7 @@ export interface PostAuthorSummary {
 export interface PostDetailData {
     bookmarkCount: number;
     comments: CommentListItem[];
+    commentsPagination: Pagination;
     createdAt: Date | string;
     description: null | string;
     downloadCount: number;

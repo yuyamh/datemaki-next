@@ -1,7 +1,10 @@
 import type { ShowPostPageProps } from "@/app/lib/interfaces/post-page";
 import { notFound, redirect } from "next/navigation";
 import { getPostDetail } from "@/app/api/posts/[id]/route";
-import { getSingleSearchParamValue } from "@/app/lib/search-params";
+import {
+    getSingleSearchParamValue,
+    parsePositiveInteger,
+} from "@/app/lib/search-params";
 import { PostDetail } from "@/app/ui/post-detail";
 import { auth } from "@/auth";
 
@@ -22,7 +25,12 @@ export default async function ShowPost({
         getSingleSearchParamValue(resolvedSearchParams.tab) === "comments"
             ? "comments"
             : "content";
+    const commentPage =
+        parsePositiveInteger(
+            getSingleSearchParamValue(resolvedSearchParams.page) ?? null,
+        ) ?? 1;
     const post = await getPostDetail({
+        commentPage,
         postId: id,
         sessionUserId: session.user.id,
     });

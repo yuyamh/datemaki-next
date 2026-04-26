@@ -27,6 +27,13 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { CalendarDays, MoreHorizontal, UserRound } from "lucide-react";
@@ -294,14 +301,14 @@ export function PostDetail({
                                     tab: "comments",
                                 })}
                             >
-                                コメント
+                                コメント（{post.commentsPagination.totalCount}）
                             </Link>
                         </div>
 
                         {activeTab === "content" ? (
                             <>
                                 <Card>
-                                    <CardContent className="pt-6">
+                                    <CardContent>
                                         <MarkdownContent
                                             content={post.description}
                                         />
@@ -310,7 +317,7 @@ export function PostDetail({
 
                                 <div className="space-x-5 text-center">
                                     <Button
-                                        onClick={() => router.back()}
+                                        onClick={() => router.push("/posts")}
                                         variant="outline"
                                     >
                                         一覧に戻る
@@ -388,7 +395,7 @@ export function PostDetail({
 
                                         return (
                                             <Card key={comment.id}>
-                                                <CardContent className="pt-6">
+                                                <CardContent>
                                                     <div className="flex items-start gap-4">
                                                         <AvatarImage
                                                             alt={`${comment.user.name}のプロフィール画像`}
@@ -533,6 +540,131 @@ export function PostDetail({
                                     ) : null}
                                 </div>
 
+                                {post.commentsPagination.totalCount > 0 ? (
+                                    <div className="flex flex-col items-center gap-4">
+                                        <p className="text-sm text-gray-500">
+                                            {post.commentsPagination.totalCount}
+                                            件中{" "}
+                                            {(post.commentsPagination
+                                                .currentPage -
+                                                1) *
+                                                post.commentsPagination
+                                                    .pageSize +
+                                                1}
+                                            {" - "}
+                                            {Math.min(
+                                                post.commentsPagination
+                                                    .currentPage *
+                                                    post.commentsPagination
+                                                        .pageSize,
+                                                post.commentsPagination
+                                                    .totalCount,
+                                            )}
+                                            件を表示
+                                        </p>
+
+                                        <Pagination className="mx-0 w-auto">
+                                            <PaginationContent>
+                                                <PaginationItem>
+                                                    <PaginationPrevious
+                                                        aria-disabled={
+                                                            !post
+                                                                .commentsPagination
+                                                                .hasPreviousPage
+                                                        }
+                                                        className={
+                                                            post
+                                                                .commentsPagination
+                                                                .hasPreviousPage
+                                                                ? undefined
+                                                                : "pointer-events-none opacity-50"
+                                                        }
+                                                        href={buildPostDetailTabUrl(
+                                                            {
+                                                                page: post
+                                                                    .commentsPagination
+                                                                    .hasPreviousPage
+                                                                    ? post
+                                                                          .commentsPagination
+                                                                          .currentPage -
+                                                                      1
+                                                                    : post
+                                                                          .commentsPagination
+                                                                          .currentPage,
+                                                                postId: post.id,
+                                                                tab: "comments",
+                                                            },
+                                                        )}
+                                                        tabIndex={
+                                                            post
+                                                                .commentsPagination
+                                                                .hasPreviousPage
+                                                                ? undefined
+                                                                : -1
+                                                        }
+                                                    />
+                                                </PaginationItem>
+
+                                                <PaginationItem>
+                                                    <span className="px-3 text-sm text-slate-500">
+                                                        {
+                                                            post
+                                                                .commentsPagination
+                                                                .currentPage
+                                                        }{" "}
+                                                        /{" "}
+                                                        {
+                                                            post
+                                                                .commentsPagination
+                                                                .totalPages
+                                                        }
+                                                    </span>
+                                                </PaginationItem>
+
+                                                <PaginationItem>
+                                                    <PaginationNext
+                                                        aria-disabled={
+                                                            !post
+                                                                .commentsPagination
+                                                                .hasNextPage
+                                                        }
+                                                        className={
+                                                            post
+                                                                .commentsPagination
+                                                                .hasNextPage
+                                                                ? undefined
+                                                                : "pointer-events-none opacity-50"
+                                                        }
+                                                        href={buildPostDetailTabUrl(
+                                                            {
+                                                                page: post
+                                                                    .commentsPagination
+                                                                    .hasNextPage
+                                                                    ? post
+                                                                          .commentsPagination
+                                                                          .currentPage +
+                                                                      1
+                                                                    : post
+                                                                          .commentsPagination
+                                                                          .currentPage,
+                                                                postId: post.id,
+                                                                tab: "comments",
+                                                            },
+                                                        )}
+                                                        tabIndex={
+                                                            post
+                                                                .commentsPagination
+                                                                .hasNextPage
+                                                                ? undefined
+                                                                : -1
+                                                        }
+                                                    />
+                                                </PaginationItem>
+                                            </PaginationContent>
+                                        </Pagination>
+                                    </div>
+                                ) : null}
+
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className="text-2xl">
@@ -569,6 +701,15 @@ export function PostDetail({
                                         </form>
                                     </CardContent>
                                 </Card>
+
+                                <div className="text-center">
+                                    <Button
+                                        onClick={() => router.push("/posts")}
+                                        variant="outline"
+                                    >
+                                        一覧に戻る
+                                    </Button>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -698,9 +839,11 @@ export function PostDetail({
 
 // 教案詳細のタブ切り替え用URLを生成する
 function buildPostDetailTabUrl({
+    page,
     postId,
     tab,
 }: {
+    page?: number;
     postId: string;
     tab: PostDetailProps["activeTab"];
 }) {
@@ -712,13 +855,21 @@ function buildPostDetailTabUrl({
     }
 
     // タブが「コメント」の場合はクエリパラメータを付与する
-    return `${pathname}?tab=comments`;
+    const searchParams = new URLSearchParams({
+        tab: "comments",
+    });
+
+    if (page && page > 1) {
+        searchParams.set("page", String(page));
+    }
+
+    return `${pathname}?${searchParams.toString()}`;
 }
 
 function buildTabClasses({ isActive }: { isActive: boolean }) {
     return isActive
-        ? "rounded-[10px] bg-white px-5 py-3 text-lg font-semibold text-slate-700 shadow-sm transition-all duration-150"
-        : "rounded-[10px] px-5 py-3 text-lg font-semibold text-slate-400 transition-all duration-150 hover:text-slate-500";
+        ? "rounded-[10px] bg-white px-4 py-3 font-semibold text-slate-700 shadow-sm"
+        : "rounded-[10px] px-5 py-3 text-slate-400 hover:text-slate-500";
 }
 
 // コメント関連の処理に失敗した場合に表示するエラーメッセージを取得する

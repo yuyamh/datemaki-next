@@ -92,9 +92,9 @@ export function UserProfileDetail({
                         </Link>
                         <Link
                             className={cn(
-                                "rounded-[10px] px-5 py-3 text-lg font-semibold transition-all duration-150",
+                                "rounded-[10px] px-5 py-3 text-lg",
                                 activeTab === "details"
-                                    ? "bg-white text-slate-700 shadow-sm"
+                                    ? "bg-white font-semibold text-slate-700 shadow-sm"
                                     : "text-slate-400 hover:text-slate-500",
                             )}
                             href={buildUserProfileTabUrl({
