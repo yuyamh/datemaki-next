@@ -17,6 +17,13 @@ import {
     DEFAULT_POST_SORT,
     parsePostListRequestSearchParams,
 } from "@/app/lib/post-search";
+import {
+    getPostFileValidationErrors,
+    getPostTextFormValues,
+    getPostUploadFiles,
+    removeManagedPostFiles,
+    uploadPostFiles,
+} from "@/app/lib/post-upload";
 import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
 import { prisma } from "@/server/db/prisma/prisma";
@@ -106,6 +113,8 @@ export async function getPaginatedPosts({
 }
 
 export async function POST(request: Request) {
+    let uploadedPaths: string[] = [];
+
     try {
         const session = await auth();
 
@@ -117,38 +126,62 @@ export async function POST(request: Request) {
         }
 
         const userId = session.user.id;
+        const formData = await request.formData();
+        const textValues = getPostTextFormValues(formData);
+        const files = getPostUploadFiles(formData);
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const body = await request.json();
+        if (!textValues || !files) {
+            return NextResponse.json(
+                { error: "不正なリクエストです。" },
+                { status: 400 },
+            );
+        }
 
-        const result = PostCreateInputSchema.safeParse(body);
+        const result = PostCreateInputSchema.safeParse({
+            description: textValues.description,
+            level: textValues.level || null,
+            textbookId: textValues.textbookId || null,
+            title: textValues.title,
+        });
 
         if (!result.success) {
             const errors = result.error.flatten().fieldErrors;
             return NextResponse.json({ errors }, { status: 422 });
         }
 
-        const { description, level, textbookId, title } = result.data;
+        const fileErrors = getPostFileValidationErrors(files);
 
-        // TODO:ファイル添付を実装したらここを修正
-        const fileName1 = null;
-        const fileName2 = null;
-        const fileName3 = null;
+        if (Object.keys(fileErrors).length > 0) {
+            return NextResponse.json({ errors: fileErrors }, { status: 422 });
+        }
+
+        const { description, level, textbookId, title } = result.data;
+        const postId = crypto.randomUUID();
+
+        // ファイルをアップロードしてパスを取得する
+        const uploadedFilePaths = await uploadPostFiles({
+            files,
+            postId,
+        });
+        uploadedPaths = uploadedFilePaths.uploadedPaths;
 
         const post = await prisma.post.create({
             data: {
-                title: title,
-                description: description,
-                fileName1: fileName1,
-                fileName2: fileName2,
-                fileName3: fileName3,
+                description,
+                fileName1: uploadedFilePaths.fileName1,
+                fileName2: uploadedFilePaths.fileName2,
+                fileName3: uploadedFilePaths.fileName3,
+                id: postId,
                 level: level ?? null,
                 textbookId: textbookId ?? null,
+                title,
                 userId,
             },
         });
         return NextResponse.json({ post });
     } catch (error) {
+        // アップロードに失敗した場合は、すでにアップロードしたファイルを削除してからエラーを返す
+        await removeManagedPostFiles(uploadedPaths);
         console.error("教案登録失敗:", error);
         return NextResponse.json(
             { error: "Internal Server Error" },

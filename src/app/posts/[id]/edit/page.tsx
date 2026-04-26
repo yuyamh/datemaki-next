@@ -1,9 +1,9 @@
 import type { EditPostPageProps } from "@/app/lib/interfaces/post-page";
 import { notFound, redirect } from "next/navigation";
+import { getEditablePostById } from "@/app/api/posts/[id]/route";
 import { PostForm } from "@/app/ui/post-form";
 import { auth } from "@/auth";
 import { isUuid } from "@/lib/uuid";
-import { prisma } from "@/server/db/prisma/prisma";
 
 export default async function EditPostPage({ params }: EditPostPageProps) {
     const { id } = await params;
@@ -15,7 +15,7 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
         redirect("/login");
     }
 
-    const post = await getPostById(id);
+    const post = await getEditablePostById(id);
 
     if (!post) {
         notFound();
@@ -40,6 +40,9 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
                 initialValues={{
                     title: post.title,
                     description: post.description,
+                    fileName1: post.fileName1,
+                    fileName2: post.fileName2,
+                    fileName3: post.fileName3,
                     level: post.level,
                     textbookId: post.textbookId,
                 }}
@@ -49,9 +52,4 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
             />
         </div>
     );
-}
-
-async function getPostById(id: string) {
-    const post = await prisma.post.findUnique({ where: { id } });
-    return post;
 }
