@@ -1,6 +1,7 @@
 import type { BookmarkResponse } from "@/app/lib/interfaces/bookmark";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 import { prisma } from "@/server/db/prisma/prisma";
 
 export async function DELETE(
@@ -10,7 +11,7 @@ export async function DELETE(
     try {
         const { id: postId } = await params;
 
-        if (!postId) {
+        if (!isUuid(postId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 
@@ -67,7 +68,7 @@ export async function POST(
     try {
         const { id: postId } = await params;
 
-        if (!postId) {
+        if (!isUuid(postId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 

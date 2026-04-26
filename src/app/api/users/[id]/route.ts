@@ -6,6 +6,7 @@ import {
     parseUserProfileRequestSearchParams,
 } from "@/app/lib/user-search";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 import { prisma } from "@/server/db/prisma/prisma";
 
 const MAX_PROFILE_POSTS_PAGE_SIZE = 30;
@@ -18,7 +19,7 @@ export async function GET(
     try {
         const { id: userId } = await params;
 
-        if (!userId) {
+        if (!isUuid(userId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 

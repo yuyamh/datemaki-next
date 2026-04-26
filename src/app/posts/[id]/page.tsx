@@ -7,6 +7,7 @@ import {
 } from "@/app/lib/search-params";
 import { PostDetail } from "@/app/ui/post-detail";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 
 export default async function ShowPost({
     params,
@@ -19,6 +20,9 @@ export default async function ShowPost({
     }
 
     const { id } = await params;
+    if (!isUuid(id)) {
+        notFound();
+    }
     const resolvedSearchParams = await searchParams;
     // 有効化されているタブを判定（教案 or コメント）
     const activeTab =

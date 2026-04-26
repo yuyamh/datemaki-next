@@ -38,7 +38,7 @@ export default function PostList({
         filters.sort !== DEFAULT_POST_SORT;
 
     return (
-        <div className="space-y-8 px-4 pb-10 md:px-8">
+        <div className="flex flex-1 flex-col space-y-8">
             <div className="space-y-3">
                 <h1 className="text-4xl font-bold text-slate-950">{title}</h1>
                 <p className="text-md text-slate-500">{description}</p>
@@ -53,7 +53,7 @@ export default function PostList({
                         : emptyUnfilteredMessage}
                 </div>
             ) : (
-                <div className="space-y-8">
+                <div className="flex flex-1 flex-col justify-between gap-8">
                     <div className="grid grid-cols-1 items-start justify-center gap-8 md:grid-cols-3">
                         {posts.map((post) => (
                             <Card className="col-span-1" key={post.id}>
@@ -120,7 +120,7 @@ export default function PostList({
                         ))}
                     </div>
 
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-col items-center gap-4 pt-4">
                         <p className="text-sm text-gray-500">
                             {pagination.totalCount}件中{" "}
                             {(pagination.currentPage - 1) *

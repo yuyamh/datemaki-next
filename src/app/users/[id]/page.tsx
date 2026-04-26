@@ -4,12 +4,16 @@ import { getPublicUserProfile } from "@/app/api/users/[id]/route";
 import { parseUserProfileSearchParams } from "@/app/lib/user-search";
 import { UserProfileDetail } from "@/app/ui/user-profile-detail";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 
 export default async function ShowUser({
     params,
     searchParams,
 }: ShowUserPageProps) {
     const { id } = await params;
+    if (!isUuid(id)) {
+        notFound();
+    }
     const resolvedSearchParams = await searchParams;
     const parsedSearchParams =
         parseUserProfileSearchParams(resolvedSearchParams);

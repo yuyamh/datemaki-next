@@ -18,7 +18,7 @@ export default function UserList({
     const hasActiveFilters = Boolean(filters.q);
 
     return (
-        <div className="space-y-8 px-4 pb-10 md:px-8">
+        <div className="flex flex-1 flex-col space-y-8">
             <div className="space-y-3">
                 <h1 className="text-4xl font-bold text-slate-950">先生一覧</h1>
                 <p className="text-md text-slate-500">
@@ -35,14 +35,14 @@ export default function UserList({
                         : "まだ登録ユーザーがいません。"}
                 </div>
             ) : (
-                <div className="space-y-8">
+                <div className="flex flex-1 flex-col justify-between gap-8">
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">
                         {users.map((user) => (
                             <UserCard key={user.id} user={user} />
                         ))}
                     </div>
 
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-col items-center gap-4 pt-4">
                         <p className="text-sm text-gray-500">
                             {pagination.totalCount}件中{" "}
                             {(pagination.currentPage - 1) *

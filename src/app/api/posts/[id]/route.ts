@@ -7,6 +7,7 @@ import {
 } from "@/app/lib/post-list-query";
 import { PostCreateInputSchema } from "@/app/lib/validations/post.schema";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 import { prisma } from "@/server/db/prisma/prisma";
 
 // 教案削除処理
@@ -16,7 +17,7 @@ export async function DELETE(
 ) {
     try {
         const { id: postId } = await params;
-        if (!postId) {
+        if (!isUuid(postId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 
@@ -78,7 +79,7 @@ export async function GET(
         }
 
         const { id: postId } = await params;
-        if (!postId) {
+        if (!isUuid(postId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
         const { searchParams } = new URL(request.url);
@@ -211,7 +212,7 @@ export async function PATCH(
 ) {
     try {
         const { id: postId } = await params;
-        if (!postId) {
+        if (!isUuid(postId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 

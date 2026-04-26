@@ -2,6 +2,7 @@ import type { CommentResponse } from "@/app/lib/interfaces/comment";
 import { NextResponse } from "next/server";
 import { CommentInputSchema } from "@/app/lib/validations/comment.schema";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 import { prisma } from "@/server/db/prisma/prisma";
 
 export async function DELETE(
@@ -11,7 +12,7 @@ export async function DELETE(
     try {
         const { id: commentId } = await params;
 
-        if (!commentId) {
+        if (!isUuid(commentId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 
@@ -71,7 +72,7 @@ export async function PATCH(
     try {
         const { id: commentId } = await params;
 
-        if (!commentId) {
+        if (!isUuid(commentId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
 

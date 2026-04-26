@@ -2,6 +2,7 @@ import type { CommentResponse } from "@/app/lib/interfaces/comment";
 import { NextResponse } from "next/server";
 import { CommentInputSchema } from "@/app/lib/validations/comment.schema";
 import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 import { prisma } from "@/server/db/prisma/prisma";
 
 // コメント投稿処理
@@ -21,9 +22,10 @@ export async function POST(request: Request) {
             postId?: string;
         };
 
-        if (!body.postId) {
+        if (!isUuid(body.postId)) {
             return NextResponse.json({ error: "Bad Request" }, { status: 400 });
         }
+        const postId = body.postId;
 
         const validationResult = CommentInputSchema.safeParse({
             content: body.content ?? "",
@@ -43,7 +45,7 @@ export async function POST(request: Request) {
                 id: true,
             },
             where: {
-                id: body.postId,
+                id: postId,
             },
         });
 
@@ -57,7 +59,7 @@ export async function POST(request: Request) {
         const comment = await prisma.comment.create({
             data: {
                 content: validationResult.data.content,
-                postId: body.postId,
+                postId,
                 userId: session.user.id,
             },
             select: {
