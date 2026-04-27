@@ -13,6 +13,7 @@ export interface PublicUserListItem {
 export interface PublicUserPostListItem {
     authorName: string;
     bookmarkCount: number;
+    commentCount: number;
     description: null | string;
     downloadCount: number;
     id: string;

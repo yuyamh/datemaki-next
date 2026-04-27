@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { isAllowedPostFileType, MAX_POST_FILE_SIZE } from "@/app/lib/post-file";
 import { POST_LEVEL_OPTIONS } from "@/app/lib/post-level";
 import { MarkdownContent } from "@/app/ui/markdown-content";
+import { MarkdownHelpDialog } from "@/app/ui/markdown-help-dialog";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -298,41 +299,49 @@ export function PostForm({
 
                         <div className="flex flex-col space-y-2">
                             <div className="mb-0 flex items-center justify-between gap-4">
-                                <Label
-                                    className="mb-2 block"
-                                    htmlFor="description"
-                                >
-                                    概要
-                                </Label>
-                                <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
-                                    <Button
-                                        className="h-8 px-3"
-                                        onClick={() =>
-                                            setDescriptionViewMode("edit")
-                                        }
-                                        type="button"
-                                        variant={
-                                            descriptionViewMode === "edit"
-                                                ? "default"
-                                                : "ghost"
-                                        }
+                                <div className="flex items-center gap-2">
+                                    <Label
+                                        className="mb-0"
+                                        htmlFor="description"
                                     >
-                                        編集
-                                    </Button>
-                                    <Button
-                                        className="h-8 px-3"
-                                        onClick={() =>
-                                            setDescriptionViewMode("preview")
-                                        }
-                                        type="button"
-                                        variant={
-                                            descriptionViewMode === "preview"
-                                                ? "default"
-                                                : "ghost"
-                                        }
-                                    >
-                                        プレビュー
-                                    </Button>
+                                        概要
+                                    </Label>
+                                    <MarkdownHelpDialog />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1">
+                                        <Button
+                                            className="h-8 px-3"
+                                            onClick={() =>
+                                                setDescriptionViewMode("edit")
+                                            }
+                                            type="button"
+                                            variant={
+                                                descriptionViewMode === "edit"
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                        >
+                                            編集
+                                        </Button>
+                                        <Button
+                                            className="h-8 px-3"
+                                            onClick={() =>
+                                                setDescriptionViewMode(
+                                                    "preview",
+                                                )
+                                            }
+                                            type="button"
+                                            variant={
+                                                descriptionViewMode ===
+                                                "preview"
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                        >
+                                            プレビュー
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                             <p className="text-sm text-slate-500">
