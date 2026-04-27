@@ -11,8 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Bookmark, Download, MessageSquareText } from "lucide-react";
 
-const COMMENT_COUNT = 3;
-
 export function PostSummaryCard({ post }: { post: PublicUserPostListItem }) {
     return (
         <Card className="col-span-1">
@@ -56,7 +54,7 @@ export function PostSummaryCard({ post }: { post: PublicUserPostListItem }) {
                         </div>
                         <div className="flex items-center justify-center">
                             <MessageSquareText size={16} />
-                            <p className="pl-1">{COMMENT_COUNT}</p>
+                            <p className="pl-1">{post.commentCount}</p>
                         </div>
                     </div>
 

@@ -4,6 +4,7 @@ import type { RootLayoutProps } from "@/app/lib/interfaces/layout";
 import type { Metadata } from "next";
 import { getNavigationUserByUserId } from "@/app/api/profile/route";
 import { FabCreate } from "@/app/ui/fab-create-post";
+import { Footer } from "@/app/ui/footer";
 import Navigation from "@/app/ui/navigation";
 import { auth } from "@/auth";
 import { Toaster } from "sonner";
@@ -38,11 +39,7 @@ async function RootLayout(props: RootLayoutProps) {
                         {props.children}
                         <FabCreate />
                     </main>
-                    <footer className="border-2 p-4">
-                        <div className="container mx-auto text-center">
-                            &copy; 2026 だてまき. All rights reserved.
-                        </div>
-                    </footer>
+                    <Footer />
                 </div>
             </body>
         </html>

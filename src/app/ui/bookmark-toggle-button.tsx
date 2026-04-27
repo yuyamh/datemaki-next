@@ -13,12 +13,14 @@ import { toast } from "sonner";
 export function BookmarkToggleButton({
     className,
     initialIsBookmarked,
+    label,
     postId,
     size = 18,
 }: BookmarkToggleButtonProps) {
     const router = useRouter();
     const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
     const [isPending, setIsPending] = useState(false);
+    const hasLabel = Boolean(label);
 
     async function handleToggleBookmark() {
         if (isPending) {
@@ -77,7 +79,12 @@ export function BookmarkToggleButton({
             }
             aria-pressed={isBookmarked}
             className={cn(
-                "inline-flex items-center justify-center rounded-sm text-slate-400 transition-colors hover:text-orange-500 focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+                hasLabel
+                    ? "inline-flex items-center justify-center gap-2 rounded-[10px] border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-600 shadow-xs transition-colors hover:border-orange-300 hover:text-orange-500 focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                    : "inline-flex items-center justify-center rounded-sm text-slate-400 transition-colors hover:text-orange-500 focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50",
+                hasLabel &&
+                    isBookmarked &&
+                    "border-orange-200 bg-orange-50 text-orange-500",
                 className,
             )}
             disabled={isPending}
@@ -90,6 +97,7 @@ export function BookmarkToggleButton({
                 )}
                 size={size}
             />
+            {label ? <span>{label}</span> : null}
         </button>
     );
 }

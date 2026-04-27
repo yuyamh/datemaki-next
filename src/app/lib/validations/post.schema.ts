@@ -8,7 +8,8 @@ export const PostCreateInputSchema = PostSchema.pick({
     description: true,
     level: true,
     textbookId: true,
-    //   TODO: fileName1〜3 を後でここに追加
 });
+
+// 添付ファイルは multipart/form-data で送られるため、route.ts 側で個別に検証する
 
 export type PostCreateInput = z.infer<typeof PostCreateInputSchema>;

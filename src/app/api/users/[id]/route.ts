@@ -123,6 +123,7 @@ export async function getPublicUserProfile({
                 _count: {
                     select: {
                         bookmarks: true,
+                        comments: true,
                     },
                 },
                 description: true,
@@ -160,6 +161,7 @@ export async function getPublicUserProfile({
             ...post,
             authorName: user.name,
             bookmarkCount: _count.bookmarks,
+            commentCount: _count.comments,
         })),
         stats: {
             // 集計結果

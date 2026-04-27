@@ -36,7 +36,16 @@ import {
 } from "@/components/ui/pagination";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarDays, MoreHorizontal, UserRound } from "lucide-react";
+import {
+    CalendarDays,
+    Download,
+    FileArchive,
+    FileChartPie,
+    FileText,
+    Image as ImageIcon,
+    MoreHorizontal,
+    UserRound,
+} from "lucide-react";
 import { toast } from "sonner";
 
 // 日付のフォーマッタ
@@ -246,15 +255,7 @@ export function PostDetail({
             open={commentToDelete !== null}
         >
             <div className="space-y-6">
-                <div className="flex items-start justify-between gap-4">
-                    <h1 className="text-3xl font-bold">{post.title ?? "-"}</h1>
-                    <BookmarkToggleButton
-                        className="shrink-0"
-                        initialIsBookmarked={post.isBookmarked}
-                        postId={post.id}
-                        size={22}
-                    />
-                </div>
+                <h1 className="text-3xl font-bold">{post.title ?? "-"}</h1>
 
                 <div className="flex items-start gap-4">
                     <AvatarImage
@@ -280,29 +281,40 @@ export function PostDetail({
 
                 <div className="grid gap-6 md:grid-cols-[1fr_360px]">
                     <div className="space-y-6">
-                        <div className="inline-flex rounded-[10px] bg-slate-100 p-2 shadow-xs">
-                            <Link
-                                className={buildTabClasses({
-                                    isActive: activeTab === "content",
-                                })}
-                                href={buildPostDetailTabUrl({
-                                    postId: post.id,
-                                    tab: "content",
-                                })}
-                            >
-                                教案内容
-                            </Link>
-                            <Link
-                                className={buildTabClasses({
-                                    isActive: activeTab === "comments",
-                                })}
-                                href={buildPostDetailTabUrl({
-                                    postId: post.id,
-                                    tab: "comments",
-                                })}
-                            >
-                                コメント（{post.commentsPagination.totalCount}）
-                            </Link>
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                            <div className="inline-flex rounded-[10px] bg-slate-100 p-2 shadow-xs">
+                                <Link
+                                    className={buildTabClasses({
+                                        isActive: activeTab === "content",
+                                    })}
+                                    href={buildPostDetailTabUrl({
+                                        postId: post.id,
+                                        tab: "content",
+                                    })}
+                                >
+                                    教案内容
+                                </Link>
+                                <Link
+                                    className={buildTabClasses({
+                                        isActive: activeTab === "comments",
+                                    })}
+                                    href={buildPostDetailTabUrl({
+                                        postId: post.id,
+                                        tab: "comments",
+                                    })}
+                                >
+                                    コメント（
+                                    {post.commentsPagination.totalCount}）
+                                </Link>
+                            </div>
+
+                            <BookmarkToggleButton
+                                className="shrink-0"
+                                initialIsBookmarked={post.isBookmarked}
+                                label="保存"
+                                postId={post.id}
+                                size={20}
+                            />
                         </div>
 
                         {activeTab === "content" ? (
@@ -314,6 +326,65 @@ export function PostDetail({
                                         />
                                     </CardContent>
                                 </Card>
+
+                                <section className="space-y-4">
+                                    <h2 className="text-2xl font-bold">
+                                        添付ファイル
+                                    </h2>
+                                    {post.attachments.length > 0 ? (
+                                        <div className="grid gap-4 sm:grid-cols-2">
+                                            {post.attachments.map(
+                                                (attachment) => (
+                                                    <Card key={attachment.slot}>
+                                                        <CardContent className="flex items-center justify-between gap-4">
+                                                            <div className="flex min-w-0 items-center gap-4">
+                                                                <div className="shrink-0 rounded-xl bg-amber-50 p-4 text-orange-500">
+                                                                    {renderAttachmentIcon(
+                                                                        attachment.originalName,
+                                                                    )}
+                                                                </div>
+                                                                <div className="min-w-0">
+                                                                    <p className="truncate text-lg font-medium text-slate-900">
+                                                                        {
+                                                                            attachment.originalName
+                                                                        }
+                                                                    </p>
+                                                                    <p className="mt-1 text-base text-slate-500">
+                                                                        {formatAttachmentSize(
+                                                                            attachment.size,
+                                                                        )}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                            <Button
+                                                                asChild
+                                                                className="shrink-0"
+                                                                size="icon-lg"
+                                                                variant="outline"
+                                                            >
+                                                                <a
+                                                                    aria-label={`${attachment.originalName} をダウンロード`}
+                                                                    href={buildAttachmentDownloadUrl(
+                                                                        {
+                                                                            postId: post.id,
+                                                                            slot: attachment.slot,
+                                                                        },
+                                                                    )}
+                                                                >
+                                                                    <Download className="h-6 w-6" />
+                                                                </a>
+                                                            </Button>
+                                                        </CardContent>
+                                                    </Card>
+                                                ),
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <p className="text-base text-slate-500">
+                                            添付ファイルはありません。
+                                        </p>
+                                    )}
+                                </section>
 
                                 <div className="space-x-5 text-center">
                                     <Button
@@ -746,11 +817,6 @@ export function PostDetail({
                                         {formatYmd(post.updatedAt)}
                                     </dd>
 
-                                    <dt className="text-slate-500">閲覧数</dt>
-                                    <dd className="font-medium text-slate-900">
-                                        {post.viewCount ?? "-"}
-                                    </dd>
-
                                     <dt className="text-slate-500">
                                         ブックマーク数
                                     </dt>
@@ -837,6 +903,17 @@ export function PostDetail({
     );
 }
 
+// 教案の添付ファイルをダウンロードするURLを生成する
+function buildAttachmentDownloadUrl({
+    postId,
+    slot,
+}: {
+    postId: string;
+    slot: 1 | 2 | 3;
+}) {
+    return `/api/posts/${postId}/files/${slot}`;
+}
+
 // 教案詳細のタブ切り替え用URLを生成する
 function buildPostDetailTabUrl({
     page,
@@ -872,6 +949,27 @@ function buildTabClasses({ isActive }: { isActive: boolean }) {
         : "rounded-[10px] px-5 py-3 text-slate-400 hover:text-slate-500";
 }
 
+function formatAttachmentSize(size: null | number) {
+    if (!size) {
+        return "- MB";
+    }
+
+    if (size >= 1024 * 1024) {
+        return `${(size / 1024 / 1024).toFixed(1)} MB`;
+    }
+
+    if (size >= 1024) {
+        return `${(size / 1024).toFixed(1)} KB`;
+    }
+
+    return `${size} B`;
+}
+
+// ファイル名から拡張子を取得する
+function getAttachmentExtension(fileName: string) {
+    return fileName.split(".").pop()?.toLowerCase() ?? "";
+}
+
 // コメント関連の処理に失敗した場合に表示するエラーメッセージを取得する
 async function getCommentErrorMessage(
     response: Response,
@@ -889,4 +987,33 @@ async function getCommentErrorMessage(
     } catch {
         return fallbackMessage;
     }
+}
+
+// 添付ファイルのアイコンを表示する
+function renderAttachmentIcon(fileName: string) {
+    // ファイル名から拡張子を取得する
+    const extension = getAttachmentExtension(fileName);
+
+    if (extension === "pdf") {
+        return <FileText className="h-8 w-8" />;
+    }
+
+    if (extension === "jpeg" || extension === "jpg" || extension === "png") {
+        return <ImageIcon className="h-8 w-8" />;
+    }
+
+    if (extension === "zip") {
+        return <FileArchive className="h-8 w-8" />;
+    }
+
+    if (
+        extension === "ppt" ||
+        extension === "pptx" ||
+        extension === "xls" ||
+        extension === "xlsx"
+    ) {
+        return <FileChartPie className="h-8 w-8" />;
+    }
+
+    return <FileText className="h-8 w-8" />;
 }
