@@ -1,18 +1,51 @@
-import { posts } from "@/app/lib/placeholder-data";
+import type { ShowPostPageProps } from "@/app/lib/interfaces/post-page";
+import { notFound, redirect } from "next/navigation";
+import { getPostDetail } from "@/app/api/posts/[id]/route";
+import {
+    getSingleSearchParamValue,
+    parsePositiveInteger,
+} from "@/app/lib/search-params";
+import { PostDetail } from "@/app/ui/post-detail";
+import { auth } from "@/auth";
+import { isUuid } from "@/lib/uuid";
 
-// TODO: 後ほどtypeで指定
-export default function BlogPost({
+export default async function ShowPost({
     params,
-}: {
-    params: {
-        id: string;
-    };
-}) {
-    const post = posts.find((p) => p.id === params.id);
-
-    if (!post) {
-        return <div>投稿が見つかりません</div>;
+    searchParams,
+}: ShowPostPageProps) {
+    // セッション取得
+    const session = await auth();
+    if (!session?.user?.id) {
+        redirect("/login");
     }
 
-    return <p>{post.title}</p>;
+    const { id } = await params;
+    if (!isUuid(id)) {
+        notFound();
+    }
+    const resolvedSearchParams = await searchParams;
+    // 有効化されているタブを判定（教案 or コメント）
+    const activeTab =
+        getSingleSearchParamValue(resolvedSearchParams.tab) === "comments"
+            ? "comments"
+            : "content";
+    const commentPage =
+        parsePositiveInteger(
+            getSingleSearchParamValue(resolvedSearchParams.page) ?? null,
+        ) ?? 1;
+    const post = await getPostDetail({
+        commentPage,
+        postId: id,
+        sessionUserId: session.user.id,
+    });
+
+    if (!post) notFound();
+
+    return (
+        <PostDetail
+            activeTab={activeTab}
+            post={post}
+            sessionUserId={session.user.id}
+        />
+    );
 }

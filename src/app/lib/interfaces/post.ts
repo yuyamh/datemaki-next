@@ -1,0 +1,78 @@
+import type { Role } from "@prisma/client";
+
+import type { CommentListItem } from "./comment";
+import type { Pagination } from "./post-list";
+
+// 教案（posts）の型指定
+export interface Post {
+    createdAt: Date;
+    description: null | string;
+    downloadCount: number;
+    fileName1: null | string;
+    fileName2: null | string;
+    fileName3: null | string;
+    fileOriginalName1: null | string;
+    fileOriginalName2: null | string;
+    fileOriginalName3: null | string;
+    fileSize1: null | number;
+    fileSize2: null | number;
+    fileSize3: null | number;
+    id: string;
+    level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null;
+    textbookId: null | string;
+    title: string;
+    updatedAt: Date;
+    userId: string;
+}
+
+export interface PostAttachmentItem {
+    originalName: string;
+    path: string;
+    size: null | number;
+    slot: 1 | 2 | 3;
+}
+
+export interface PostAuthorSummary {
+    avatar: null | string;
+    bio: null | string;
+    id: string;
+    name: string;
+    role: Role;
+}
+
+export interface PostDetailData {
+    attachments: PostAttachmentItem[];
+    bookmarkCount: number;
+    comments: CommentListItem[];
+    commentsPagination: Pagination;
+    createdAt: Date | string;
+    description: null | string;
+    downloadCount: number;
+    id: string;
+    isBookmarked: boolean;
+    level: "A1" | "A2" | "B1" | "B2" | "C1" | "C2" | null;
+    textbook: null | PostTextbookSummary;
+    title: string;
+    updatedAt: Date | string;
+    user: PostAuthorSummary;
+}
+
+export interface PostListItem {
+    bookmarkCount: number;
+    description: null | string;
+    downloadCount: number;
+    id: string;
+    isBookmarked: boolean;
+    title: string;
+    updatedAt: Date | string;
+    user: PostListUser;
+}
+
+export interface PostListUser {
+    id: string;
+    name: string;
+}
+
+export interface PostTextbookSummary {
+    name: string;
+}
