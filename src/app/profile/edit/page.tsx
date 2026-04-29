@@ -10,6 +10,11 @@ export default async function EditProfilePage() {
         redirect("/login");
     }
 
+    // ゲストユーザーはプロフィール編集不可なので、プロフィール詳細ページにリダイレクト
+    if (session.user.role === "guest") {
+        redirect(`/users/${session.user.id}?tab=details`);
+    }
+
     const profile = await getProfileByUserId(session.user.id);
 
     if (!profile) {

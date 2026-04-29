@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 
 import type { RootLayoutProps } from "@/app/lib/interfaces/layout";
+import type { Role } from "@prisma/client";
 import type { Metadata } from "next";
 import { getNavigationUserByUserId } from "@/app/api/profile/route";
 import { FabCreate } from "@/app/ui/fab-create-post";
@@ -26,6 +27,7 @@ async function RootLayout(props: RootLayoutProps) {
                   avatar: null,
                   id: session.user.id,
                   name: session.user.name,
+                  role: session.user.role ?? ("user" satisfies Role),
               }
             : null);
 

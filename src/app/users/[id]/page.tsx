@@ -31,10 +31,13 @@ export default async function ShowUser({
         notFound();
     }
 
+    const isOwnProfile = session?.user?.id === id;
+
     return (
         <UserProfileDetail
             activeTab={parsedSearchParams.tab}
-            canEditProfile={session?.user?.id === id}
+            canEditProfile={isOwnProfile && session?.user?.role !== "guest"} // ゲストユーザーはプロフィール編集不可
+            canShowProfileEditAction={isOwnProfile}
             filters={parsedSearchParams.filters}
             profile={profile}
         />

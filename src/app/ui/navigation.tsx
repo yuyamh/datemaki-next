@@ -57,6 +57,8 @@ export default function Navigation({ currentUser }: NavigationProps) {
     const profilePostsHref = currentUser
         ? `/users/${currentUser.id}?tab=posts`
         : "#";
+    const isGuestUser = currentUser?.role === "guest";
+    const canEditProfile = Boolean(currentUser) && !isGuestUser;
 
     return (
         <AlertDialog
@@ -132,11 +134,17 @@ export default function Navigation({ currentUser }: NavigationProps) {
                                                     投稿した教案
                                                 </Link>
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem asChild>
-                                                <Link href="/profile/edit">
-                                                    設定
-                                                </Link>
-                                            </DropdownMenuItem>
+                                            {canEditProfile ? (
+                                                <DropdownMenuItem asChild>
+                                                    <Link href="/profile/edit">
+                                                        設定
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            ) : (
+                                                <DropdownMenuItem disabled>
+                                                    設定（編集不可）
+                                                </DropdownMenuItem>
+                                            )}
                                             <DropdownMenuItem
                                                 onSelect={() =>
                                                     setIsLogoutDialogOpen(true)
@@ -269,16 +277,26 @@ export default function Navigation({ currentUser }: NavigationProps) {
                                             </SheetClose>
                                         ) : null}
 
-                                        <SheetClose asChild>
-                                            <Link
-                                                className={mobileMenuLinkClasses(
-                                                    "/profile/edit",
-                                                )}
-                                                href="/profile/edit"
+                                        {canEditProfile ? (
+                                            <SheetClose asChild>
+                                                <Link
+                                                    className={mobileMenuLinkClasses(
+                                                        "/profile/edit",
+                                                    )}
+                                                    href="/profile/edit"
+                                                >
+                                                    設定
+                                                </Link>
+                                            </SheetClose>
+                                        ) : currentUser ? (
+                                            <button
+                                                className="block w-full cursor-not-allowed rounded-md px-4 py-3 text-left text-base font-medium text-slate-400 opacity-60"
+                                                disabled
+                                                type="button"
                                             >
                                                 設定
-                                            </Link>
-                                        </SheetClose>
+                                            </button>
+                                        ) : null}
 
                                         {currentUser ? (
                                             <button
