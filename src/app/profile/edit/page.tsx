@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { getProfileByUserId } from "@/app/api/profile/route";
+import { AccountDeleteCard } from "@/app/ui/account-delete-card";
 import { ProfileForm } from "@/app/ui/profile-form";
 import { auth } from "@/auth";
 
@@ -33,6 +34,8 @@ export default async function EditProfilePage() {
             </div>
 
             <ProfileForm initialValues={profile} />
+            {/* 一般ユーザーのみ退会可能 */}
+            {session.user.role === "user" ? <AccountDeleteCard /> : null}
         </div>
     );
 }
