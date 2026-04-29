@@ -87,6 +87,7 @@ export function PostForm({
 
     const [textbookList, setTextbookList] = useState<Textbook[]>([]);
     const [fieldErrors, setFieldErrors] = useState<PostFormFieldErrors>({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const setFileFieldError = (
         fieldName: "file1" | "file2" | "file3",
@@ -175,12 +176,19 @@ export function PostForm({
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (isSubmitting) {
+            return;
+        }
+
         setFieldErrors({});
 
         if (isEdit && !postId) {
             toast.error("更新対象のIDが見つかりません。");
             return;
         }
+
+        setIsSubmitting(true);
 
         const url = isEdit ? `/api/posts/${postId}` : "/api/posts";
         const method = isEdit ? "PATCH" : "POST";
@@ -206,38 +214,49 @@ export function PostForm({
             formData.set("file3", file3State.selectedFile);
         }
 
-        const response = await fetch(url, {
-            method,
-            body: formData,
-        });
+        try {
+            const response = await fetch(url, {
+                method,
+                body: formData,
+            });
 
-        const responseData = (await response
-            .json()
-            .catch(() => null)) as null | {
-            error?: string;
-            errors?: PostFormFieldErrors;
-        };
+            const responseData = (await response
+                .json()
+                .catch(() => null)) as null | {
+                error?: string;
+                errors?: PostFormFieldErrors;
+            };
 
-        if (response.ok) {
-            router.push("/posts");
-            router.refresh();
-            toast.success(
-                isEdit ? "教案が更新されました" : "教案が作成されました",
+            if (response.ok) {
+                router.push("/posts");
+                router.refresh();
+                toast.success(
+                    isEdit ? "教案が更新されました" : "教案が作成されました",
+                );
+                return;
+            }
+
+            if (responseData?.errors) {
+                setFieldErrors(responseData.errors);
+                return;
+            }
+
+            toast.error(
+                responseData?.error ??
+                    (isEdit
+                        ? "教案更新に失敗しました。再度更新してください。"
+                        : "教案登録に失敗しました。再度登録してください。"),
             );
-            return;
-        }
-
-        if (responseData?.errors) {
-            setFieldErrors(responseData.errors);
-            return;
-        }
-
-        toast.error(
-            responseData?.error ??
-                (isEdit
+        } catch (error) {
+            console.error("Post submit failed:", error);
+            toast.error(
+                isEdit
                     ? "教案更新に失敗しました。再度更新してください。"
-                    : "教案登録に失敗しました。再度登録してください。"),
-        );
+                    : "教案登録に失敗しました。再度登録してください。",
+            );
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const getTextbooks = async () => {
@@ -524,8 +543,14 @@ export function PostForm({
                 >
                     キャンセル
                 </Button>
-                <Button type="submit">
-                    {isEdit ? "更新する" : "投稿する"}
+                <Button disabled={isSubmitting} type="submit">
+                    {isSubmitting
+                        ? isEdit
+                            ? "更新中..."
+                            : "投稿中..."
+                        : isEdit
+                          ? "更新する"
+                          : "投稿する"}
                 </Button>
             </div>
         </form>

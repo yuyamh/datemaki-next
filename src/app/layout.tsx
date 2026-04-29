@@ -37,7 +37,11 @@ async function RootLayout(props: RootLayoutProps) {
                 <div className="flex min-h-screen flex-col bg-white">
                     <Navigation currentUser={navigationUser} />
                     <main className="container mx-auto flex flex-1 flex-col px-4 py-8">
-                        <Toaster position="top-right" richColors />
+                        <Toaster
+                            duration={1500}
+                            position="top-right"
+                            richColors
+                        />
                         {props.children}
                         <FabCreate />
                     </main>
