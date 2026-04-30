@@ -56,6 +56,7 @@ export interface UserListProps {
 export interface UserProfileDetailProps {
     activeTab: UserProfileTab;
     canEditProfile: boolean;
+    canShowProfileEditAction: boolean;
     filters: UserProfilePostFilters;
     profile: PublicUserProfileData;
 }

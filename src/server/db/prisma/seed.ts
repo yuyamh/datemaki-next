@@ -1,4 +1,10 @@
 import type { Role } from "@prisma/client";
+import {
+    GUEST_USER_AVATAR_PATH,
+    GUEST_USER_BIO,
+    GUEST_USER_EMAIL,
+    GUEST_USER_NAME,
+} from "@/app/lib/constants/guest-user";
 import { prisma } from "@/server/db/prisma/prisma";
 import bcrypt from "bcryptjs";
 
@@ -224,6 +230,7 @@ async function main() {
 
     const textbookIdByName = await getTextbookIdByName();
     const userIdByEmail = await seedUsers(hashedPassword);
+    await seedGuestUser(hashedPassword);
 
     await seedPosts(textbookIdByName, userIdByEmail);
 
@@ -234,6 +241,34 @@ async function main() {
             `- ${user.name} (${user.role}): ${user.email} / ${DEFAULT_SEED_PASSWORD}`,
         );
     }
+}
+
+// ゲストユーザのシーダー
+async function seedGuestUser(hashedPassword: string) {
+    await prisma.user.upsert({
+        create: {
+            avatar: GUEST_USER_AVATAR_PATH,
+            bio: GUEST_USER_BIO,
+            email: GUEST_USER_EMAIL,
+            hashedPassword,
+            name: GUEST_USER_NAME,
+            role: "guest",
+        },
+        update: {
+            avatar: GUEST_USER_AVATAR_PATH,
+            bio: GUEST_USER_BIO,
+            hashedPassword,
+            name: GUEST_USER_NAME,
+            role: "guest",
+        },
+        where: {
+            email: GUEST_USER_EMAIL,
+        },
+    });
+
+    console.log(
+        `- ${GUEST_USER_NAME} (guest): ${GUEST_USER_EMAIL} / ゲストログインボタンを使用`,
+    );
 }
 
 async function seedPosts(

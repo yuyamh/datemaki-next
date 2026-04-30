@@ -21,17 +21,29 @@ export const env = createEnv({
     // createEnv() がこれを使って、「ちゃんと型に合ってる？」をチェック
     runtimeEnv: {
         DATABASE_URL: process.env.DATABASE_URL,
+        APP_BASE_URL: process.env.APP_BASE_URL,
+        CONTACT_TO_EMAIL: process.env.CONTACT_TO_EMAIL,
         DEBUG_MESSAGE: process.env.DEBUG_MESSAGE,
         DIRECT_URL: process.env.DIRECT_URL,
         NEXT_PUBLIC_SUPABASE_ANON_KEY:
             process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
         NODE_ENV: process.env.NODE_ENV,
+        RESEND_API_KEY: process.env.RESEND_API_KEY,
+        RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         VERCEL_URL: process.env.VERCEL_URL,
     },
     // 3. server: サーバーだけで使う変数
     server: {
+        /**
+         * メール内リンク生成に使うアプリケーションURL
+         */
+        APP_BASE_URL: z.string().url().optional(),
+        /**
+         * お問い合わせ通知の宛先メールアドレス
+         */
+        CONTACT_TO_EMAIL: z.email().optional(),
         /**
          * Prisma Client がデータベースへ接続するためのデータベース接続先
          */
@@ -50,6 +62,14 @@ export const env = createEnv({
         NODE_ENV: z
             .enum(["development", "test", "production"])
             .default("development"),
+        /**
+         * Resend APIキー
+         */
+        RESEND_API_KEY: z.string().optional(),
+        /**
+         * Resendの送信元メールアドレス
+         */
+        RESEND_FROM_EMAIL: z.string().optional(),
         /**
          * サーバー経由でSupabase Storageを操作するための秘密鍵
          */

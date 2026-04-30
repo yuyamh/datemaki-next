@@ -1,5 +1,6 @@
 import type { User } from "@/app/lib/interfaces/user";
 import type { NextAuthConfig } from "next-auth";
+import { GUEST_USER_EMAIL } from "@/app/lib/constants/guest-user";
 import { prisma } from "@/server/db/prisma/prisma";
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
@@ -46,6 +47,10 @@ const authConfig: NextAuthConfig = {
                     where: { email },
                 });
 
+                if (user?.role === "guest") {
+                    return null;
+                }
+
                 if (!user?.hashedPassword) {
                     // ユーザーがいない or パスワード未設定
                     return null;
@@ -68,6 +73,28 @@ const authConfig: NextAuthConfig = {
                     email: user.email,
                     name: user.name,
                     role: user.role,
+                };
+            },
+        }),
+        // ゲストユーザーログイン用
+        Credentials({
+            id: "guest",
+            name: "Guest",
+            credentials: {},
+            async authorize() {
+                const guestUser = await prisma.user.findUnique({
+                    where: { email: GUEST_USER_EMAIL },
+                });
+
+                if (!guestUser || guestUser.role !== "guest") {
+                    return null;
+                }
+
+                return {
+                    id: guestUser.id,
+                    email: guestUser.email,
+                    name: guestUser.name,
+                    role: guestUser.role,
                 };
             },
         }),

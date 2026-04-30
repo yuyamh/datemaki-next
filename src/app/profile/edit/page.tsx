@@ -1,5 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getProfileByUserId } from "@/app/api/profile/route";
+import { AccountDeleteCard } from "@/app/ui/account-delete-card";
+import { PasswordChangeCard } from "@/app/ui/password-change-card";
 import { ProfileForm } from "@/app/ui/profile-form";
 import { auth } from "@/auth";
 
@@ -8,6 +10,11 @@ export default async function EditProfilePage() {
 
     if (!session?.user?.id) {
         redirect("/login");
+    }
+
+    // ゲストユーザーはプロフィール編集不可なので、プロフィール詳細ページにリダイレクト
+    if (session.user.role === "guest") {
+        redirect(`/users/${session.user.id}?tab=details`);
     }
 
     const profile = await getProfileByUserId(session.user.id);
@@ -28,6 +35,13 @@ export default async function EditProfilePage() {
             </div>
 
             <ProfileForm initialValues={profile} />
+            {/* 一般ユーザーのみパスワード変更・退会可能 */}
+            {session.user.role === "user" ? (
+                <>
+                    <PasswordChangeCard />
+                    <AccountDeleteCard />
+                </>
+            ) : null}
         </div>
     );
 }

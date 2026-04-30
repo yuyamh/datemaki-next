@@ -20,6 +20,7 @@ const DEFAULT_USER_BIO = "自己紹介はまだ登録されていません。";
 export function UserProfileDetail({
     activeTab,
     canEditProfile,
+    canShowProfileEditAction,
     filters,
     profile,
 }: UserProfileDetailProps) {
@@ -61,12 +62,23 @@ export function UserProfileDetail({
                             <span>{profile.user.postCount} 件</span>
                         </div>
 
-                        {canEditProfile ? (
-                            <Button asChild className="mt-6 w-full">
-                                <Link href="/profile/edit">
-                                    <FilePenLine className="mr-2 h-4 w-4" />
-                                    プロフィールを編集
-                                </Link>
+                        {canShowProfileEditAction ? (
+                            <Button
+                                asChild={canEditProfile}
+                                className="mt-6 w-full"
+                                disabled={!canEditProfile}
+                            >
+                                {canEditProfile ? (
+                                    <Link href="/profile/edit">
+                                        <FilePenLine className="mr-2 h-4 w-4" />
+                                        プロフィールを編集
+                                    </Link>
+                                ) : (
+                                    <>
+                                        <FilePenLine className="mr-2 h-4 w-4" />
+                                        プロフィールを編集
+                                    </>
+                                )}
                             </Button>
                         ) : null}
                     </CardContent>

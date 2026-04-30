@@ -27,6 +27,7 @@ export async function getNavigationUserByUserId(
             avatar: true,
             id: true,
             name: true,
+            role: true,
         },
         where: {
             id: userId,
@@ -75,6 +76,13 @@ export async function PATCH(request: Request) {
             return NextResponse.json(
                 { error: "Unauthorized" },
                 { status: 401 },
+            );
+        }
+
+        if (session.user.role === "guest") {
+            return NextResponse.json(
+                { error: "ゲストユーザーはプロフィールを更新できません。" },
+                { status: 403 },
             );
         }
 
