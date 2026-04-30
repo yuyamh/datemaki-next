@@ -12,6 +12,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
 
 const ALL_OPTION_VALUE = "all";
@@ -33,7 +34,12 @@ export function UserProfilePostsToolbar({
     const router = useRouter();
     const searchParams = useSearchParams();
     const [keyword, setKeyword] = useState(filters.q);
+    const [isMounted, setIsMounted] = useState(false);
     const [isPending, startTransition] = useTransition();
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         setKeyword(filters.q);
@@ -43,12 +49,12 @@ export function UserProfilePostsToolbar({
         const nextSearchParams = new URLSearchParams(searchParams.toString());
 
         for (const [key, value] of Object.entries(updates)) {
-            if (!value) {
+            if (!value || value.trim().length === 0) {
                 nextSearchParams.delete(key);
                 continue;
             }
 
-            nextSearchParams.set(key, value);
+            nextSearchParams.set(key, value.trim());
         }
 
         nextSearchParams.delete("page");
@@ -68,6 +74,20 @@ export function UserProfilePostsToolbar({
         replaceSearchParams({ q: keyword.trim() || null });
     };
 
+    // キーワード入力のたびに、URLのクエリパラメータを更新する
+    // ただし、空文字はURLから消すようにする
+    const handleKeywordChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        const nextKeyword = event.target.value;
+
+        setKeyword(nextKeyword);
+
+        if (nextKeyword.trim().length === 0 && searchParams.has("q")) {
+            replaceSearchParams({ q: null });
+        }
+    };
+
     const handleLevelChange = (value: string) => {
         replaceSearchParams({
             level: value === ALL_OPTION_VALUE ? null : value,
@@ -77,6 +97,10 @@ export function UserProfilePostsToolbar({
     const handleSortChange = (value: string) => {
         replaceSearchParams({ sort: value });
     };
+
+    if (!isMounted) {
+        return <UserProfilePostsToolbarSkeleton />;
+    }
 
     return (
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(280px,1fr)_220px_220px]">
@@ -88,7 +112,7 @@ export function UserProfilePostsToolbar({
                 <Input
                     className="h-full w-full rounded-xl border-slate-200 px-3 py-1 pl-12 text-base"
                     disabled={isPending}
-                    onChange={(event) => setKeyword(event.target.value)}
+                    onChange={handleKeywordChange}
                     placeholder="教案を検索..."
                     type="search"
                     value={keyword}
@@ -135,6 +159,19 @@ export function UserProfilePostsToolbar({
                     </SelectContent>
                 </Select>
             </div>
+        </div>
+    );
+}
+
+function UserProfilePostsToolbarSkeleton() {
+    return (
+        <div
+            aria-hidden="true"
+            className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(280px,1fr)_220px_220px]"
+        >
+            <Skeleton className="h-12 rounded-xl border border-slate-200 bg-slate-50" />
+            <Skeleton className="h-12 rounded-xl border border-slate-200 bg-slate-50" />
+            <Skeleton className="h-12 rounded-xl border border-slate-200 bg-slate-50" />
         </div>
     );
 }
