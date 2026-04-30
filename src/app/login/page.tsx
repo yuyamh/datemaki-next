@@ -2,6 +2,7 @@
 
 import type { FormEvent } from "react";
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PasswordInput } from "@/app/ui/password-input";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ function LoginPageInner() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [error, setError] = useState<null | string>(null);
+    const [isGuestSigningIn, setIsGuestSigningIn] = useState(false);
 
     // ログイン後に戻すパス（なければ /posts ）
     const redirectTo = searchParams.get("redirectTo") ?? "/posts";
@@ -60,9 +62,29 @@ function LoginPageInner() {
         toast.success("ログインしました");
     }
 
+    // ゲストユーザーとしてのログイン処理
+    async function handleGuestSignIn() {
+        setError(null);
+        setIsGuestSigningIn(true);
+
+        const res = await signIn("guest", {
+            redirect: false,
+        });
+
+        if (res?.error) {
+            setIsGuestSigningIn(false);
+            setError("ゲストログインに失敗しました。");
+            return;
+        }
+
+        router.push(redirectTo);
+        router.refresh();
+        toast.success("ゲストユーザーでログインしました");
+    }
+
     return (
-        <form className="m-auto md:w-1/2" onSubmit={handleSubmit}>
-            <Card className="gap-10">
+        <form className="m-auto w-full md:w-1/2" onSubmit={handleSubmit}>
+            <Card className="gap-12">
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between text-xl">
                         <h1>ログイン</h1>
@@ -94,17 +116,33 @@ function LoginPageInner() {
                     {error && <p className="text-sm text-red-600">{error}</p>}
                 </CardContent>
                 <CardFooter className="flex flex-col">
-                    <Button className="w-full" type="submit">
+                    <Button className="w-full md:w-3/4" type="submit">
                         ログイン
                     </Button>
-                    <p className="my-4 flex flex-col items-center text-sm">
+                    <Button
+                        className="mt-3 w-full bg-amber-300 text-black hover:bg-amber-200 focus:ring-amber-300 disabled:pointer-events-none disabled:opacity-50 md:w-3/4"
+                        disabled={isGuestSigningIn}
+                        onClick={handleGuestSignIn}
+                        type="button"
+                    >
+                        {isGuestSigningIn
+                            ? "ゲストログイン中..."
+                            : "ゲストユーザーでログインする"}
+                    </Button>
+                    <p className="my-6 flex flex-col items-center text-sm">
+                        <Link
+                            className="mb-8 text-blue-600 underline"
+                            href="/password-reset"
+                        >
+                            パスワードを忘れた方
+                        </Link>
                         アカウントをお持ちでない場合{" "}
-                        <a
+                        <Link
                             className="my-2 text-blue-600 underline"
                             href="/signup"
                         >
                             新規登録はこちら
-                        </a>
+                        </Link>
                     </p>
                 </CardFooter>
             </Card>

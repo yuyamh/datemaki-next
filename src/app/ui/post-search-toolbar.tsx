@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Search } from "lucide-react";
 
 // 全件（未フィルタ）を表すためのダミー値
@@ -47,7 +48,12 @@ export function PostSearchToolbar({
     const router = useRouter();
     const searchParams = useSearchParams();
     const [keyword, setKeyword] = useState(filters.q);
+    const [isMounted, setIsMounted] = useState(false);
     const [isPending, startTransition] = useTransition(); // 重い更新を後回しにするためのフック
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         setKeyword(filters.q);
@@ -80,6 +86,20 @@ export function PostSearchToolbar({
         replaceSearchParams({ q: keyword.trim() || null });
     };
 
+    // キーワード入力のたびに、URLのクエリパラメータを更新する
+    // ただし、空文字はURLから消すようにする
+    const handleKeywordChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        const nextKeyword = event.target.value;
+
+        setKeyword(nextKeyword);
+
+        if (nextKeyword.trim().length === 0 && searchParams.has("q")) {
+            replaceSearchParams({ q: null });
+        }
+    };
+
     // フィルターや並び順の選択肢が変わるたびに、URLのクエリパラメータを更新する
     const handleLevelChange = (value: string) => {
         replaceSearchParams({
@@ -107,6 +127,10 @@ export function PostSearchToolbar({
     const searchSelectTriggerClasses =
         "!h-12 w-full rounded-xl border-slate-200 px-3 py-1 text-base";
 
+    if (!isMounted) {
+        return <PostSearchToolbarSkeleton />;
+    }
+
     return (
         <div className="grid grid-cols-1 gap-2 lg:grid-cols-[minmax(280px,1fr)_160px_200px_160px] xl:grid-cols-[minmax(320px,1fr)_220px_220px_220px] 2xl:grid-cols-[minmax(0,1fr)_260px_260px_260px]">
             <form
@@ -117,7 +141,7 @@ export function PostSearchToolbar({
                 <Input
                     className={`${searchControlClasses} pl-12`}
                     disabled={isPending}
-                    onChange={(event) => setKeyword(event.target.value)}
+                    onChange={handleKeywordChange}
                     placeholder="キーワードで検索..."
                     type="search"
                     value={keyword}
@@ -232,6 +256,20 @@ function createNextSearchParams({
     return nextSearchParams;
 }
 
+function PostSearchToolbarSkeleton() {
+    return (
+        <div
+            aria-hidden="true"
+            className="grid grid-cols-1 gap-2 lg:grid-cols-[minmax(280px,1fr)_160px_200px_160px] xl:grid-cols-[minmax(320px,1fr)_220px_220px_220px] 2xl:grid-cols-[minmax(0,1fr)_260px_260px_260px]"
+        >
+            <Skeleton className="h-12 rounded-xl border border-slate-200 bg-slate-50" />
+            <Skeleton className="h-12 rounded-xl border border-slate-200 bg-slate-50" />
+            <Skeleton className="h-12 rounded-xl border border-slate-200 bg-slate-50" />
+            <Skeleton className="h-12 rounded-xl border border-slate-200 bg-slate-50" />
+        </div>
+    );
+}
+
 // クエリパラメータの値が null か空文字列なら、そのクエリパラメータをURLSearchParamsから削除する
 // そうでなければ、URLSearchParamsにセットする
 function setOrDeleteSearchParam({
@@ -244,12 +282,12 @@ function setOrDeleteSearchParam({
     value: null | string;
 }) {
     // 値が null か空文字列なら、そのクエリパラメータを削除する
-    if (!value) {
+    if (!value || value.trim().length === 0) {
         searchParams.delete(key);
         return;
     }
 
-    searchParams.set(key, value);
+    searchParams.set(key, value.trim());
 }
 
 // 未選択（空文字）をnullにして、URLから消せるようにする

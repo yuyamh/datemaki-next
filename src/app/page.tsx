@@ -1,28 +1,42 @@
 // src/app/page.tsx
 import Link from "next/link";
 import {
+    Bookmark,
+    BookOpen,
     Clock,
     Download,
     FileText,
+    ListFilter,
     Search,
     Share2,
     UserPlus,
 } from "lucide-react";
 
-const popularTags = [
-    "初級",
-    "中級",
-    "上級",
-    "文法",
-    "会話",
-    "読解",
-    "聴解",
-    "作文",
-    "ビジネス日本語",
-    "JLPT対策",
-    "漢字",
-    "語彙",
-    "発音",
+const lessonSearchLinks = [
+    {
+        description: "文型や活動名など、授業で扱いたい内容から探せます。",
+        href: "/posts",
+        icon: <Search className="h-5 w-5 text-orange-600" />,
+        title: "キーワードで探す",
+    },
+    {
+        description: "A1からC2まで、学習者のレベルに合わせて絞り込めます。",
+        href: "/posts",
+        icon: <ListFilter className="h-5 w-5 text-orange-600" />,
+        title: "レベルで絞り込む",
+    },
+    {
+        description: "使用しているテキストに合う教案を見つけやすくなります。",
+        href: "/posts",
+        icon: <BookOpen className="h-5 w-5 text-orange-600" />,
+        title: "使用テキストで探す",
+    },
+    {
+        description: "多くの先生に保存されている教案を優先して確認できます。",
+        href: "/posts?sort=bookmarks_desc",
+        icon: <Bookmark className="h-5 w-5 text-orange-600" />,
+        title: "ブックマーク順で見る",
+    },
 ];
 
 export default function Page() {
@@ -89,7 +103,7 @@ export default function Page() {
                                 title="教案の共有"
                             />
                             <FeatureCard
-                                description="レベルやスキル、テーマなどのタグやキーワードで必要な教案をすぐに見つけられます。"
+                                description="キーワード、レベル、使用テキストで必要な教案をすぐに見つけられます。"
                                 icon={
                                     <Search className="h-5 w-5 text-orange-600" />
                                 }
@@ -110,21 +124,29 @@ export default function Page() {
                     <div className="mx-auto max-w-6xl px-4 pb-16 sm:pb-20">
                         <div className="text-center">
                             <h2 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-                                人気のタグから探す
+                                条件に合わせて教案を探す
                             </h2>
                             <p className="mt-3 text-sm text-slate-600 sm:text-base">
-                                関心のあるカテゴリーから教案を見つけましょう
+                                授業内容や学習者に合わせて、必要な教案へすばやくアクセスできます
                             </p>
                         </div>
 
-                        <div className="mt-8 flex flex-wrap justify-center gap-2">
-                            {popularTags.map((tag) => (
+                        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            {lessonSearchLinks.map((item) => (
                                 <Link
-                                    className="inline-flex items-center rounded-full border border-slate-300 bg-white px-3 py-1 text-sm text-slate-800 shadow-sm transition hover:bg-slate-50"
-                                    href="#"
-                                    key={tag}
+                                    className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:border-orange-200 hover:bg-orange-50/40"
+                                    href={item.href}
+                                    key={item.title}
                                 >
-                                    {tag}
+                                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50">
+                                        {item.icon}
+                                    </div>
+                                    <h3 className="mt-4 text-base font-semibold text-slate-900">
+                                        {item.title}
+                                    </h3>
+                                    <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                                        {item.description}
+                                    </p>
                                 </Link>
                             ))}
                         </div>
@@ -150,7 +172,7 @@ export default function Page() {
                                 title="アカウント登録"
                             />
                             <StepCard
-                                description="作成した教案をアップロードし、適切なタグを付けて他の教師と共有しましょう。"
+                                description="作成した教案をアップロードし、レベルや使用テキストを設定して他の教師と共有しましょう。"
                                 icon={<Share2 className="h-7 w-7" />}
                                 step={2}
                                 title="教案を共有"

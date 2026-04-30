@@ -78,18 +78,31 @@ model Textbook {
 }
 
 model User {
-  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name           String
-  email          String     @unique
-  hashedPassword String     @map("password")
-  bio            String?
-  role           Role       @default(user)
-  avatar         String?
-  bookmarks      Bookmark[]
-  comments       Comment[]
-  Posts          Post[]
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  id                  String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                String
+  email               String               @unique
+  hashedPassword      String               @map("password")
+  bio                 String?
+  role                Role                 @default(user)
+  avatar              String?
+  bookmarks           Bookmark[]
+  comments            Comment[]
+  Posts               Post[]
+  passwordResetTokens PasswordResetToken[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+}
+
+model PasswordResetToken {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 // レベル（CEFRに準拠）

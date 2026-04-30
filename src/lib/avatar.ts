@@ -19,6 +19,10 @@ export function buildAvatarPublicUrl(avatarPath: null | string) {
         return null;
     }
 
+    if (avatarPath.startsWith("/")) {
+        return avatarPath;
+    }
+
     if (
         avatarPath.startsWith("blob:") ||
         avatarPath.startsWith("data:") ||

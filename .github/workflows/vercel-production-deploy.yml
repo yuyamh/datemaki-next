@@ -60,6 +60,10 @@ jobs:
                   vercel env rm NEXT_PUBLIC_SUPABASE_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm SUPABASE_SERVICE_ROLE_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm RESEND_API_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm RESEND_FROM_EMAIL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm CONTACT_TO_EMAIL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm APP_BASE_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   echo "${{ secrets.PROD_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE production --token=${{ secrets.VERCEL_TOKEN }}
                   echo "${{ secrets.PROD_AUTH_SECRET }}" | vercel env add AUTH_SECRET production --token=${{ secrets.VERCEL_TOKEN }}
                   echo "${{ secrets.PROD_DATABASE_URL }}" | vercel env add DATABASE_URL production --token=${{ secrets.VERCEL_TOKEN }}
@@ -67,6 +71,10 @@ jobs:
                   echo "${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_URL }}" | vercel env add NEXT_PUBLIC_SUPABASE_URL production --token=${{ secrets.VERCEL_TOKEN }}
                   echo "${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_ANON_KEY }}" | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token=${{ secrets.VERCEL_TOKEN }}
                   echo "${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}" | vercel env add SUPABASE_SERVICE_ROLE_KEY production --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PROD_RESEND_API_KEY }}" | vercel env add RESEND_API_KEY production --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PROD_RESEND_FROM_EMAIL }}" | vercel env add RESEND_FROM_EMAIL production --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PROD_CONTACT_TO_EMAIL }}" | vercel env add CONTACT_TO_EMAIL production --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PROD_APP_BASE_URL }}" | vercel env add APP_BASE_URL production --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -119,6 +127,10 @@ jobs:
                       ${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
                   SUPABASE_SERVICE_ROLE_KEY:
                       ${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}
+                  RESEND_API_KEY: ${{ secrets.PROD_RESEND_API_KEY }}
+                  RESEND_FROM_EMAIL: ${{ secrets.PROD_RESEND_FROM_EMAIL }}
+                  CONTACT_TO_EMAIL: ${{ secrets.PROD_CONTACT_TO_EMAIL }}
+                  APP_BASE_URL: ${{ secrets.PROD_APP_BASE_URL }}
 
             # 11. デプロイ
             # ビルド済みファイルをアップロードして本番URLを発行（本番環境）
@@ -139,3 +151,7 @@ jobs:
                       ${{ secrets.PROD_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
                   SUPABASE_SERVICE_ROLE_KEY:
                       ${{ secrets.PROD_SUPABASE_SERVICE_ROLE_KEY }}
+                  RESEND_API_KEY: ${{ secrets.PROD_RESEND_API_KEY }}
+                  RESEND_FROM_EMAIL: ${{ secrets.PROD_RESEND_FROM_EMAIL }}
+                  CONTACT_TO_EMAIL: ${{ secrets.PROD_CONTACT_TO_EMAIL }}
+                  APP_BASE_URL: ${{ secrets.PROD_APP_BASE_URL }}

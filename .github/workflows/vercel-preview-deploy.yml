@@ -60,6 +60,10 @@ jobs:
                   vercel env rm NEXT_PUBLIC_SUPABASE_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   vercel env rm SUPABASE_SERVICE_ROLE_KEY preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm RESEND_API_KEY preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm RESEND_FROM_EMAIL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm CONTACT_TO_EMAIL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
+                  vercel env rm APP_BASE_URL preview --yes --token=${{ secrets.VERCEL_TOKEN }} || true
                   printf "%s" "${{ secrets.PREVIEW_DEBUG_MESSAGE }}" | vercel env add DEBUG_MESSAGE preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
                   printf "%s" "${{ secrets.PREVIEW_AUTH_SECRET }}" | vercel env add AUTH_SECRET preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
                   printf "%s" "${{ secrets.PREVIEW_DATABASE_URL }}" | vercel env add DATABASE_URL preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
@@ -67,6 +71,10 @@ jobs:
                   printf "%s" "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_URL }}" | vercel env add NEXT_PUBLIC_SUPABASE_URL preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
                   printf "%s" "${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}" | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
                   printf "%s" "${{ secrets.PREVIEW_SUPABASE_SERVICE_ROLE_KEY }}" | vercel env add SUPABASE_SERVICE_ROLE_KEY preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_RESEND_API_KEY }}" | vercel env add RESEND_API_KEY preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_RESEND_FROM_EMAIL }}" | vercel env add RESEND_FROM_EMAIL preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_CONTACT_TO_EMAIL }}" | vercel env add CONTACT_TO_EMAIL preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
+                  printf "%s" "${{ secrets.PREVIEW_APP_BASE_URL }}" | vercel env add APP_BASE_URL preview "${{ github.ref_name }}" --token=${{ secrets.VERCEL_TOKEN }}
               env:
                   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
                   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
@@ -119,6 +127,10 @@ jobs:
                       ${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
                   SUPABASE_SERVICE_ROLE_KEY:
                       ${{ secrets.PREVIEW_SUPABASE_SERVICE_ROLE_KEY }}
+                  RESEND_API_KEY: ${{ secrets.PREVIEW_RESEND_API_KEY }}
+                  RESEND_FROM_EMAIL: ${{ secrets.PREVIEW_RESEND_FROM_EMAIL }}
+                  CONTACT_TO_EMAIL: ${{ secrets.PREVIEW_CONTACT_TO_EMAIL }}
+                  APP_BASE_URL: ${{ secrets.PREVIEW_APP_BASE_URL }}
 
             # 11. デプロイ
             # ビルド済みファイルをアップロードしてプレビューURLを発行（プレビュー環境）
@@ -137,3 +149,7 @@ jobs:
                       ${{ secrets.PREVIEW_NEXT_PUBLIC_SUPABASE_ANON_KEY }}
                   SUPABASE_SERVICE_ROLE_KEY:
                       ${{ secrets.PREVIEW_SUPABASE_SERVICE_ROLE_KEY }}
+                  RESEND_API_KEY: ${{ secrets.PREVIEW_RESEND_API_KEY }}
+                  RESEND_FROM_EMAIL: ${{ secrets.PREVIEW_RESEND_FROM_EMAIL }}
+                  CONTACT_TO_EMAIL: ${{ secrets.PREVIEW_CONTACT_TO_EMAIL }}
+                  APP_BASE_URL: ${{ secrets.PREVIEW_APP_BASE_URL }}

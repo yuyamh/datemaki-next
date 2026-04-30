@@ -6,6 +6,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PasswordInput } from "@/app/ui/password-input";
 import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { signIn } from "next-auth/react";
 
 export default function SignupPage() {
@@ -76,56 +84,72 @@ export default function SignupPage() {
     }
 
     return (
-        <main className="mx-auto mt-12 max-w-md">
-            <h1 className="mb-4 text-xl font-bold">新規登録</h1>
+        <form className="m-auto w-full md:w-1/2" onSubmit={handleSubmit}>
+            <Card className="gap-12">
+                <CardHeader>
+                    <CardTitle className="flex items-center justify-between text-xl">
+                        <h1>新規登録</h1>
+                    </CardTitle>
+                    <CardDescription></CardDescription>
+                </CardHeader>
 
-            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                <label className="flex flex-col gap-1">
-                    <span>名前</span>
-                    <input
-                        autoComplete="username"
-                        className="rounded border px-3 py-2"
-                        name="name"
-                        required
-                        type="text"
-                    />
-                </label>
+                <CardContent className="space-y-5">
+                    <label className="flex flex-col gap-1">
+                        <span>名前</span>
+                        <input
+                            autoComplete="username"
+                            className="rounded border px-3 py-2"
+                            name="name"
+                            required
+                            type="text"
+                        />
+                    </label>
 
-                <label className="flex flex-col gap-1">
-                    <span>メールアドレス</span>
-                    <input
-                        autoComplete="email"
-                        className="rounded border px-3 py-2"
-                        name="email"
-                        required
-                        type="email"
-                    />
-                </label>
+                    <label className="flex flex-col gap-1">
+                        <span>メールアドレス</span>
+                        <input
+                            autoComplete="email"
+                            className="rounded border px-3 py-2"
+                            name="email"
+                            required
+                            type="email"
+                        />
+                    </label>
 
-                <label className="flex flex-col gap-1">
-                    <span>パスワード</span>
-                    <PasswordInput
-                        autoComplete="new-password"
-                        className="rounded border px-3 py-2"
-                        minLength={8}
-                        name="password"
-                        required
-                    />
-                </label>
+                    <label className="flex flex-col gap-1">
+                        <span>パスワード</span>
+                        <PasswordInput
+                            autoComplete="new-password"
+                            className="rounded border px-3 py-2"
+                            minLength={8}
+                            name="password"
+                            required
+                        />
+                    </label>
 
-                {error && <p className="text-sm text-red-600">{error}</p>}
+                    {error && <p className="text-sm text-red-600">{error}</p>}
+                </CardContent>
 
-                <Button disabled={loading} type="submit">
-                    {loading ? "登録中..." : "登録する"}
-                </Button>
+                <CardFooter className="flex flex-col">
+                    <Button
+                        className="w-full md:w-3/4"
+                        disabled={loading}
+                        type="submit"
+                    >
+                        {loading ? "登録中..." : "登録する"}
+                    </Button>
 
-                <p className="mt-2 text-sm">
-                    すでにアカウントをお持ちですか？{" "}
-                    <a className="text-blue-600 underline" href="/login">
-                        ログインはこちら
-                    </a>
-                </p>
-            </form>
-        </main>
+                    <p className="my-6 flex flex-col items-center text-sm">
+                        すでにアカウントをお持ちの場合{" "}
+                        <a
+                            className="my-2 text-blue-600 underline"
+                            href="/login"
+                        >
+                            ログインはこちら
+                        </a>
+                    </p>
+                </CardFooter>
+            </Card>
+        </form>
     );
 }
