@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const FOOTER_LINKS = [
     {
-        href: undefined,
+        href: "/contact",
         label: "お問い合わせ",
     },
     {
@@ -29,24 +29,15 @@ export function Footer() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-slate-500 md:justify-end md:text-base">
-                    {FOOTER_LINKS.map((link) =>
-                        link.href ? (
-                            <Link
-                                className="transition-colors hover:text-slate-700 hover:underline"
-                                href={link.href}
-                                key={link.label}
-                            >
-                                {link.label}
-                            </Link>
-                        ) : (
-                            <span
-                                className="cursor-default transition-colors hover:text-slate-700 hover:underline"
-                                key={link.label}
-                            >
-                                {link.label}
-                            </span>
-                        ),
-                    )}
+                    {FOOTER_LINKS.map((link) => (
+                        <Link
+                            className="transition-colors hover:text-slate-700 hover:underline"
+                            href={link.href}
+                            key={link.label}
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
                     <span className="whitespace-nowrap md:ml-12">
                         &copy; 2026 だてまき
                     </span>

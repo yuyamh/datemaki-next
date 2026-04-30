@@ -2,6 +2,7 @@
 
 import type { FormEvent } from "react";
 import { Suspense, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PasswordInput } from "@/app/ui/password-input";
 import { Button } from "@/components/ui/button";
@@ -129,13 +130,19 @@ function LoginPageInner() {
                             : "ゲストユーザーでログインする"}
                     </Button>
                     <p className="my-6 flex flex-col items-center text-sm">
+                        <Link
+                            className="mb-8 text-blue-600 underline"
+                            href="/password-reset"
+                        >
+                            パスワードを忘れた方
+                        </Link>
                         アカウントをお持ちでない場合{" "}
-                        <a
+                        <Link
                             className="my-2 text-blue-600 underline"
                             href="/signup"
                         >
                             新規登録はこちら
-                        </a>
+                        </Link>
                     </p>
                 </CardFooter>
             </Card>
