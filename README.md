@@ -140,13 +140,24 @@ Github：
 
 ## ⭐️ テーブル定義書
 
-postsテーブル
+### Postテーブル
+![Post](https://github.com/user-attachments/assets/747a20c1-4dc0-4609-8bfd-7aa602b6b81c)
 
-textsテーブル
+### Textbookテーブル
+![Textbook](https://github.com/user-attachments/assets/037c08a2-74de-4c86-8c83-fc816412361e)
 
-bookmarksテーブル
+### Bookmarkテーブル
+![Bookmark](https://github.com/user-attachments/assets/3279f72a-5e28-4370-ba3e-94e699a2f153)
 
-usersテーブル
+### Userテーブル
+![User](https://github.com/user-attachments/assets/cb934f07-2c7c-4152-bd61-59a60cd28453)
+
+### Commentテーブル
+![Comment](https://github.com/user-attachments/assets/9eefcc09-5e2b-4a53-8960-3fa681bd4979)
+
+
+### PasswordResetTokenテーブル
+![PasswordResetToken](https://github.com/user-attachments/assets/a4cd2a33-fd7c-43d8-ac6e-2a79e7b3b973)
 
 <br>
 
