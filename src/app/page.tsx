@@ -12,6 +12,19 @@ import {
     UserPlus,
 } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
+// Heroの背景画像（ランダム）
+const heroImagePaths = [
+    "/class_room1.jpg",
+    "/class_room2.jpg",
+    "/class_room3.jpg",
+    "/desk.jpg",
+    "/kyouzai.jpg",
+    "/libruary.jpg",
+    "/teaching.jpg",
+] as const;
+
 const lessonSearchLinks = [
     {
         description: "文型や活動名など、授業で扱いたい内容から探せます。",
@@ -40,43 +53,63 @@ const lessonSearchLinks = [
 ];
 
 export default function Page() {
+    // Heroの背景画像をランダムに選択
+    const heroImagePath =
+        heroImagePaths[Math.floor(Math.random() * heroImagePaths.length)] ??
+        heroImagePaths[0];
+
     return (
         <div className="relative right-1/2 left-1/2 -mt-8 -mr-[50vw] -mb-8 -ml-[50vw] w-screen">
             <main>
                 {/* Hero */}
-                <section className="bg-[#F7F1E6]">
-                    <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20 lg:py-24">
-                        <div className="text-center">
-                            <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
-                                日本語教師のための 教案共有プラットフォーム
-                            </h1>
+                <section
+                    className="relative overflow-hidden bg-cover bg-center"
+                    style={{ backgroundImage: `url(${heroImagePath})` }}
+                >
+                    <div
+                        aria-hidden="true"
+                        className="absolute inset-0 bg-slate-950/10"
+                    />
+                    <div className="relative mx-auto max-w-6xl px-4 py-16 sm:py-20 lg:py-24">
+                        <div className="mx-auto max-w-4xl rounded-2xl bg-white/75 px-5 py-8 text-center shadow-xl shadow-slate-950/15 backdrop-blur-sm sm:px-8 sm:py-10">
+                            <div>
+                                <h1 className="text-3xl leading-normal font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+                                    日本語教師のための
+                                    <br />
+                                    教案共有プラットフォーム
+                                </h1>
 
-                            <p className="text-md mt-3 text-slate-600 sm:text-base">
-                                <span className="italic">
-                                    <span className="text-orange-500">Da</span>
-                                    tabase for{" "}
-                                    <span className="text-orange-500">Te</span>
-                                    achers{" "}
-                                    <span className="text-orange-500">
-                                        Maki
+                                <p className="text-md mt-3 text-slate-700 sm:text-base">
+                                    <span className="italic">
+                                        <span className="text-orange-600">
+                                            Da
+                                        </span>
+                                        tabase for{" "}
+                                        <span className="text-orange-600">
+                                            Te
+                                        </span>
+                                        achers{" "}
+                                        <span className="text-orange-600">
+                                            Maki
+                                        </span>
+                                        ng Japanese Lessons
                                     </span>
-                                    ng Japanese Lessons
-                                </span>
-                            </p>
+                                </p>
 
-                            <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-700 sm:text-lg">
-                                教案作成の負担を減らし、より質の高い授業のために。
-                                <br className="hidden sm:block" />
-                                教案を共有し、アイデアを交換しましょう。
-                            </p>
+                                <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-800 sm:text-lg">
+                                    教案作成の負担を減らし、より質の高い授業のために。
+                                    <br className="hidden sm:block" />
+                                    教案を共有し、アイデアを交換しましょう。
+                                </p>
 
-                            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                                <Link
-                                    className="inline-flex h-11 w-full items-center justify-center rounded-md bg-orange-500 px-6 text-sm font-medium text-white shadow-sm transition hover:bg-orange-600 sm:w-auto"
-                                    href="/posts"
-                                >
-                                    始めてみる
-                                </Link>
+                                <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                                    <Link
+                                        className="inline-flex h-11 w-full items-center justify-center rounded-md bg-orange-500 px-6 text-sm font-medium text-white shadow-sm transition hover:bg-orange-600 sm:w-auto"
+                                        href="/posts"
+                                    >
+                                        始めてみる
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -65,7 +65,7 @@ export default function Navigation({ currentUser }: NavigationProps) {
             onOpenChange={setIsLogoutDialogOpen}
             open={isLogoutDialogOpen}
         >
-            <header className="sticky top-0 z-40 bg-white px-2 py-4 text-gray-800 shadow-sm">
+            <header className="sticky top-0 z-40 bg-white/90 px-2 py-4 text-gray-800 shadow-sm backdrop-blur-sm">
                 <nav className="flex w-full items-center justify-between px-4">
                     <Link className="flex items-center space-x-2" href="/">
                         <Image
