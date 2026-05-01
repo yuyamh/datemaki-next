@@ -135,6 +135,8 @@ Github：
 <br>
 
 ## ⭐️ ER図
+![er_diagram](https://github.com/user-attachments/assets/34bb4908-b3d7-42c8-bcef-5e29fe9b6384)
+
 
 <br>
 
