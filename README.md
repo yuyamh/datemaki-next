@@ -130,15 +130,15 @@ Github：
 
 <br>
 
-# ⭐️ インフラ構成図
+## ⭐️ インフラ構成図
 
 <br>
 
-# ⭐️ ER図
+## ⭐️ ER図
 
 <br>
 
-# ⭐️ テーブル定義書
+## ⭐️ テーブル定義書
 
 postsテーブル
 
@@ -150,9 +150,15 @@ usersテーブル
 
 <br>
 
-# ⭐️ URL設計書
+## ⭐️ URL設計書
+### 画面URL
+![url_spec](https://github.com/user-attachments/assets/09ed7071-98f1-433c-a237-e9b816f449f5)
 
-# Figma(作成風景)
+### API URL
+![api_spec](https://github.com/user-attachments/assets/9d66422f-ac31-4988-b892-294e4bbdd4f5)
+
+
+## Figma(作成風景)
 ![figma](https://github.com/user-attachments/assets/4c042a0a-d73f-42a9-a467-3ce629672e42)
 
 <br>
