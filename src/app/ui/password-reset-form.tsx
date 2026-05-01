@@ -36,14 +36,6 @@ function PasswordResetConfirmForm({ token }: Required<PasswordResetFormProps>) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [password, setPassword] = useState("");
 
-    // パスワードの貼り付けを禁止
-    function preventPasswordPaste(
-        event: React.ClipboardEvent<HTMLInputElement>,
-    ) {
-        event.preventDefault();
-        setError("新しいパスワードは貼り付けできません。");
-    }
-
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -123,7 +115,6 @@ function PasswordResetConfirmForm({ token }: Required<PasswordResetFormProps>) {
                             onChange={(event) =>
                                 setPassword(event.target.value)
                             }
-                            onPaste={preventPasswordPaste}
                             required
                             value={password}
                         />
@@ -141,7 +132,6 @@ function PasswordResetConfirmForm({ token }: Required<PasswordResetFormProps>) {
                             onChange={(event) =>
                                 setConfirmPassword(event.target.value)
                             }
-                            onPaste={preventPasswordPaste}
                             required
                             value={confirmPassword}
                         />

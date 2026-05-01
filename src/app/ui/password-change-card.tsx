@@ -21,14 +21,6 @@ export function PasswordChangeCard() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [newPassword, setNewPassword] = useState("");
 
-    // パスワードの貼り付けを禁止
-    function preventPasswordPaste(
-        event: React.ClipboardEvent<HTMLInputElement>,
-    ) {
-        event.preventDefault();
-        setError("新しいパスワードは貼り付けできません。");
-    }
-
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -128,7 +120,6 @@ export function PasswordChangeCard() {
                             onChange={(event) =>
                                 setNewPassword(event.target.value)
                             }
-                            onPaste={preventPasswordPaste}
                             required
                             value={newPassword}
                         />
@@ -146,7 +137,6 @@ export function PasswordChangeCard() {
                             onChange={(event) =>
                                 setConfirmPassword(event.target.value)
                             }
-                            onPaste={preventPasswordPaste}
                             required
                             value={confirmPassword}
                         />
