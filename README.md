@@ -131,6 +131,20 @@ Github：
 <br>
 
 ## ⭐️ インフラ構成図
+![infra](https://github.com/user-attachments/assets/dfadd431-609d-4f63-af3b-1a4a09031d4e)
+
+
+<br>
+
+## ⭐️ デプロイの流れ
+1. GitHubにpushする
+2. GitHub Actions が動き始める
+3. GitHub Actions上に、アプリを動かすための実行環境を準備する
+4. コードをチェックする（型エラー/lint/format）
+5. GitHubに登録された環境変数から、Vercelに必要な環境変数を登録する(DB接続情報、Supabase、Resend など)
+6. Supabase のDBにマイグレーション・Seeder実行（テーブル構造を最新にする）
+7. Vercel 用にアプリをビルドする
+8. Vercel にデプロイする（mainブランチはProd環境へ、それ以外はPreview環境へデプロイ）
 
 <br>
 
