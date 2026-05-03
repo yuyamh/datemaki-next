@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/server/db/prisma/prisma";
+import { getAllTextbooks } from "@/server/textbooks";
 
 // 使用テキストの全件取得
 export async function GET() {
@@ -13,12 +13,4 @@ export async function GET() {
             { status: 500 },
         );
     }
-}
-
-export async function getAllTextbooks() {
-    return prisma.textbook.findMany({
-        orderBy: {
-            name: "asc",
-        },
-    });
 }

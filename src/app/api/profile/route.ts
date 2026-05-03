@@ -1,8 +1,4 @@
-import type { NavigationUser } from "@/app/lib/interfaces/navigation";
-import type {
-    ProfileFieldErrors,
-    ProfileFormValues,
-} from "@/app/lib/interfaces/profile-form";
+import type { ProfileFieldErrors } from "@/app/lib/interfaces/profile-form";
 import { NextResponse } from "next/server";
 import { ProfileUpdateInputSchema } from "@/app/lib/validations/profile.schema";
 import { auth } from "@/auth";
@@ -14,56 +10,10 @@ import {
 } from "@/lib/avatar";
 import { prisma } from "@/server/db/prisma/prisma";
 import { createSupabaseServerClient } from "@/server/supabase/client";
+import { getProfileByUserId } from "@/server/users";
 
 // ファイルサイズは2MBまでに制限
 const MAX_AVATAR_FILE_SIZE = 2 * 1024 * 1024;
-
-// navbar 表示用の最小ユーザー情報を取得する
-export async function getNavigationUserByUserId(
-    userId: string,
-): Promise<NavigationUser | null> {
-    const user = await prisma.user.findUnique({
-        select: {
-            avatar: true,
-            id: true,
-            name: true,
-            role: true,
-        },
-        where: {
-            id: userId,
-        },
-    });
-
-    if (!user) {
-        return null;
-    }
-
-    return user;
-}
-
-// ユーザーIDからプロフィールを取得する
-export async function getProfileByUserId(
-    userId: string,
-): Promise<null | ProfileFormValues> {
-    const user = await prisma.user.findUnique({
-        select: {
-            avatar: true,
-            bio: true,
-            email: true,
-            id: true,
-            name: true,
-        },
-        where: {
-            id: userId,
-        },
-    });
-
-    if (!user) {
-        return null;
-    }
-
-    return user;
-}
 
 // プロフィールの更新処理
 export async function PATCH(request: Request) {

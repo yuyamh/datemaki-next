@@ -1,4 +1,3 @@
-import { DEFAULT_USERS_PAGE_SIZE } from "@/app/api/users/route";
 import {
     Card,
     CardContent,
@@ -13,6 +12,7 @@ import {
     PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DEFAULT_USERS_PAGE_SIZE } from "@/server/users";
 
 export default function Loading() {
     return (

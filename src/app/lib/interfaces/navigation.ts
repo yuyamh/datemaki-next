@@ -1,7 +1,7 @@
 import type { Role } from "@prisma/client";
 
 export interface NavigationProps {
-    currentUser: NavigationUser | null;
+    currentUser?: NavigationUser | null;
 }
 
 export interface NavigationUser {

@@ -2,7 +2,7 @@
 
 import type { PasswordResetFormProps } from "@/app/lib/interfaces/password-reset";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PasswordInput } from "@/app/ui/password-input";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +17,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-export function PasswordResetForm({ token }: PasswordResetFormProps) {
+export function PasswordResetForm({
+    token: tokenProp,
+}: PasswordResetFormProps) {
+    const searchParams = useSearchParams();
+    const token = tokenProp ?? searchParams.get("token") ?? undefined;
+
     // tokenがあればパスワード再設定フォーム、なければ再設定メール送信フォーム（設定するのに）を表示
     return token ? (
         // api/password-reset/confirmにPOSTするフォームを表示

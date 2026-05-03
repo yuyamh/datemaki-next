@@ -12,8 +12,6 @@ import {
     UserPlus,
 } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 // Heroの背景画像（ランダム）
 const heroImagePaths = [
     "/class_room1.jpg",

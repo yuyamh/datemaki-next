@@ -1,7 +1,9 @@
 import type { UserIndexPageProps } from "@/app/lib/interfaces/user-page";
-import { getPaginatedUsers } from "@/app/api/users/route";
 import { parseUserIndexSearchParams } from "@/app/lib/user-search";
 import UserList from "@/app/ui/user-list";
+import { getPaginatedUsers } from "@/server/users";
+
+export const dynamic = "force-dynamic";
 
 export default async function UserIndex({ searchParams }: UserIndexPageProps) {
     const resolvedSearchParams = await searchParams;
