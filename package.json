@@ -16,6 +16,8 @@
         "clean": "git clean -xdf node_modules dist .next",
         "prepare": "husky",
         "db:seed": "prisma db seed",
+        "db:seed:preview": "pnpm dlx vercel@latest env run -e preview --git-branch develop -- pnpm prisma db seed",
+        "db:seed:production": "pnpm dlx vercel@latest env run -e production -- pnpm prisma db seed",
         "db:generate": "prisma generate"
     },
     "prisma": {

@@ -1,9 +1,9 @@
 import type { EditPostPageProps } from "@/app/lib/interfaces/post-page";
 import { notFound, redirect } from "next/navigation";
-import { getEditablePostById } from "@/app/api/posts/[id]/route";
 import { PostForm } from "@/app/ui/post-form";
 import { auth } from "@/auth";
 import { isUuid } from "@/lib/uuid";
+import { getEditablePostById } from "@/server/posts";
 
 export default async function EditPostPage({ params }: EditPostPageProps) {
     const { id } = await params;

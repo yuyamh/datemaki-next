@@ -1,10 +1,10 @@
 import type { PostIndexProps } from "@/app/lib/interfaces/post-page";
 import { redirect } from "next/navigation";
-import { getPaginatedBookmarkedPosts } from "@/app/api/bookmarks/route";
-import { getAllTextbooks } from "@/app/api/textbooks/route";
 import { parsePostIndexSearchParams } from "@/app/lib/post-search";
 import PostList from "@/app/ui/post-list";
 import { auth } from "@/auth";
+import { getPaginatedBookmarkedPosts } from "@/server/bookmarks";
+import { getAllTextbooks } from "@/server/textbooks";
 
 export default async function BookmarkIndex({ searchParams }: PostIndexProps) {
     const session = await auth();

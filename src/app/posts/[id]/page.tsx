@@ -1,6 +1,5 @@
 import type { ShowPostPageProps } from "@/app/lib/interfaces/post-page";
 import { notFound, redirect } from "next/navigation";
-import { getPostDetail } from "@/app/api/posts/[id]/route";
 import {
     getSingleSearchParamValue,
     parsePositiveInteger,
@@ -8,6 +7,7 @@ import {
 import { PostDetail } from "@/app/ui/post-detail";
 import { auth } from "@/auth";
 import { isUuid } from "@/lib/uuid";
+import { getPostDetail } from "@/server/posts";
 
 export default async function ShowPost({
     params,

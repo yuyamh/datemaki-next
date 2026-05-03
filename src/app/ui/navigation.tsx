@@ -1,7 +1,7 @@
 "use client";
 
 import type { NavigationProps } from "@/app/lib/interfaces/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -35,9 +35,50 @@ import clsx from "clsx";
 import { Menu } from "lucide-react";
 import { signOut } from "next-auth/react";
 
-export default function Navigation({ currentUser }: NavigationProps) {
+export default function Navigation({
+    currentUser: initialUser = null,
+}: NavigationProps) {
     const pathname = usePathname();
     const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
+    const [currentUser, setCurrentUser] = useState(initialUser);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        async function loadCurrentUser() {
+            try {
+                const response = await fetch("/api/navigation-user", {
+                    cache: "no-store",
+                    signal: controller.signal,
+                });
+
+                if (!response.ok) {
+                    setCurrentUser(null);
+                    return;
+                }
+
+                const data = (await response.json()) as {
+                    currentUser: NavigationProps["currentUser"];
+                };
+                setCurrentUser(data.currentUser ?? null);
+            } catch (error) {
+                if (
+                    error instanceof DOMException &&
+                    error.name === "AbortError"
+                ) {
+                    return;
+                }
+
+                setCurrentUser(null);
+            }
+        }
+
+        void loadCurrentUser();
+
+        return () => {
+            controller.abort();
+        };
+    }, []);
 
     const desktopNavLinkClasses = (href: string) =>
         clsx("hover:text-orange-300", {
@@ -65,7 +106,7 @@ export default function Navigation({ currentUser }: NavigationProps) {
             onOpenChange={setIsLogoutDialogOpen}
             open={isLogoutDialogOpen}
         >
-            <header className="sticky top-0 z-40 bg-white px-2 py-4 text-gray-800 shadow-sm">
+            <header className="sticky top-0 z-40 bg-white/90 px-2 py-4 text-gray-800 shadow-sm backdrop-blur-sm">
                 <nav className="flex w-full items-center justify-between px-4">
                     <Link className="flex items-center space-x-2" href="/">
                         <Image
