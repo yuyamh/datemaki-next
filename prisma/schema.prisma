@@ -47,6 +47,12 @@ model Post {
   comments          Comment[]
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
+
+  @@index([updatedAt, id])
+  @@index([userId, updatedAt, id])
+  @@index([textbookId])
+  @@index([level])
+  @@index([downloadCount, updatedAt, id])
 }
 
 model Bookmark {
@@ -58,6 +64,7 @@ model Bookmark {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
+  @@index([postId])
 }
 
 model Comment {
@@ -69,6 +76,9 @@ model Comment {
   updatedAt DateTime @updatedAt
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([postId, createdAt])
+  @@index([userId])
 }
 
 model Textbook {
@@ -91,6 +101,8 @@ model User {
   passwordResetTokens PasswordResetToken[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
+
+  @@index([role, updatedAt, id])
 }
 
 model PasswordResetToken {

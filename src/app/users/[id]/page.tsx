@@ -1,10 +1,12 @@
 import type { ShowUserPageProps } from "@/app/lib/interfaces/user-page";
 import { notFound } from "next/navigation";
-import { getPublicUserProfile } from "@/app/api/users/[id]/route";
 import { parseUserProfileSearchParams } from "@/app/lib/user-search";
 import { UserProfileDetail } from "@/app/ui/user-profile-detail";
 import { auth } from "@/auth";
 import { isUuid } from "@/lib/uuid";
+import { getPublicUserProfile } from "@/server/users";
+
+export const dynamic = "force-dynamic";
 
 export default async function ShowUser({
     params,

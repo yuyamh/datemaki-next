@@ -1,9 +1,9 @@
 import { notFound, redirect } from "next/navigation";
-import { getProfileByUserId } from "@/app/api/profile/route";
 import { AccountDeleteCard } from "@/app/ui/account-delete-card";
 import { PasswordChangeCard } from "@/app/ui/password-change-card";
 import { ProfileForm } from "@/app/ui/profile-form";
 import { auth } from "@/auth";
+import { getProfileByUserId } from "@/server/users";
 
 export default async function EditProfilePage() {
     const session = await auth();

@@ -1,10 +1,10 @@
 import type { PostIndexProps } from "@/app/lib/interfaces/post-page";
 import { redirect } from "next/navigation";
-import { getPaginatedPosts } from "@/app/api/posts/route";
-import { getAllTextbooks } from "@/app/api/textbooks/route";
 import { parsePostIndexSearchParams } from "@/app/lib/post-search";
 import PostList from "@/app/ui/post-list";
 import { auth } from "@/auth";
+import { getPaginatedPosts } from "@/server/posts";
+import { getAllTextbooks } from "@/server/textbooks";
 
 export default async function PostIndex({ searchParams }: PostIndexProps) {
     // セッション取得

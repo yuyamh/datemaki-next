@@ -1,13 +1,10 @@
 import "@/styles/globals.css";
 
 import type { RootLayoutProps } from "@/app/lib/interfaces/layout";
-import type { Role } from "@prisma/client";
 import type { Metadata } from "next";
-import { getNavigationUserByUserId } from "@/app/api/profile/route";
 import { FabCreate } from "@/app/ui/fab-create-post";
 import { Footer } from "@/app/ui/footer";
 import Navigation from "@/app/ui/navigation";
-import { auth } from "@/auth";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
@@ -15,27 +12,12 @@ export const metadata: Metadata = {
     title: "だてまき",
 };
 
-async function RootLayout(props: RootLayoutProps) {
-    const session = await auth();
-    const currentUser = session?.user?.id
-        ? await getNavigationUserByUserId(session.user.id)
-        : null;
-    const navigationUser =
-        currentUser ??
-        (session?.user?.id && session.user.name
-            ? {
-                  avatar: null,
-                  id: session.user.id,
-                  name: session.user.name,
-                  role: session.user.role ?? ("user" satisfies Role),
-              }
-            : null);
-
+function RootLayout(props: RootLayoutProps) {
     return (
         <html lang="ja">
             <body>
                 <div className="flex min-h-screen flex-col bg-white">
-                    <Navigation currentUser={navigationUser} />
+                    <Navigation />
                     <main className="container mx-auto flex flex-1 flex-col px-4 py-8">
                         <Toaster
                             duration={1500}
