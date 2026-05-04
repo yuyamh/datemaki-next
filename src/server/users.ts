@@ -47,29 +47,27 @@ export async function getPaginatedUsers({
 }): Promise<UsersResponse> {
     const safePageSize = Math.min(pageSize, MAX_USERS_PAGE_SIZE);
     const where = buildPublicUserWhere(q);
-    const totalCount = await prisma.user.count({ where });
+    const [totalCount, requestedPageUsers] = await Promise.all([
+        prisma.user.count({ where }),
+        getPublicUserListRows({
+            skip: getSkipCount(page, safePageSize),
+            take: safePageSize,
+            where,
+        }),
+    ]);
     const pagination = buildPagination({
         page,
         pageSize: safePageSize,
         totalCount,
     });
-    const users = await prisma.user.findMany({
-        orderBy: [{ updatedAt: "desc" }],
-        select: {
-            _count: {
-                select: {
-                    Posts: true,
-                },
-            },
-            avatar: true,
-            bio: true,
-            id: true,
-            name: true,
-        },
-        skip: getSkipCount(pagination.currentPage, safePageSize),
-        take: safePageSize,
-        where,
-    });
+    const users =
+        pagination.currentPage === page
+            ? requestedPageUsers
+            : await getPublicUserListRows({
+                  skip: getSkipCount(pagination.currentPage, safePageSize),
+                  take: safePageSize,
+                  where,
+              });
 
     return {
         pagination,
@@ -104,6 +102,7 @@ export async function getProfileByUserId(
 }
 
 export async function getPublicUserProfile({
+    includePosts = true,
     level,
     page = 1,
     pageSize = PROFILE_POSTS_PAGE_SIZE,
@@ -112,6 +111,7 @@ export async function getPublicUserProfile({
     userId,
     viewerUserId,
 }: {
+    includePosts?: boolean;
     level?: CEFR | null;
     page?: number;
     pageSize?: number;
@@ -129,60 +129,21 @@ export async function getPublicUserProfile({
                   id: userId,
                   role: "user",
               };
-    const user = await prisma.user.findFirst({
-        select: {
-            _count: {
-                select: {
-                    Posts: true,
-                },
-            },
-            avatar: true,
-            bio: true,
-            createdAt: true,
-            id: true,
-            name: true,
-        },
-        where: userWhere,
-    });
-
-    if (!user) {
-        return null;
-    }
-
-    const safePageSize = Math.min(pageSize, MAX_PROFILE_POSTS_PAGE_SIZE);
-    const postWhere = buildUserPostWhere({
-        level,
-        q,
-        userId,
-    });
-    const totalFilteredPostCount = await prisma.post.count({
-        where: postWhere,
-    });
-    const pagination = buildPagination({
-        page,
-        pageSize: safePageSize,
-        totalCount: totalFilteredPostCount,
-    });
-    const [posts, totalBookmarkCount, downloadAggregate] = await Promise.all([
-        prisma.post.findMany({
-            orderBy: buildUserPostOrderBy(sort),
+    const [user, totalBookmarkCount, downloadAggregate] = await Promise.all([
+        prisma.user.findFirst({
             select: {
                 _count: {
                     select: {
-                        bookmarks: true,
-                        comments: true,
+                        Posts: true,
                     },
                 },
-                description: true,
-                downloadCount: true,
+                avatar: true,
+                bio: true,
+                createdAt: true,
                 id: true,
-                level: true,
-                title: true,
-                updatedAt: true,
+                name: true,
             },
-            skip: getSkipCount(pagination.currentPage, safePageSize),
-            take: safePageSize,
-            where: postWhere,
+            where: userWhere,
         }),
         prisma.bookmark.count({
             where: {
@@ -200,6 +161,29 @@ export async function getPublicUserProfile({
             },
         }),
     ]);
+
+    if (!user) {
+        return null;
+    }
+
+    const safePageSize = Math.min(pageSize, MAX_PROFILE_POSTS_PAGE_SIZE);
+    const { pagination, posts } = includePosts
+        ? await getPublicUserProfilePosts({
+              level,
+              page,
+              pageSize: safePageSize,
+              q,
+              sort,
+              userId,
+          })
+        : {
+              pagination: buildPagination({
+                  page: 1,
+                  pageSize: safePageSize,
+                  totalCount: user._count.Posts,
+              }),
+              posts: [],
+          };
 
     return {
         pagination,
@@ -311,6 +295,119 @@ function buildUserPostWhere({
     }
 
     return where;
+}
+
+function getPublicUserListRows({
+    skip,
+    take,
+    where,
+}: {
+    skip: number;
+    take: number;
+    where: Prisma.UserWhereInput;
+}) {
+    return prisma.user.findMany({
+        orderBy: [{ updatedAt: "desc" }],
+        select: {
+            _count: {
+                select: {
+                    Posts: true,
+                },
+            },
+            avatar: true,
+            bio: true,
+            id: true,
+            name: true,
+        },
+        skip,
+        take,
+        where,
+    });
+}
+
+function getPublicUserProfilePostRows({
+    page,
+    pageSize,
+    postWhere,
+    sort,
+}: {
+    page: number;
+    pageSize: number;
+    postWhere: Prisma.PostWhereInput;
+    sort: UserProfilePostSortOption;
+}) {
+    return prisma.post.findMany({
+        orderBy: buildUserPostOrderBy(sort),
+        select: {
+            _count: {
+                select: {
+                    bookmarks: true,
+                    comments: true,
+                },
+            },
+            description: true,
+            downloadCount: true,
+            id: true,
+            level: true,
+            title: true,
+            updatedAt: true,
+        },
+        skip: getSkipCount(page, pageSize),
+        take: pageSize,
+        where: postWhere,
+    });
+}
+
+async function getPublicUserProfilePosts({
+    level,
+    page,
+    pageSize,
+    q,
+    sort,
+    userId,
+}: {
+    level?: CEFR | null;
+    page: number;
+    pageSize: number;
+    q?: string;
+    sort: UserProfilePostSortOption;
+    userId: string;
+}) {
+    const postWhere = buildUserPostWhere({
+        level,
+        q,
+        userId,
+    });
+    const [totalFilteredPostCount, requestedPagePosts] = await Promise.all([
+        prisma.post.count({
+            where: postWhere,
+        }),
+        getPublicUserProfilePostRows({
+            page,
+            pageSize,
+            postWhere,
+            sort,
+        }),
+    ]);
+    const pagination = buildPagination({
+        page,
+        pageSize,
+        totalCount: totalFilteredPostCount,
+    });
+    const posts =
+        pagination.currentPage === page
+            ? requestedPagePosts
+            : await getPublicUserProfilePostRows({
+                  page: pagination.currentPage,
+                  pageSize,
+                  postWhere,
+                  sort,
+              });
+
+    return {
+        pagination,
+        posts,
+    };
 }
 
 function getSkipCount(currentPage: number, pageSize: number) {

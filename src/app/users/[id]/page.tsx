@@ -27,6 +27,7 @@ export default async function ShowUser({
         sort: parsedSearchParams.filters.sort,
         userId: id,
         viewerUserId: session?.user?.id,
+        includePosts: parsedSearchParams.tab === "posts",
     });
 
     if (!profile) {
