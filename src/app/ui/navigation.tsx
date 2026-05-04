@@ -78,7 +78,7 @@ export default function Navigation({
         return () => {
             controller.abort();
         };
-    }, []);
+    }, [pathname]);
 
     const desktopNavLinkClasses = (href: string) =>
         clsx("hover:text-orange-300", {
