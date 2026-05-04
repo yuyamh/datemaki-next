@@ -64,20 +64,31 @@ export async function getPaginatedPosts({
     });
     const orderBy = buildPostOrderBy(sort);
 
-    const totalCount = await prisma.post.count({ where });
+    const [totalCount, requestedPagePosts] = await Promise.all([
+        prisma.post.count({ where }),
+        getPostListRows({
+            orderBy,
+            sessionUserId,
+            skip: getSkipCount(page, safePageSize),
+            take: safePageSize,
+            where,
+        }),
+    ]);
     const pagination = buildPagination({
         page,
         pageSize: safePageSize,
         totalCount,
     });
-
-    const posts = await getPostListRows({
-        orderBy,
-        sessionUserId,
-        skip: getSkipCount(pagination.currentPage, safePageSize),
-        take: safePageSize,
-        where,
-    });
+    const posts =
+        pagination.currentPage === page
+            ? requestedPagePosts
+            : await getPostListRows({
+                  orderBy,
+                  sessionUserId,
+                  skip: getSkipCount(pagination.currentPage, safePageSize),
+                  take: safePageSize,
+                  where,
+              });
 
     return {
         pagination,
