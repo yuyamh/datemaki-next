@@ -6,7 +6,7 @@ import { prisma } from "@/server/db/prisma/prisma";
 import { createSupabaseServerClient } from "@/server/supabase/client";
 
 // 教案に添付されているファイルをダウンロードする
-// 署名付きURLを生成して、クライアントをそのURLにリダイレクトさせてダウンロードさせる
+// ファイル本体を返し、ダウンロード時の日本語ファイル名を正しく伝える（日本語のファイル名のエンコード化したURLをそのまま返さないための工夫）
 export async function GET(
     _request: Request,
     { params }: { params: Promise<{ id: string; slot: string }> },
@@ -78,13 +78,10 @@ export async function GET(
         const supabase = createSupabaseServerClient();
         const { data, error } = await supabase.storage
             .from(getPostFileBucketName())
-            .createSignedUrl(filePath, 60, {
-                // URLの有効期限を60秒に設定
-                download: originalName ?? true, // ダウンロード時のファイル名を指定（オリジナル名があればそれを使用、なければURLを直接開く）
-            });
+            .download(filePath);
 
-        if (error || !data?.signedUrl) {
-            console.error("添付ファイルのダウンロードURL生成失敗:", error);
+        if (error || !data) {
+            console.error("添付ファイルの取得失敗:", error);
             return NextResponse.json(
                 { error: "添付ファイルのダウンロードに失敗しました。" },
                 { status: 500 },
@@ -99,8 +96,21 @@ export async function GET(
             WHERE "id" = ${postId}::uuid
         `;
 
-        // 生成したURLにリダイレクトして、ファイルをダウンロードさせる
-        return NextResponse.redirect(data.signedUrl);
+        // ファイル名を取得する
+        const downloadName =
+            originalName ?? filePath.split("/").pop() ?? "attachment";
+        // ファイルをバイト列として読み込む
+        const fileBuffer = await data.arrayBuffer();
+
+        return new NextResponse(fileBuffer, {
+            headers: {
+                "Cache-Control": "private, no-store",
+                "Content-Disposition":
+                    buildAttachmentContentDisposition(downloadName),
+                "Content-Length": String(data.size),
+                "Content-Type": data.type || "application/octet-stream",
+            },
+        });
     } catch (error) {
         console.error("添付ファイルのダウンロード失敗:", error);
         return NextResponse.json(
@@ -110,9 +120,56 @@ export async function GET(
     }
 }
 
+// ASCIIだけの安全なファイル名を作る（古いブラウザや一部の環境で日本語ファイル名が正しく扱えない場合のフォールバック用）
+// ASCII以外を _ にする
+// " と \ を除去
+// % ; / を除去
+// その他、trimと空白にならないようにする
+function buildAsciiFallbackFileName(fileName: string) {
+    const fallback = fileName
+        .replaceAll(/[^\u0020-\u007E]/g, "_")
+        .replaceAll(/["\\]/g, "_")
+        .replaceAll(/[%;/]/g, "_")
+        .trim();
+
+    return fallback || "attachment";
+}
+
+// HTTPレスポンスの Content-Disposition ヘッダー用文字列を作る
+// 例：attachment; filename="sample.pdf"; filename*=UTF-8''%E3%83%86%E3%82%B9%E3%83%88.pdf
+function buildAttachmentContentDisposition(fileName: string) {
+    // ファイル名を安全な形式に変換する
+    const sanitizedFileName = sanitizeHeaderFileName(fileName);
+    // ASCIIだけの安全なファイル名を作る
+    const fallbackFileName = buildAsciiFallbackFileName(sanitizedFileName);
+    // UTF-8ファイル名をURLエンコードする
+    const encodedFileName = encodeRFC5987ValueChars(sanitizedFileName);
+
+    return `attachment; filename="${fallbackFileName}"; filename*=UTF-8''${encodedFileName}`;
+}
+
+// UTF-8ファイル名をURLエンコードする
+function encodeRFC5987ValueChars(value: string) {
+    return encodeURIComponent(value)
+        .replaceAll("'", "%27")
+        .replaceAll("(", "%28")
+        .replaceAll(")", "%29")
+        .replaceAll("*", "%2A");
+}
+
 // ファイルスロットの値をパースする
 function parseFileSlot(value: string) {
     return value === "1" || value === "2" || value === "3"
         ? Number(value)
         : null;
+}
+
+// ファイル名を安全な形式に変換する
+// 改行削除
+// trim
+// 空なら "attachment"
+function sanitizeHeaderFileName(fileName: string) {
+    const sanitized = fileName.replaceAll(/[\r\n]/g, "").trim();
+
+    return sanitized || "attachment";
 }
